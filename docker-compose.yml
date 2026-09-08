@@ -1,0 +1,35 @@
+services:
+  db:
+    image: pgvector/pgvector:pg16
+    container_name: fittrack-db
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:-fittrack}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-fittrack}
+      POSTGRES_DB: ${POSTGRES_DB:-fittrack}
+    ports:
+      - "${POSTGRES_PORT:-5432}:5432"
+    volumes:
+      - fittrack_pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-fittrack} -d ${POSTGRES_DB:-fittrack}"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  # Bot + API (bitta jarayon). DB tayyor bo'lgach ishga tushadi.
+  # MVP da ixtiyoriy — lokal ishlashda `make run` bilan hostda yuritish mumkin.
+  bot:
+    build: .
+    container_name: fittrack-bot
+    restart: unless-stopped
+    depends_on:
+      db:
+        condition: service_healthy
+    env_file: .env
+    environment:
+      POSTGRES_HOST: db
+    profiles: ["full"]  # `docker compose --profile full up` bilan yoqiladi
+
+volumes:
+  fittrack_pgdata:
