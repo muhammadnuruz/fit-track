@@ -10,6 +10,7 @@ import asyncio
 import contextlib
 
 from app.bot.bot import create_bot, create_dispatcher
+from app.bot.commands import setup_bot_commands
 from app.config import settings
 from app.logging_config import get_logger, setup_logging
 
@@ -23,6 +24,7 @@ async def run_polling() -> None:
     log.info("bot.starting", mode="polling")
     try:
         await bot.delete_webhook(drop_pending_updates=True)
+        await setup_bot_commands(bot)
         await dp.start_polling(bot)
     finally:
         await bot.session.close()
