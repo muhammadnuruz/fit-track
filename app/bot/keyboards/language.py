@@ -1,18 +1,34 @@
-"""Til tanlash inline klaviaturasi."""
+"""Til bilan bog'liq klaviaturalar.
+
+- `main_reply_keyboard(lang)`  → doimiy pastki reply-knopka ("Tilni o'zgartirish").
+- `language_inline_keyboard()` → til tanlash uchun 3 tilli inline picker.
+"""
 
 from __future__ import annotations
 
-from aiogram.types import InlineKeyboardMarkup
-from aiogram.utils.keyboard import InlineKeyboardBuilder
+from aiogram.types import InlineKeyboardMarkup, ReplyKeyboardMarkup
+from aiogram.utils.keyboard import InlineKeyboardBuilder, ReplyKeyboardBuilder
 
-from app.i18n.languages import LANGUAGES
+from app.i18n import LANGUAGES, Lang, t
 
-# Callback data prefiksi:  "lang:uz"
+# Inline til tanlash callback prefiksi:  "lang:uz"
 LANG_CALLBACK_PREFIX = "lang"
 
 
-def language_keyboard() -> InlineKeyboardMarkup:
-    """Har bir qo'llab-quvvatlanadigan til uchun bitta tugma (bayroq + nom)."""
+def main_reply_keyboard(lang: Lang) -> ReplyKeyboardMarkup:
+    """Doimiy pastki menyu — hozircha faqat "Tilni o'zgartirish" knopkasi.
+
+    is_persistent=True → knopka har doim ko'rinib turadi.
+    Kelajakda bu yerga boshqa asosiy knopkalar qo'shiladi.
+    """
+    builder = ReplyKeyboardBuilder()
+    builder.button(text=t("btn_change_language", lang))
+    builder.adjust(1)
+    return builder.as_markup(resize_keyboard=True, is_persistent=True)
+
+
+def language_inline_keyboard() -> InlineKeyboardMarkup:
+    """Har bir til uchun bitta tugma (bayroq + o'z tilidagi nom)."""
     builder = InlineKeyboardBuilder()
     for info in LANGUAGES:
         builder.button(
@@ -21,3 +37,8 @@ def language_keyboard() -> InlineKeyboardMarkup:
         )
     builder.adjust(1)  # har bir til alohida qatorda
     return builder.as_markup()
+
+
+def change_language_labels() -> set[str]:
+    """Barcha tillardagi "Tilni o'zgartirish" knopka matnlari (message filtri uchun)."""
+    return {t("btn_change_language", info.code) for info in LANGUAGES}

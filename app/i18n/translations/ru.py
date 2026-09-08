@@ -8,7 +8,8 @@ MESSAGES: dict[str, str] = {
     "cmd_language_desc": "Сменить язык",
     "cmd_help_desc": "Помощь",
     # --- Выбор языка ---
-    "choose_language": "🌐 Выберите язык:",
+    "btn_change_language": "🌐 Изменить язык",
+    "choose_language": "Выберите язык:",
     "language_changed": "✅ Язык изменён на <b>Русский</b>.",
     # --- Общее ---
     "start_welcome": (
@@ -21,8 +22,8 @@ MESSAGES: dict[str, str] = {
     "help_text": (
         "<b>Команды:</b>\n"
         "/start — начать\n"
-        "/language — сменить язык\n"
         "/help — помощь\n\n"
+        "🌐 Язык можно сменить в любой момент кнопкой <b>«Изменить язык»</b> внизу.\n\n"
         "Скоро: настройка профиля, учёт еды, еженедельный чек-ин."
     ),
 }

@@ -9,9 +9,9 @@ from app.i18n import DEFAULT_LANG, LANGUAGES, Lang, t
 
 
 def _commands_for(lang: Lang) -> list[BotCommand]:
+    # Til almashtirish endi buyruq emas, doimiy reply-knopka orqali.
     return [
         BotCommand(command="start", description=t("cmd_start_desc", lang)),
-        BotCommand(command="language", description=t("cmd_language_desc", lang)),
         BotCommand(command="help", description=t("cmd_help_desc", lang)),
     ]
 

@@ -8,7 +8,8 @@ MESSAGES: dict[str, str] = {
     "cmd_language_desc": "Tilni almashtirish",
     "cmd_help_desc": "Yordam",
     # --- Til tanlash ---
-    "choose_language": "🌐 Tilni tanlang:",
+    "btn_change_language": "🌐 Tilni o'zgartirish",
+    "choose_language": "Tilni tanlang:",
     "language_changed": "✅ Til <b>O'zbekcha</b> ga o'zgartirildi.",
     # --- Umumiy ---
     "start_welcome": (
@@ -21,8 +22,9 @@ MESSAGES: dict[str, str] = {
     "help_text": (
         "<b>Buyruqlar:</b>\n"
         "/start — boshlash\n"
-        "/language — tilni almashtirish\n"
         "/help — yordam\n\n"
+        "🌐 Tilni istalgan payt pastdagi <b>«Tilni o'zgartirish»</b> "
+        "knopkasi orqali almashtirasiz.\n\n"
         "Tez orada: profil sozlash, ovqat loglash, haftalik check-in."
     ),
 }
