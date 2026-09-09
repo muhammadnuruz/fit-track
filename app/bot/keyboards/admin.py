@@ -3,7 +3,7 @@ from __future__ import annotations
 from aiogram.types import ReplyKeyboardMarkup
 from aiogram.utils.keyboard import ReplyKeyboardBuilder
 
-import emoji
+from app.bot import emoji
 
 STATS_BTN = "Statistics"
 BROADCAST_BTN = "Broadcast"
