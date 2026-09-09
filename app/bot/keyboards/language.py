@@ -6,9 +6,15 @@
 
 from __future__ import annotations
 
-from aiogram.types import InlineKeyboardMarkup, ReplyKeyboardMarkup
+from aiogram.types import (
+    InlineKeyboardButton,
+    InlineKeyboardMarkup,
+    KeyboardButton,
+    ReplyKeyboardMarkup,
+)
 from aiogram.utils.keyboard import InlineKeyboardBuilder, ReplyKeyboardBuilder
 
+from app.bot.emoji import CHANGE_LANG_EMOJI_ID, FLAG_EMOJI_IDS
 from app.i18n import LANGUAGES, Lang, t
 
 # Inline til tanlash callback prefiksi:  "lang:uz"
@@ -22,18 +28,26 @@ def main_reply_keyboard(lang: Lang) -> ReplyKeyboardMarkup:
     Kelajakda bu yerga boshqa asosiy knopkalar qo'shiladi.
     """
     builder = ReplyKeyboardBuilder()
-    builder.button(text=t("btn_change_language", lang))
+    builder.add(
+        KeyboardButton(
+            text=t("btn_change_language", lang),
+            icon_custom_emoji_id=CHANGE_LANG_EMOJI_ID,
+        )
+    )
     builder.adjust(1)
     return builder.as_markup(resize_keyboard=True, is_persistent=True)
 
 
 def language_inline_keyboard() -> InlineKeyboardMarkup:
-    """Har bir til uchun bitta tugma (bayroq + o'z tilidagi nom)."""
+    """Har bir til uchun bitta tugma (premium bayroq icon + o'z tilidagi nom)."""
     builder = InlineKeyboardBuilder()
     for info in LANGUAGES:
-        builder.button(
-            text=f"{info.flag} {info.native_name}",
-            callback_data=f"{LANG_CALLBACK_PREFIX}:{info.code.value}",
+        builder.add(
+            InlineKeyboardButton(
+                text=info.native_name,
+                callback_data=f"{LANG_CALLBACK_PREFIX}:{info.code.value}",
+                icon_custom_emoji_id=FLAG_EMOJI_IDS[info.code],
+            )
         )
     builder.adjust(1)  # har bir til alohida qatorda
     return builder.as_markup()

@@ -10,7 +10,7 @@ from aiogram.filters import Command, CommandStart
 from aiogram.types import CallbackQuery, Message
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from app.bot.emoji import change_lang_prefix, flag_emoji
+from app.bot.emoji import flag_emoji, point_down, welcome_emojis
 from app.bot.keyboards.language import (
     LANG_CALLBACK_PREFIX,
     change_language_labels,
@@ -29,36 +29,48 @@ Translator = Callable[..., str]
 _CHANGE_LANG_LABELS = change_language_labels()
 
 
-async def _send_language_picker(message: Message, prompt_lang: Lang) -> None:
-    """Til tanlash: premium 🌍 + har til premium bayrog'i bilan, + inline picker.
-
-    Custom emoji rad etilsa (CUSTOM_EMOJI_INVALID) oddiy emojilar bilan qayta yuboriladi.
-    """
-    prompt = t("choose_language", prompt_lang)
+async def _send_language_picker(message: Message, prompt_lang: Lang = DEFAULT_LANG) -> None:
+    """Til tanlash — 3 tilda, har biri premium bayroq + 👇 bilan, + inline picker."""
     keyboard = language_inline_keyboard()
-    lines = [f"{change_lang_prefix()} <b>{prompt}</b>", ""]
-    lines += [f"{flag_emoji(info.code)} {info.native_name}" for info in LANGUAGES]
+    lines = [
+        f"{flag_emoji(info.code)} {t('choose_language', info.code).rstrip(': ')} {point_down()}"
+        for info in LANGUAGES
+    ]
     try:
         await message.answer("\n".join(lines), reply_markup=keyboard)
     except TelegramBadRequest:
-        plain = [f"🌐 <b>{prompt}</b>", ""]
-        plain += [f"{info.flag} {info.native_name}" for info in LANGUAGES]
+        plain = [
+            f"{info.flag} {t('choose_language', info.code).rstrip(': ')} 👇"
+            for info in LANGUAGES
+        ]
         await message.answer("\n".join(plain), reply_markup=keyboard)
+
+
+async def _send_welcome(message: Message, lang: Lang) -> None:
+    """Xush kelibsiz xabari — premium emojilar bilan, fallback bilan himoyalangan."""
+    keyboard = main_reply_keyboard(lang)
+    try:
+        await message.answer(t("start_welcome", lang, **welcome_emojis()), reply_markup=keyboard)
+    except TelegramBadRequest:
+        await message.answer(
+            t("start_welcome", lang, wave="👋", salad="🥗", muscle="💪"),
+            reply_markup=keyboard,
+        )
 
 
 @router.message(CommandStart())
 async def cmd_start(message: Message, lang: Lang | None) -> None:
     # Til hali tanlanmagan bo'lsa — avval tilni so'raymiz (birinchi qadam).
     if lang is None:
-        await _send_language_picker(message, DEFAULT_LANG)
+        await _send_language_picker(message)
         return
-    await message.answer(t("start_welcome", lang), reply_markup=main_reply_keyboard(lang))
+    await _send_welcome(message, lang)
 
 
 @router.message(F.text.in_(_CHANGE_LANG_LABELS))
 async def on_change_language_button(message: Message, lang: Lang | None) -> None:
     # Doimiy pastki knopka bosildi — til tanlash pickerini ko'rsatamiz.
-    await _send_language_picker(message, lang or DEFAULT_LANG)
+    await _send_language_picker(message)
 
 
 @router.callback_query(F.data.startswith(f"{LANG_CALLBACK_PREFIX}:"))
@@ -78,9 +90,7 @@ async def on_language_selected(callback: CallbackQuery, session: AsyncSession) -
         except TelegramBadRequest:
             await callback.message.edit_text(t("language_changed", chosen))
         # Doimiy knopkani yangi til yorlig'i bilan yangilash uchun xabar yuboramiz.
-        await callback.message.answer(
-            t("start_welcome", chosen), reply_markup=main_reply_keyboard(chosen)
-        )
+        await _send_welcome(callback.message, chosen)
 
 
 @router.message(Command("help"))

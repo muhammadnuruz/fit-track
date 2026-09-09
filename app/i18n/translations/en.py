@@ -13,9 +13,8 @@ MESSAGES: dict[str, str] = {
     "language_changed": "✅ Language changed to <b>English</b>.",
     # --- Common ---
     "start_welcome": (
-        "👋 Welcome to <b>FitTrack</b>!\n\n"
-        "I'll help you track macros and reshape your body composition — "
-        "and I know local dishes too.\n\n"
+        "{wave} Welcome to <b>FitTrack</b>! {salad} I'll help you track macros and reshape "
+        "your body composition. {muscle}\n\n"
         "Tap /help to get started.\n"
         "<i>(Onboarding flow lands in the next stage.)</i>"
     ),

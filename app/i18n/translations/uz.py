@@ -13,9 +13,8 @@ MESSAGES: dict[str, str] = {
     "language_changed": "✅ Til <b>O'zbekcha</b> ga o'zgartirildi.",
     # --- Umumiy ---
     "start_welcome": (
-        "👋 <b>FitTrack</b> ga xush kelibsiz!\n\n"
-        "Men sizga makros (BJU) hisoblab, tana tarkibingizni o'zgartirishga "
-        "yordam beraman — mahalliy taomlarni ham bilaman.\n\n"
+        "{wave} <b>FitTrack</b> ga xush kelibsiz! {salad} Men sizga makros (BJU) hisoblab, "
+        "tana tarkibingizni o'zgartirishga yordam beraman. {muscle}\n\n"
         "Boshlash uchun /help ni bosing.\n"
         "<i>(Onboarding oqimi keyingi bosqichda ulanadi.)</i>"
     ),
