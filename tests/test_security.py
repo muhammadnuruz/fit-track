@@ -7,6 +7,7 @@ import time
 from urllib.parse import urlencode
 
 import pytest
+from pydantic import ValidationError
 
 from app.api.security import InitDataError, validate_init_data
 
@@ -72,7 +73,7 @@ def test_onboarding_rejects_blank_name() -> None:
         "goal": "maintain",
     }
 
-    with pytest.raises(Exception):
+    with pytest.raises(ValidationError):
         OnboardingIn.model_validate(payload)
 
 
@@ -90,7 +91,7 @@ def test_onboarding_rejects_non_alpha_name() -> None:
         "goal": "maintain",
     }
 
-    with pytest.raises(Exception):
+    with pytest.raises(ValidationError):
         OnboardingIn.model_validate(payload)
 
 
@@ -108,5 +109,5 @@ def test_onboarding_rejects_negative_measurements() -> None:
         "goal": "maintain",
     }
 
-    with pytest.raises(Exception):
+    with pytest.raises(ValidationError):
         OnboardingIn.model_validate(payload)
