@@ -1,11 +1,13 @@
 from __future__ import annotations
 
 import structlog
+from aiogram.exceptions import TelegramBadRequest
 from fastapi import APIRouter, Depends, HTTPException, Request
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.api.schemas import MacrosOut, OnboardingIn, OnboardingOut, PlanOut
 from app.api.security import InitDataError, validate_init_data
+from app.bot.emoji import bodyfat_emoji, plan_emojis
 from app.config import settings
 from app.db.session import get_session
 from app.i18n import parse_lang, t
@@ -17,8 +19,7 @@ router = APIRouter(prefix="/api")
 log = structlog.get_logger(__name__)
 
 
-async def _send_plan(request: Request, chat_id: int, lang, plan, body_fat_pct, name) -> None:
-    bot = request.app.state.bot
+def _build_plan_text(lang, plan, body_fat_pct, name, *, plain: bool) -> str:
     text = t(
         "plan_ready",
         lang,
@@ -29,11 +30,29 @@ async def _send_plan(request: Request, chat_id: int, lang, plan, body_fat_pct, n
         fat=plan.macros.fat_g,
         bmi=plan.bmi,
         tdee=plan.tdee,
+        **plan_emojis(plain=plain),
     )
     if body_fat_pct is not None:
-        text = f"{text}\n{t('plan_bodyfat', lang, bf=body_fat_pct)}"
+        text = f"{text}\n{t('plan_bodyfat', lang, bf=body_fat_pct, e_dna=bodyfat_emoji(plain=plain))}"
+    return text
+
+
+async def _send_plan(request: Request, chat_id: int, lang, plan, body_fat_pct, name) -> None:
+    bot = request.app.state.bot
     try:
-        await bot.send_message(chat_id=chat_id, text=text)
+        await bot.send_message(
+            chat_id=chat_id,
+            text=_build_plan_text(lang, plan, body_fat_pct, name, plain=False),
+        )
+    except TelegramBadRequest:
+        # Premium emoji ishlamasa — oddiy emoji bilan qayta yuboramiz
+        try:
+            await bot.send_message(
+                chat_id=chat_id,
+                text=_build_plan_text(lang, plan, body_fat_pct, name, plain=True),
+            )
+        except Exception as exc:
+            log.warning("plan_send_failed", chat_id=chat_id, error=str(exc))
     except Exception as exc:
         log.warning("plan_send_failed", chat_id=chat_id, error=str(exc))
 

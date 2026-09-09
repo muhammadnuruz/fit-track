@@ -54,7 +54,10 @@ async def _send_onboarding_cta(message: Message, lang: Lang) -> None:
     keyboard = onboarding_inline_keyboard(lang)
     if keyboard is None:
         return
-    await message.answer(t("onboarding_cta", lang), reply_markup=keyboard)
+    try:
+        await message.answer(t("onboarding_cta", lang, point=point_down()), reply_markup=keyboard)
+    except TelegramBadRequest:
+        await message.answer(t("onboarding_cta", lang, point="👇"), reply_markup=keyboard)
 
 
 async def _send_welcome(message: Message, lang: Lang, *, show_onboarding: bool) -> None:

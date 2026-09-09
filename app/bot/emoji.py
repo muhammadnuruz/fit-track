@@ -64,3 +64,44 @@ def welcome_emojis() -> dict[str, str]:
         "muscle": custom_emoji(WELCOME_MUSCLE_EMOJI_ID, "💪"),
         "point": custom_emoji(POINT_DOWN_EMOJI_ID, "👇"),
     }
+
+
+# Reja xabari (plan) uchun premium emoji ID lari.
+# Bo'sh qoldirilganlar (CARB, BODYFAT) hozircha oddiy emoji sifatida chiqadi —
+# ID kelishi bilan premium bo'ladi.
+CALORIES_EMOJI_ID = "5420315771991497307"  # 🔥
+PROTEIN_EMOJI_ID = "5470159421512359552"  # 🍖
+FAT_EMOJI_ID = "5454298326331571916"  # 🥑
+BMI_EMOJI_ID = STATISTICS_EMOJI_ID  # 📊
+CARB_EMOJI_ID = ""  # 🍚 — kutilmoqda
+BODYFAT_EMOJI_ID = ""  # 🧬 — kutilmoqda
+
+
+def _emoji_or_plain(emoji_id: str, fallback: str) -> str:
+    return custom_emoji(emoji_id, fallback) if emoji_id else fallback
+
+
+def plan_emojis(*, plain: bool = False) -> dict[str, str]:
+    if plain:
+        return {
+            "e_check": "✅",
+            "e_fire": "🔥",
+            "e_protein": "🍖",
+            "e_carb": "🍚",
+            "e_fat": "🥑",
+            "e_stats": "📊",
+        }
+    return {
+        "e_check": custom_emoji(CHECK_EMOJI_ID, "✅"),
+        "e_fire": _emoji_or_plain(CALORIES_EMOJI_ID, "🔥"),
+        "e_protein": _emoji_or_plain(PROTEIN_EMOJI_ID, "🍖"),
+        "e_carb": _emoji_or_plain(CARB_EMOJI_ID, "🍚"),
+        "e_fat": _emoji_or_plain(FAT_EMOJI_ID, "🥑"),
+        "e_stats": custom_emoji(BMI_EMOJI_ID, "📊"),
+    }
+
+
+def bodyfat_emoji(*, plain: bool = False) -> str:
+    if plain:
+        return "🧬"
+    return _emoji_or_plain(BODYFAT_EMOJI_ID, "🧬")

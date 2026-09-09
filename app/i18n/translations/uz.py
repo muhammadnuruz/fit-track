@@ -6,16 +6,16 @@ MESSAGES: dict[str, str] = {
     "cmd_help_desc": "Yordam",
     "btn_change_language": "Tilni o'zgartirish",
     "btn_start_onboarding": "Boshlash",
-    "onboarding_cta": "Profilingizni to'ldiring va shaxsiy rejangizni oling 👇",
+    "onboarding_cta": "Profilingizni to'ldiring va shaxsiy rejangizni oling {point}",
     "plan_ready": (
-        "✅ <b>{name}</b>, rejangiz tayyor!\n\n"
-        "🔥 Kunlik kaloriya: <b>{kcal} kkal</b>\n"
-        "🥩 Protein: <b>{protein} g</b>\n"
-        "🍚 Uglevod: <b>{carb} g</b>\n"
-        "🥑 Yog': <b>{fat} g</b>\n\n"
-        "📊 BMI: <b>{bmi}</b> · TDEE: <b>{tdee} kkal</b>"
+        "{e_check} <b>{name}</b>, rejangiz tayyor!\n\n"
+        "{e_fire} Kunlik kaloriya: <b>{kcal} kkal</b>\n"
+        "{e_protein} Protein: <b>{protein} g</b>\n"
+        "{e_carb} Uglevod: <b>{carb} g</b>\n"
+        "{e_fat} Yog': <b>{fat} g</b>\n\n"
+        "{e_stats} BMI: <b>{bmi}</b> · TDEE: <b>{tdee} kkal</b>"
     ),
-    "plan_bodyfat": "🧬 Tana yog'i: <b>{bf}%</b>",
+    "plan_bodyfat": "{e_dna} Tana yog'i: <b>{bf}%</b>",
     "choose_language": "Tilni tanlang:",
     "language_changed": "{check} Til {flag} <b>O'zbekcha</b> ga o'zgartirildi.",
     "start_welcome": (
