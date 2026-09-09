@@ -554,6 +554,58 @@
     text-transform: uppercase;
   }
 
+  .calc {
+    text-align: center;
+    padding: 8px 0 6px;
+  }
+
+  .calc .ring {
+    width: 78px;
+    height: 78px;
+    margin: 6px auto 18px;
+    border-radius: 50%;
+    background: conic-gradient(from 0deg, var(--green), var(--navy), var(--sky), var(--green));
+    -webkit-mask: radial-gradient(farthest-side, #0000 calc(100% - 8px), #000 calc(100% - 8px));
+    mask: radial-gradient(farthest-side, #0000 calc(100% - 8px), #000 calc(100% - 8px));
+    animation: spin 0.85s linear infinite;
+  }
+
+  @keyframes spin {
+    to { transform: rotate(360deg); }
+  }
+
+  .calc h1 {
+    font-size: clamp(21px, 4.6vw, 27px);
+    margin-bottom: 10px;
+  }
+
+  .calc .cstep {
+    color: var(--ink-soft);
+    font-size: 14px;
+    min-height: 20px;
+    margin-bottom: 18px;
+    transition: opacity 0.25s ease;
+  }
+
+  .calc .cbar {
+    height: 8px;
+    width: 80%;
+    max-width: 240px;
+    margin: 0 auto;
+    background: rgba(44,46,42,0.08);
+    border-radius: 999px;
+    overflow: hidden;
+  }
+
+  .calc .cbar > i {
+    display: block;
+    height: 100%;
+    width: 0;
+    border-radius: inherit;
+    background: linear-gradient(90deg, var(--green), var(--navy));
+    transition: width 2.3s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
   .chips {
     display: flex;
     justify-content: center;
@@ -710,6 +762,7 @@ const T = {
     already: "Siz allaqachon ro'yxatdan o'tgansiz.",
     errReq: "To'ldiring", errRange: "Oralig'i",
     errSend: "Xatolik, qayta urinib ko'ring", sending: "Yaratilmoqda...",
+    calc_title: "Rejangiz tayyorlanmoqda", calc_steps: ["Ma'lumotlar tahlil qilinmoqda", "Kaloriya hisoblanmoqda", "Makronutrientlar sozlanmoqda"],
   },
   ru: {
     tagline: "Ваш спутник на пути к здоровью",
@@ -742,6 +795,7 @@ const T = {
     already: "Вы уже зарегистрированы.",
     errReq: "Заполните", errRange: "Диапазон",
     errSend: "Ошибка, попробуйте снова", sending: "Создаём...",
+    calc_title: "Готовим ваш план", calc_steps: ["Анализируем данные", "Считаем калории", "Настраиваем БЖУ"],
   },
   en: {
     tagline: "Your companion on the way to health",
@@ -774,6 +828,7 @@ const T = {
     already: "You are already registered.",
     errReq: "Required", errRange: "Range",
     errSend: "Error, please try again", sending: "Creating...",
+    calc_title: "Preparing your plan", calc_steps: ["Analyzing your data", "Calculating calories", "Tuning your macros"],
   },
 };
 const L = T[LANG];
@@ -1038,10 +1093,33 @@ function renderGoal() {
   ], true);
 }
 
-async function submit() {
+let _calcTimer = null;
+function showCalculating() {
+  stepLbl.textContent = "";
+  pctLbl.textContent = "";
   bar.style.width = "100%";
-  nav.querySelectorAll("button").forEach(b => b.disabled = true);
-  const p = document.getElementById("primary"); if (p) p.textContent = L.sending;
+  nav.innerHTML = "";
+  card.innerHTML = `<div class="calc">
+      <div class="ring"></div>
+      <h1>${esc(L.calc_title)}</h1>
+      <div class="cstep" id="cstep">${esc(L.calc_steps[0])}</div>
+      <div class="cbar"><i id="cbari"></i></div>
+    </div>`;
+  requestAnimationFrame(() => { const b = document.getElementById("cbari"); if (b) b.style.width = "100%"; });
+  let i = 0;
+  const el = document.getElementById("cstep");
+  _calcTimer = setInterval(() => {
+    i = (i + 1) % L.calc_steps.length;
+    if (!el) return;
+    el.style.opacity = "0";
+    setTimeout(() => { el.textContent = L.calc_steps[i]; el.style.opacity = "1"; }, 220);
+  }, 760);
+}
+function stopCalculating() { if (_calcTimer) { clearInterval(_calcTimer); _calcTimer = null; } }
+
+async function submit() {
+  showCalculating();
+  const minWait = new Promise(r => setTimeout(r, 2400));
   try {
     const initData = tg ? tg.initData : "";
     if (!initData) {
@@ -1072,12 +1150,14 @@ async function submit() {
           : L.errSend;
       throw new Error(`${res.status} · ${msg}`);
     }
+    await minWait;
+    stopCalculating();
     clearStore();
     if (json.already) return showAlready();
     showPlan(json.plan);
   } catch (e) {
-    nav.querySelectorAll("button").forEach(b => b.disabled = false);
-    if (p) p.textContent = L.finish;
+    stopCalculating();
+    render();
     toast.textContent = e?.message || L.errSend;
     toast.classList.add("show");
     setTimeout(() => toast.classList.remove("show"), 2800);
