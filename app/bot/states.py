@@ -23,3 +23,7 @@ class CheckIn(StatesGroup):
     hip = State()
     mood = State()
     photo = State()
+
+
+class AdminBroadcast(StatesGroup):
+    waiting_message = State()

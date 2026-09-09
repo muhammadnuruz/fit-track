@@ -37,6 +37,7 @@ class Settings(BaseSettings):
     log_level: str = "INFO"
     tz: str = "Asia/Tashkent"
     env: Literal["development", "production", "test"] = "development"
+    admins: str = ""
 
     @computed_field
     @property
@@ -52,6 +53,15 @@ class Settings(BaseSettings):
     @property
     def db_dsn_sync(self) -> str:
         return self.db_dsn.replace("+asyncpg", "+psycopg2")
+
+    @property
+    def admin_ids(self) -> list[int]:
+        ids: list[int] = []
+        for part in self.admins.split(","):
+            part = part.strip()
+            if part.isdigit():
+                ids.append(int(part))
+        return ids
 
 
 @lru_cache

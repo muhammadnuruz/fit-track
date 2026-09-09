@@ -22,8 +22,9 @@ from app.bot.keyboards.language import (
     language_inline_keyboard,
     main_reply_keyboard,
 )
+from app.bot.notifications import notify_admins_new_user
 from app.i18n import DEFAULT_LANG, LANGUAGES, Lang, parse_lang, t
-from app.services.settings import set_language
+from app.services.settings import has_language, set_language
 
 router = Router(name="common")
 
@@ -76,6 +77,7 @@ async def on_language_selected(callback: CallbackQuery, session: AsyncSession) -
     assert callback.data is not None
     chosen: Lang = parse_lang(callback.data.split(":", 1)[1])
 
+    is_new = not await has_language(session, callback.from_user.id)
     await set_language(session, callback.from_user.id, chosen)
     await callback.answer()
 
@@ -89,6 +91,8 @@ async def on_language_selected(callback: CallbackQuery, session: AsyncSession) -
                 t("language_changed", chosen, check="✅", flag=FALLBACK_FLAG[chosen])
             )
         await _send_welcome(callback.message, chosen)
+        if is_new:
+            await notify_admins_new_user(callback.bot, callback.from_user, chosen)
 
 
 @router.message(Command("help"))
