@@ -7,6 +7,7 @@ from aiogram.types import Update
 from fastapi import FastAPI, HTTPException, Request
 from fastapi.exceptions import RequestValidationError
 from fastapi.responses import FileResponse, JSONResponse
+from fastapi.staticfiles import StaticFiles
 
 from app.api.routes.onboarding import router as onboarding_router
 from app.config import settings
@@ -44,6 +45,8 @@ def create_app(bot: Bot, dp: Dispatcher) -> FastAPI:
     @app.get("/webapp")
     async def webapp_page() -> FileResponse:
         return FileResponse(WEBAPP_DIR / "index.html")
+
+    app.mount("/assets", StaticFiles(directory=WEBAPP_DIR / "assets"), name="assets")
 
     if settings.bot_mode == "webhook":
 

@@ -35,6 +35,7 @@ from app.bot.states import AdminBroadcast
 from app.db.session import async_session_factory
 from app.i18n import Lang
 from app.models import User, UserSettings
+from app.services.users import user_exists
 
 log = structlog.get_logger(__name__)
 
@@ -62,7 +63,9 @@ async def admin_back_to_main_menu(message: Message, state: FSMContext, lang: Lan
     if lang is None:
         await _send_language_picker(message)
         return
-    await _send_welcome(message, lang)
+    async with async_session_factory() as session:
+        show_onboarding = not await user_exists(session, message.from_user.id)
+    await _send_welcome(message, lang, show_onboarding=show_onboarding)
 
 
 @router.message(F.text == STATS_BTN)
