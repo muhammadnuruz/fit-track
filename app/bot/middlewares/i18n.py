@@ -1,11 +1,3 @@
-"""i18n middleware — foydalanuvchi tilini aniqlab, handler'ga inject qiladi.
-
-Til Telegram lokalidan EMAS, DB dagi tanlovdan olinadi (foydalanuvchi o'zi tanlaydi).
-Handler'lar quyidagilarni oladi:
-  - `lang: Lang | None`   → tanlangan til (hali tanlanmagan bo'lsa None)
-  - `_`  : Callable       → `_("kalit", **kwargs)` tarjima yordamchisi (DEFAULT_LANG fallback)
-"""
-
 from __future__ import annotations
 
 from collections.abc import Awaitable, Callable

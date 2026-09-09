@@ -1,9 +1,3 @@
-"""boshlang'ich sxema: pgvector + users, measurements, foods, food_logs, daily_summary
-
-Revision ID: 0001_initial
-Revises:
-Create Date: 2026-09-08
-"""
 from __future__ import annotations
 
 from collections.abc import Sequence
@@ -21,7 +15,6 @@ EMBEDDING_DIM = 384
 
 
 def upgrade() -> None:
-    # pgvector kengaytmasi — `foods.embedding` dan oldin bo'lishi shart.
     op.execute("CREATE EXTENSION IF NOT EXISTS vector")
 
     gender = sa.Enum("male", "female", name="gender")
@@ -31,7 +24,6 @@ def upgrade() -> None:
     )
     food_source = sa.Enum("open_db", "manual", "user", name="food_source")
 
-    # --- users ---
     op.create_table(
         "users",
         sa.Column("id", sa.BigInteger(), sa.Identity(always=False), primary_key=True),
@@ -51,7 +43,6 @@ def upgrade() -> None:
     )
     op.create_index("ix_users_telegram_id", "users", ["telegram_id"], unique=True)
 
-    # --- measurements ---
     op.create_table(
         "measurements",
         sa.Column("id", sa.BigInteger(), sa.Identity(always=False), primary_key=True),
@@ -69,7 +60,6 @@ def upgrade() -> None:
     )
     op.create_index("ix_measurements_user_id", "measurements", ["user_id"])
 
-    # --- foods ---
     op.create_table(
         "foods",
         sa.Column("id", sa.BigInteger(), sa.Identity(always=False), primary_key=True),
@@ -86,7 +76,6 @@ def upgrade() -> None:
     )
     op.create_index("ix_foods_name_normalized", "foods", ["name_normalized"])
 
-    # --- food_logs ---
     op.create_table(
         "food_logs",
         sa.Column("id", sa.BigInteger(), sa.Identity(always=False), primary_key=True),
@@ -104,7 +93,6 @@ def upgrade() -> None:
     op.create_index("ix_food_logs_user_id", "food_logs", ["user_id"])
     op.create_index("ix_food_logs_logged_at", "food_logs", ["logged_at"])
 
-    # --- daily_summary ---
     op.create_table(
         "daily_summary",
         sa.Column("id", sa.BigInteger(), sa.Identity(always=False), primary_key=True),

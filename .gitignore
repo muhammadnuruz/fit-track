@@ -1,4 +1,3 @@
-# Python
 __pycache__/
 *.py[cod]
 *.egg-info/
@@ -9,12 +8,10 @@ dist/
 venv/
 env/
 
-# Muhit va sirlar
 .env
 *.env
 !.env.example
 
-# Test / lint keshlari
 .pytest_cache/
 .mypy_cache/
 .ruff_cache/
@@ -22,17 +19,14 @@ env/
 htmlcov/
 coverage.xml
 
-# ML modellari keshi
 .cache/
 models/
 
-# IDE
 .idea/
 .vscode/
 *.swp
 .DS_Store
 
-# Ma'lumotlar / vaqtinchalik
 *.png
 !docs/**/*.png
 *.sqlite3

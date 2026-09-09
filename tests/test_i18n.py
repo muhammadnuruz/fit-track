@@ -1,5 +1,3 @@
-"""i18n katalogi testlari — to'liqlik, fallback, format."""
-
 from __future__ import annotations
 
 import pytest
@@ -22,7 +20,6 @@ def test_all_languages_have_catalog() -> None:
 
 
 def test_no_missing_keys_across_languages() -> None:
-    """Har bir kalit HAR uch tilda bo'lishi shart."""
     missing = missing_keys()
     for lang, keys in missing.items():
         assert not keys, f"{lang.value} tilida yetishmayotgan kalitlar: {keys}"
@@ -35,7 +32,6 @@ def test_t_returns_correct_language() -> None:
 
 
 def test_t_fallback_to_default_for_unknown_key() -> None:
-    # Noma'lum kalit — kalitning o'zi qaytadi (crash bo'lmaydi).
     assert t("___yoq___", Lang.EN) == "___yoq___"
 
 
@@ -44,7 +40,6 @@ def test_t_default_lang_argument() -> None:
 
 
 def test_t_format_kwargs_safe() -> None:
-    # Placeholder bo'lmasa ham kwargs xato bermasligi kerak.
     assert t("help_text", Lang.UZ, unused="x")
 
 

@@ -1,9 +1,3 @@
-"""Tarjima katalogi va `t()` yordamchisi.
-
-`t(key, lang, **kwargs)` — kalitni tanlangan tilda qaytaradi.
-Kalit topilmasa: DEFAULT_LANG ga, u ham bo'lmasa kalitning o'ziga tushadi.
-"""
-
 from __future__ import annotations
 
 from app.i18n.languages import DEFAULT_LANG, Lang
@@ -17,7 +11,6 @@ CATALOG: dict[Lang, dict[str, str]] = {
 
 
 def t(key: str, lang: Lang = DEFAULT_LANG, /, **kwargs: object) -> str:
-    """Kalit bo'yicha tarjimani oladi va {placeholder} larni to'ldiradi."""
     catalog = CATALOG.get(lang, CATALOG[DEFAULT_LANG])
     template = catalog.get(key) or CATALOG[DEFAULT_LANG].get(key) or key
     if kwargs:
@@ -29,7 +22,6 @@ def t(key: str, lang: Lang = DEFAULT_LANG, /, **kwargs: object) -> str:
 
 
 def missing_keys() -> dict[Lang, set[str]]:
-    """Har bir tilda yetishmayotgan kalitlar (testlar va CI uchun)."""
     all_keys: set[str] = set()
     for messages in CATALOG.values():
         all_keys |= messages.keys()

@@ -1,5 +1,3 @@
-"""Async engine va sessiya fabrikasi."""
-
 from __future__ import annotations
 
 from collections.abc import AsyncGenerator
@@ -28,7 +26,6 @@ async_session_factory: async_sessionmaker[AsyncSession] = async_sessionmaker(
 
 
 async def get_session() -> AsyncGenerator[AsyncSession, None]:
-    """Bir so'rov / muomala uchun sessiya beradi (FastAPI Depends va bot uchun)."""
     async with async_session_factory() as session:
         try:
             yield session

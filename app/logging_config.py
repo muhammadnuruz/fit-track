@@ -1,5 +1,3 @@
-"""structlog asosidagi strukturaviy loglash sozlamasi."""
-
 from __future__ import annotations
 
 import logging
@@ -10,7 +8,6 @@ from app.config import settings
 
 
 def setup_logging() -> None:
-    """Butun ilova uchun loglashni bir marta sozlaydi."""
     level = getattr(logging, settings.log_level.upper(), logging.INFO)
     logging.basicConfig(level=level, format="%(message)s")
 

@@ -27,12 +27,10 @@ CHECK_EMOJI_ID = "5852871561983299073"
 
 
 def check_emoji() -> str:
-    """Tasdiq belgisi premium emoji (fallback: ✅)."""
     return custom_emoji(CHECK_EMOJI_ID, "✅")
 
 
 def globe_emoji() -> str:
-    """Globe premium emoji (fallback: 🌐)."""
     return custom_emoji(CHANGE_LANG_EMOJI_ID, "🌐")
 
 

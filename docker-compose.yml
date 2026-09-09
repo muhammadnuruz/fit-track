@@ -17,8 +17,6 @@ services:
       timeout: 5s
       retries: 10
 
-  # Bot + API (bitta jarayon). DB tayyor bo'lgach ishga tushadi.
-  # `docker compose up` bilan default ravishda ko'tariladi (Docker-first).
   bot:
     build: .
     container_name: fittrack-bot
@@ -28,7 +26,6 @@ services:
         condition: service_healthy
     env_file: .env
     environment:
-      # Konteyner ichida DB 'db' xostida va ICHKI 5432 portida (host'dagi 5433 emas).
       POSTGRES_HOST: db
       POSTGRES_PORT: 5432
     volumes:

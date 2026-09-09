@@ -1,5 +1,3 @@
-"""Domen o'zagi — formulalar va tavsiya dvijoki (vektor ishlaridan mustaqil)."""
-
 from app.core.formulas import (
     Macros,
     NutritionPlan,

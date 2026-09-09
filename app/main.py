@@ -1,9 +1,3 @@
-"""Ilova kirish nuqtasi — bot (polling/webhook) + FastAPI bitta event loopda.
-
-MVP: bitta jarayon (SPEC §7). Polling rejimida FastAPI fon vazifasi sifatida
-ishga tushiriladi, bot esa polling qiladi.
-"""
-
 from __future__ import annotations
 
 import asyncio
@@ -18,7 +12,6 @@ log = get_logger(__name__)
 
 
 async def run_polling() -> None:
-    """Bot polling rejimida (dev/MVP)."""
     bot = create_bot()
     dp = create_dispatcher()
     log.info("bot.starting", mode="polling")
@@ -41,7 +34,6 @@ def main() -> None:
         with contextlib.suppress(KeyboardInterrupt):
             asyncio.run(run_polling())
     else:
-        # Webhook rejimi Bosqich 3 (production) da ulanadi.
         raise NotImplementedError("webhook rejimi hali ulanmagan — BOT_MODE=polling ishlating")
 
 

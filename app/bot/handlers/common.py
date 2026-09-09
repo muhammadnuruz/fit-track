@@ -1,5 +1,3 @@
-"""Umumiy handlerlar — /start, /help, til tanlash (doimiy knopka + inline picker)."""
-
 from __future__ import annotations
 
 from collections.abc import Callable
@@ -29,10 +27,8 @@ from app.services.settings import set_language
 
 router = Router(name="common")
 
-# Middleware'dan keladigan tarjima yordamchisi tipi: _("kalit", **kwargs)
 Translator = Callable[..., str]
 
-# Barcha tillardagi "Tilni o'zgartirish" knopka matnlari (bir marta hisoblanadi).
 _CHANGE_LANG_LABELS = change_language_labels()
 
 
@@ -46,8 +42,7 @@ async def _send_language_picker(message: Message, prompt_lang: Lang = DEFAULT_LA
         await message.answer("\n".join(lines), reply_markup=keyboard)
     except TelegramBadRequest:
         plain = [
-            f"{info.flag} {t('choose_language', info.code).rstrip(': ')} 👇"
-            for info in LANGUAGES
+            f"{info.flag} {t('choose_language', info.code).rstrip(': ')} 👇" for info in LANGUAGES
         ]
         await message.answer("\n".join(plain), reply_markup=keyboard)
 

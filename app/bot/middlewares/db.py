@@ -1,9 +1,3 @@
-"""DB sessiya middleware — har bir update uchun bitta sessiya ochadi va inject qiladi.
-
-Handler'lar `session: AsyncSession` argumenti orqali oladi.
-Muvaffaqiyatli tugasa commit, xato bo'lsa rollback qilinadi.
-"""
-
 from __future__ import annotations
 
 from collections.abc import Awaitable, Callable

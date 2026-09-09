@@ -1,5 +1,3 @@
-"""Foydalanuvchi sozlamalari xizmati — til o'qish/yozish (upsert)."""
-
 from __future__ import annotations
 
 from sqlalchemy import select
@@ -10,13 +8,11 @@ from app.models.user_settings import UserSettings
 
 
 async def get_language(session: AsyncSession, telegram_id: int) -> Lang | None:
-    """Tanlangan tilni qaytaradi; hali tanlanmagan bo'lsa None."""
     row = await session.get(UserSettings, telegram_id)
     return row.language if row else None
 
 
 async def set_language(session: AsyncSession, telegram_id: int, language: Lang) -> UserSettings:
-    """Tilni saqlaydi (mavjud bo'lsa yangilaydi, bo'lmasa yaratadi)."""
     row = await session.get(UserSettings, telegram_id)
     if row is None:
         row = UserSettings(telegram_id=telegram_id, language=language)

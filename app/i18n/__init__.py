@@ -1,5 +1,3 @@
-"""i18n paketi — tillar, katalog, `t()` yordamchisi."""
-
 from app.i18n.catalog import CATALOG, missing_keys, t
 from app.i18n.languages import (
     DEFAULT_LANG,

@@ -1,9 +1,3 @@
-"""user_settings jadvali (til sozlamasi)
-
-Revision ID: 0002_user_settings
-Revises: 0001_initial
-Create Date: 2026-09-08
-"""
 from __future__ import annotations
 
 from collections.abc import Sequence
