@@ -187,8 +187,8 @@
 
   .dob-grid {
     display: grid;
-    grid-template-columns: 1fr 1fr 1.4fr;
-    gap: 10px;
+    grid-template-columns: 0.8fr 1.55fr 1.05fr;
+    gap: 8px;
     margin-top: 6px;
   }
 
@@ -197,17 +197,17 @@
     background: rgba(255,255,255,0.7);
     border: 1px solid var(--line);
     border-radius: 18px;
-    padding: 10px 10px 8px;
+    padding: 10px 6px 8px;
     min-height: 62px;
   }
 
   .dob-box::after {
     content: "";
     position: absolute;
-    right: 10px;
+    right: 7px;
     bottom: 15px;
-    width: 7px;
-    height: 7px;
+    width: 6px;
+    height: 6px;
     border-right: 2px solid var(--ink-soft);
     border-bottom: 2px solid var(--ink-soft);
     transform: rotate(45deg);
@@ -230,7 +230,7 @@
     border: none;
     background: transparent;
     padding: 0;
-    font-size: 18px;
+    font-size: 16px;
     color: var(--ink);
     text-align: center;
     outline: none;
@@ -241,8 +241,9 @@
     -moz-appearance: none;
     appearance: none;
     text-align-last: center;
-    padding: 0 12px;
+    padding: 0 14px 0 2px;
     cursor: pointer;
+    text-overflow: ellipsis;
   }
 
   .dob-box input::placeholder {
