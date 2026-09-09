@@ -20,7 +20,7 @@ htmlcov/
 coverage.xml
 
 .cache/
-models/
+/models/
 
 .idea/
 .vscode/
