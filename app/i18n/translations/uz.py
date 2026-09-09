@@ -8,22 +8,20 @@ MESSAGES: dict[str, str] = {
     "cmd_language_desc": "Tilni almashtirish",
     "cmd_help_desc": "Yordam",
     # --- Til tanlash ---
-    "btn_change_language": "🌐 Tilni o'zgartirish",
+    "btn_change_language": "Tilni o'zgartirish",
     "choose_language": "Tilni tanlang:",
-    "language_changed": "✅ Til <b>O'zbekcha</b> ga o'zgartirildi.",
+    "language_changed": "{check} Til <b>O'zbekcha</b> ga o'zgartirildi.",
     # --- Umumiy ---
     "start_welcome": (
         "{wave} <b>FitTrack</b> ga xush kelibsiz! {salad} Men sizga makros (BJU) hisoblab, "
         "tana tarkibingizni o'zgartirishga yordam beraman. {muscle}\n\n"
-        "Boshlash uchun /help ni bosing.\n"
-        "<i>(Onboarding oqimi keyingi bosqichda ulanadi.)</i>"
+        "Boshlash uchun /help ni bosing."
     ),
     "help_text": (
         "<b>Buyruqlar:</b>\n"
         "/start — boshlash\n"
         "/help — yordam\n\n"
-        "🌐 Tilni istalgan payt pastdagi <b>«Tilni o'zgartirish»</b> "
+        "{globe} Tilni istalgan payt pastdagi <b>«Tilni o'zgartirish»</b> "
         "knopkasi orqali almashtirasiz.\n\n"
-        "Tez orada: profil sozlash, ovqat loglash, haftalik check-in."
     ),
 }

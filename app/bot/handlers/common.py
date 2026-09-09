@@ -10,7 +10,7 @@ from aiogram.filters import Command, CommandStart
 from aiogram.types import CallbackQuery, Message
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from app.bot.emoji import flag_emoji, point_down, welcome_emojis
+from app.bot.emoji import check_emoji, flag_emoji, globe_emoji, point_down, welcome_emojis
 from app.bot.keyboards.language import (
     LANG_CALLBACK_PREFIX,
     change_language_labels,
@@ -30,7 +30,6 @@ _CHANGE_LANG_LABELS = change_language_labels()
 
 
 async def _send_language_picker(message: Message, prompt_lang: Lang = DEFAULT_LANG) -> None:
-    """Til tanlash — 3 tilda, har biri premium bayroq + 👇 bilan, + inline picker."""
     keyboard = language_inline_keyboard()
     lines = [
         f"{flag_emoji(info.code)} {t('choose_language', info.code).rstrip(': ')} {point_down()}"
@@ -47,7 +46,6 @@ async def _send_language_picker(message: Message, prompt_lang: Lang = DEFAULT_LA
 
 
 async def _send_welcome(message: Message, lang: Lang) -> None:
-    """Xush kelibsiz xabari — premium emojilar bilan, fallback bilan himoyalangan."""
     keyboard = main_reply_keyboard(lang)
     try:
         await message.answer(t("start_welcome", lang, **welcome_emojis()), reply_markup=keyboard)
@@ -60,7 +58,6 @@ async def _send_welcome(message: Message, lang: Lang) -> None:
 
 @router.message(CommandStart())
 async def cmd_start(message: Message, lang: Lang | None) -> None:
-    # Til hali tanlanmagan bo'lsa — avval tilni so'raymiz (birinchi qadam).
     if lang is None:
         await _send_language_picker(message)
         return
@@ -69,7 +66,6 @@ async def cmd_start(message: Message, lang: Lang | None) -> None:
 
 @router.message(F.text.in_(_CHANGE_LANG_LABELS))
 async def on_change_language_button(message: Message, lang: Lang | None) -> None:
-    # Doimiy pastki knopka bosildi — til tanlash pickerini ko'rsatamiz.
     await _send_language_picker(message)
 
 
@@ -81,19 +77,26 @@ async def on_language_selected(callback: CallbackQuery, session: AsyncSession) -
     await set_language(session, callback.from_user.id, chosen)
     await callback.answer()
 
-    # Tanlangan YANGI tilda javob beramiz (middleware eski tilni ko'rgan edi).
     if isinstance(callback.message, Message):
         try:
             await callback.message.edit_text(
-                f"{flag_emoji(chosen)} {t('language_changed', chosen)}"
+                f"{flag_emoji(chosen)} {t('language_changed', chosen, check=check_emoji())}"
             )
         except TelegramBadRequest:
-            await callback.message.edit_text(t("language_changed", chosen))
-        # Doimiy knopkani yangi til yorlig'i bilan yangilash uchun xabar yuboramiz.
+            await callback.message.edit_text(t("language_changed", chosen, check="✅"))
         await _send_welcome(callback.message, chosen)
 
 
 @router.message(Command("help"))
 async def cmd_help(message: Message, lang: Lang | None) -> None:
     effective = lang or DEFAULT_LANG
-    await message.answer(t("help_text", effective), reply_markup=main_reply_keyboard(effective))
+    try:
+        await message.answer(
+            t("help_text", effective, globe=globe_emoji()),
+            reply_markup=main_reply_keyboard(effective),
+        )
+    except TelegramBadRequest:
+        await message.answer(
+            t("help_text", effective, globe="🌐"),
+            reply_markup=main_reply_keyboard(effective),
+        )
