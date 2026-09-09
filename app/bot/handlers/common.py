@@ -10,14 +10,14 @@ from aiogram.filters import Command, CommandStart
 from aiogram.types import CallbackQuery, Message
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from app.bot.emoji import change_lang_prefix
+from app.bot.emoji import change_lang_prefix, flag_emoji
 from app.bot.keyboards.language import (
     LANG_CALLBACK_PREFIX,
     change_language_labels,
     language_inline_keyboard,
     main_reply_keyboard,
 )
-from app.i18n import DEFAULT_LANG, Lang, parse_lang, t
+from app.i18n import DEFAULT_LANG, LANGUAGES, Lang, parse_lang, t
 from app.services.settings import set_language
 
 router = Router(name="common")
@@ -30,17 +30,20 @@ _CHANGE_LANG_LABELS = change_language_labels()
 
 
 async def _send_language_picker(message: Message, prompt_lang: Lang) -> None:
-    """Til tanlash xabari (premium emoji bilan) + inline picker yuboradi.
+    """Til tanlash: premium 🌍 + har til premium bayrog'i bilan, + inline picker.
 
-    Agar Telegram custom emoji id'ni rad etsa (bot unga kira olmasa), oddiy 🌐
-    bilan qayta yuboriladi — /start hech qachon buzilmaydi.
+    Custom emoji rad etilsa (CUSTOM_EMOJI_INVALID) oddiy emojilar bilan qayta yuboriladi.
     """
     prompt = t("choose_language", prompt_lang)
     keyboard = language_inline_keyboard()
+    lines = [f"{change_lang_prefix()} <b>{prompt}</b>", ""]
+    lines += [f"{flag_emoji(info.code)} {info.native_name}" for info in LANGUAGES]
     try:
-        await message.answer(f"{change_lang_prefix()} {prompt}", reply_markup=keyboard)
+        await message.answer("\n".join(lines), reply_markup=keyboard)
     except TelegramBadRequest:
-        await message.answer(f"🌐 {prompt}", reply_markup=keyboard)
+        plain = [f"🌐 <b>{prompt}</b>", ""]
+        plain += [f"{info.flag} {info.native_name}" for info in LANGUAGES]
+        await message.answer("\n".join(plain), reply_markup=keyboard)
 
 
 @router.message(CommandStart())
@@ -68,7 +71,12 @@ async def on_language_selected(callback: CallbackQuery, session: AsyncSession) -
 
     # Tanlangan YANGI tilda javob beramiz (middleware eski tilni ko'rgan edi).
     if isinstance(callback.message, Message):
-        await callback.message.edit_text(t("language_changed", chosen))
+        try:
+            await callback.message.edit_text(
+                f"{flag_emoji(chosen)} {t('language_changed', chosen)}"
+            )
+        except TelegramBadRequest:
+            await callback.message.edit_text(t("language_changed", chosen))
         # Doimiy knopkani yangi til yorlig'i bilan yangilash uchun xabar yuboramiz.
         await callback.message.answer(
             t("start_welcome", chosen), reply_markup=main_reply_keyboard(chosen)

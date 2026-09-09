@@ -10,8 +10,20 @@ belgi (matndagi oddiy emoji) ko'rinadi — matn hech qachon "buzilmaydi".
 
 from __future__ import annotations
 
+from app.i18n import Lang
+
 # Til o'zgartirish uchun premium emoji id (foydalanuvchi bergan).
 CHANGE_LANG_EMOJI_ID = "5399898266265475100"
+
+# Har bir til bayrog'ining premium emoji id'lari (foydalanuvchi bergan).
+FLAG_EMOJI_IDS: dict[Lang, str] = {
+    Lang.UZ: "5449829434334912605",
+    Lang.RU: "5449408995691341691",
+    Lang.EN: "5228818371562190371",
+}
+
+# Premium emoji ishlamasa ko'rinadigan oddiy bayroqlar.
+FALLBACK_FLAG: dict[Lang, str] = {Lang.UZ: "🇺🇿", Lang.RU: "🇷🇺", Lang.EN: "🇬🇧"}
 
 
 def custom_emoji(emoji_id: str, fallback: str) -> str:
@@ -22,3 +34,8 @@ def custom_emoji(emoji_id: str, fallback: str) -> str:
 def change_lang_prefix() -> str:
     """Til tanlash xabari uchun premium emoji prefiksi (fallback: 🌐)."""
     return custom_emoji(CHANGE_LANG_EMOJI_ID, "🌐")
+
+
+def flag_emoji(lang: Lang) -> str:
+    """Til bayrog'ining premium emojisi (fallback: oddiy bayroq)."""
+    return custom_emoji(FLAG_EMOJI_IDS[lang], FALLBACK_FLAG[lang])
