@@ -66,19 +66,9 @@ bo'lsangiz — `docker compose logs -f bot`.
 > faqat asosiy (runtime) bog'liqliklar o'rnatilgan. Test/lint uchun lokal venv kerak:
 > ```bash
 > python3.10 -m venv .venv && source .venv/bin/activate && pip install -e ".[dev]"
-> make test    # yoki: pytest
+> pytest        # testlar
+> ruff check app tests   # lint
 > ```
-
-### Makefile (ixtiyoriy qisqartmalar)
-
-`Makefile` — Docker buyruqlariga ixtiyoriy qisqartma, xohlasangiz ishlating:
-
-| Rejim | Buyruq | Bot qayerda | Qachon |
-|---|---|---|---|
-| **Host** | `make run` | host (venv) | kundalik ishlab chiqish — tez qayta ishga tushadi |
-| **Docker** (tavsiya) | `make up` | Docker | `docker compose up -d` ning qisqartmasi |
-
-Barcha buyruqlar: `make help`.
 
 ## Rivojlanish bosqichlari (SPEC §8)
 
