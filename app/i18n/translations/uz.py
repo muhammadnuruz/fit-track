@@ -6,6 +6,7 @@ MESSAGES: dict[str, str] = {
     "cmd_help_desc": "Yordam",
     "btn_change_language": "Tilni o'zgartirish",
     "btn_start_onboarding": "Boshlash",
+    "onboarding_cta": "Profilingizni to'ldiring va shaxsiy rejangizni oling 👇",
     "plan_ready": (
         "✅ <b>{name}</b>, rejangiz tayyor!\n\n"
         "🔥 Kunlik kaloriya: <b>{kcal} kkal</b>\n"

@@ -6,6 +6,7 @@ MESSAGES: dict[str, str] = {
     "cmd_help_desc": "Помощь",
     "btn_change_language": "Изменить язык",
     "btn_start_onboarding": "Начать",
+    "onboarding_cta": "Заполните профиль и получите персональный план 👇",
     "plan_ready": (
         "✅ <b>{name}</b>, ваш план готов!\n\n"
         "🔥 Калории в день: <b>{kcal} ккал</b>\n"
