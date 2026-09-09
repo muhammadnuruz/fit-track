@@ -260,14 +260,14 @@ let step = 0;
     if (raw) {
       const saved = JSON.parse(raw);
       Object.assign(data, saved.data || {});
-      if (typeof saved.step === "number" && saved.step >= 0 && saved.step < 8) step = saved.step;
+      if (typeof saved.step === "number" && saved.step >= 0 && saved.step < 7) step = saved.step;
     }
   } catch (e) {}
 })();
 function persist() { try { localStorage.setItem(LS_KEY, JSON.stringify({ data, step })); } catch (e) {} }
 function clearStore() { try { localStorage.removeItem(LS_KEY); } catch (e) {} }
 
-const TOTAL = 8;
+const TOTAL = 7;
 const card = document.getElementById("card");
 const nav = document.getElementById("nav");
 const bar = document.getElementById("bar");
@@ -324,7 +324,7 @@ function setPrimaryEnabled(on) { const p = document.getElementById("primary"); i
 
 function render() {
   setProgress();
-  const r = [renderName, renderGender, renderAge, renderHeight, renderWeight, renderActivity, renderGoal, renderMeasures][step];
+  const r = [renderName, renderGender, renderAge, renderHeight, renderWeight, renderActivity, renderGoal][step];
   r();
 }
 
@@ -380,7 +380,7 @@ function renderAge() { renderNumber("age", L.q_age, L.s_age, L.age); }
 function renderHeight() { renderNumber("height_cm", L.q_height, L.s_height, L.height); }
 function renderWeight() { renderNumber("weight_kg", L.q_weight, L.s_weight, L.weight); }
 
-function choiceStep(key, title, sub, items) {
+function choiceStep(key, title, sub, items, finish) {
   card.innerHTML = `<h1>${esc(title)}</h1><p class="sub">${esc(sub)}</p>
     <div class="options">${items.map(it => `
       <div class="opt ${data[key]===it.v?'sel':''}" data-v="${it.v}">
@@ -393,7 +393,10 @@ function choiceStep(key, title, sub, items) {
     card.querySelectorAll(".opt").forEach(o => o.classList.toggle("sel", o.dataset.v === data[key]));
     setPrimaryEnabled(true);
   });
-  navBtns(L.next, () => { if (!data[key]) return; go(step + 1); }, { disabled: !data[key] });
+  navBtns(finish ? L.finish : L.next, () => {
+    if (!data[key]) return;
+    if (finish) submit(); else go(step + 1);
+  }, { disabled: !data[key], cta: !!finish });
 }
 
 function renderGender() {
@@ -410,30 +413,7 @@ function renderGoal() {
     { v: "cut", t: L.g_cut, d: L.g_cut_d, ic: "🔻" },
     { v: "maintain", t: L.g_maintain, d: L.g_maintain_d, ic: "⚖️" },
     { v: "bulk", t: L.g_bulk, d: L.g_bulk_d, ic: "🔺" },
-  ]);
-}
-
-function renderMeasures() {
-  const hipNote = data.gender === "female" ? `<p class="micro">${esc(L.hipNote)}</p>` : "";
-  card.innerHTML = `<h1>${esc(L.q_measures)}</h1><p class="sub">${esc(L.s_measures)}</p>
-    <div class="row">
-      <div class="field"><label>${esc(L.waist)}</label><input id="waist" type="number" inputmode="decimal" value="${data.waist_cm ?? ""}" /></div>
-      <div class="field"><label>${esc(L.neck)}</label><input id="neck" type="number" inputmode="decimal" value="${data.neck_cm ?? ""}" /></div>
-    </div>
-    <div class="row"><div class="field"><label>${esc(L.hip)}</label><input id="hip" type="number" inputmode="decimal" value="${data.hip_cm ?? ""}" /></div></div>
-    ${hipNote}<p class="micro">${esc(L.m_measures)}</p>`;
-  const grab = () => {
-    data.waist_cm = pn("waist", 30, 250); data.neck_cm = pn("neck", 15, 100); data.hip_cm = pn("hip", 40, 250);
-    persist();
-  };
-  ["waist","neck","hip"].forEach(id => document.getElementById(id).addEventListener("input", grab));
-  navBtns(L.finish, () => { grab(); submit(); }, { cta: true, skip: () => {
-    data.waist_cm = data.neck_cm = data.hip_cm = null; persist(); submit();
-  }});
-}
-function pn(id, min, max) {
-  const el = document.getElementById(id); if (!el || el.value.trim() === "") return null;
-  const v = parseFloat(el.value); return (isNaN(v) || v < min || v > max) ? null : v;
+  ], true);
 }
 
 async function submit() {

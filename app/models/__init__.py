@@ -7,12 +7,12 @@ from app.models.user import User
 from app.models.user_settings import UserSettings
 
 __all__ = [
+    "ActivityLevel",
     "Base",
-    "User",
-    "UserSettings",
-    "Measurement",
+    "FoodSource",
     "Gender",
     "Goal",
-    "ActivityLevel",
-    "FoodSource",
+    "Measurement",
+    "User",
+    "UserSettings",
 ]
