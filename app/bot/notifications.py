@@ -13,11 +13,11 @@ log = structlog.get_logger(__name__)
 async def notify_admins_new_user(bot: Bot, user: User, lang: Lang) -> None:
     username = f"@{user.username}" if user.username else "—"
     text = (
-        "🆕 Yangi foydalanuvchi qo'shildi\n\n"
+        "🆕 New user joined\n\n"
         f"ID: <code>{user.id}</code>\n"
-        f"Ism: {user.full_name}\n"
+        f"Name: {user.full_name}\n"
         f"Username: {username}\n"
-        f"Til: {lang.value}"
+        f"Language: {lang.value}"
     )
     for admin_id in settings.admin_ids:
         try:
