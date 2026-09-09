@@ -10,7 +10,7 @@ MESSAGES: dict[str, str] = {
     # --- Выбор языка ---
     "btn_change_language": "Изменить язык",
     "choose_language": "Выберите язык:",
-    "language_changed": "{check} Язык изменён на <b>Русский</b>.",
+    "language_changed": "{check} Язык изменён на {flag} <b>Русский</b>.",
     # --- Общее ---
     "start_welcome": (
         "{wave} Добро пожаловать в <b>FitTrack</b>! {salad} Я помогу вам считать макросы (БЖУ) "

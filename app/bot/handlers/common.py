@@ -10,7 +10,14 @@ from aiogram.filters import Command, CommandStart
 from aiogram.types import CallbackQuery, Message
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from app.bot.emoji import check_emoji, flag_emoji, globe_emoji, point_down, welcome_emojis
+from app.bot.emoji import (
+    FALLBACK_FLAG,
+    check_emoji,
+    flag_emoji,
+    globe_emoji,
+    point_down,
+    welcome_emojis,
+)
 from app.bot.keyboards.language import (
     LANG_CALLBACK_PREFIX,
     change_language_labels,
@@ -80,10 +87,12 @@ async def on_language_selected(callback: CallbackQuery, session: AsyncSession) -
     if isinstance(callback.message, Message):
         try:
             await callback.message.edit_text(
-                f"{flag_emoji(chosen)} {t('language_changed', chosen, check=check_emoji())}"
+                t("language_changed", chosen, check=check_emoji(), flag=flag_emoji(chosen))
             )
         except TelegramBadRequest:
-            await callback.message.edit_text(t("language_changed", chosen, check="✅"))
+            await callback.message.edit_text(
+                t("language_changed", chosen, check="✅", flag=FALLBACK_FLAG[chosen])
+            )
         await _send_welcome(callback.message, chosen)
 
 

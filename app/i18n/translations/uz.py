@@ -10,7 +10,7 @@ MESSAGES: dict[str, str] = {
     # --- Til tanlash ---
     "btn_change_language": "Tilni o'zgartirish",
     "choose_language": "Tilni tanlang:",
-    "language_changed": "{check} Til <b>O'zbekcha</b> ga o'zgartirildi.",
+    "language_changed": "{check} Til {flag} <b>O'zbekcha</b> ga o'zgartirildi.",
     # --- Umumiy ---
     "start_welcome": (
         "{wave} <b>FitTrack</b> ga xush kelibsiz! {salad} Men sizga makros (BJU) hisoblab, "

@@ -10,7 +10,7 @@ MESSAGES: dict[str, str] = {
     # --- Language selection ---
     "btn_change_language": "Change language",
     "choose_language": "Choose your language:",
-    "language_changed": "{check} Language changed to <b>English</b>.",
+    "language_changed": "{check} Language changed to {flag} <b>English</b>.",
     # --- Common ---
     "start_welcome": (
         "{wave} Welcome to <b>FitTrack</b>! {salad} I'll help you track macros and reshape "
