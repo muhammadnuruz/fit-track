@@ -22,10 +22,18 @@ from app.bot.emoji import (
     STATISTICS_EMOJI_ID,
     custom_emoji,
 )
-from app.bot.keyboards.admin import BROADCAST_BTN, STATS_BTN, admin_menu_keyboard
+from app.bot.keyboards.admin import (
+    BACK_ADMIN_MENU,
+    BACK_MAIN_MENU,
+    BROADCAST_BTN,
+    STATS_BTN,
+    admin_menu_keyboard,
+    broadcast_keyboard,
+)
+from app.bot.keyboards.language import main_reply_keyboard
 from app.bot.states import AdminBroadcast
 from app.db.session import async_session_factory
-from app.i18n import Lang
+from app.i18n import DEFAULT_LANG, Lang
 from app.models import User, UserSettings
 
 log = structlog.get_logger(__name__)
@@ -43,6 +51,16 @@ async def cmd_admin(message: Message) -> None:
     await message.answer(
         f"{custom_emoji(ADMIN_PANEL_EMOJI_ID, '👨‍💻')} Admin panel",
         reply_markup=admin_menu_keyboard(),
+    )
+
+
+@router.message(F.text == BACK_MAIN_MENU)
+async def admin_back_to_main_menu(message: Message, lang: Lang | None) -> None:
+    if not is_admin(message.from_user.id if message.from_user else None):
+        return
+    await message.answer(
+        "Main menu",
+        reply_markup=main_reply_keyboard(lang or DEFAULT_LANG),
     )
 
 
@@ -87,16 +105,23 @@ async def admin_broadcast_start(message: Message, state: FSMContext) -> None:
         "Send the message to broadcast to every user.\n\n"
         "Any type works: text, photo, video, document, a message with inline "
         "buttons, or a forward.\n\n"
-        "To cancel, send /cancel."
+        "To cancel, send /cancel.",
+        reply_markup=broadcast_keyboard(),
     )
-
-
-@router.message(Command("cancel"))
+@router.message(AdminBroadcast.waiting_message, Command("cancel"))
 async def admin_cancel(message: Message, state: FSMContext) -> None:
     if not is_admin(message.from_user.id if message.from_user else None):
         return
     await state.clear()
-    await message.answer("Bekor qilindi", reply_markup=admin_menu_keyboard())
+    await message.answer("Broadcast cancelled.", reply_markup=admin_menu_keyboard())
+
+
+@router.message(AdminBroadcast.waiting_message, F.text == BACK_ADMIN_MENU)
+async def admin_broadcast_back(message: Message, state: FSMContext) -> None:
+    if not is_admin(message.from_user.id if message.from_user else None):
+        return
+    await state.clear()
+    await message.answer("Admin menu", reply_markup=admin_menu_keyboard())
 
 
 @router.message(AdminBroadcast.waiting_message)

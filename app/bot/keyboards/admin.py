@@ -18,3 +18,9 @@ def admin_menu_keyboard() -> ReplyKeyboardMarkup:
     builder.button(text=BACK_MAIN_MENU, icon_custom_emoji_id=emoji.BACK_EMOJI_ID)
     builder.adjust(2)
     return builder.as_markup(resize_keyboard=True, is_persistent=True)
+
+
+def broadcast_keyboard() -> ReplyKeyboardMarkup:
+    builder = ReplyKeyboardBuilder()
+    builder.button(text=BACK_ADMIN_MENU, icon_custom_emoji_id=emoji.BACK_EMOJI_ID)
+    return builder.as_markup(resize_keyboard=True, is_persistent=True)
