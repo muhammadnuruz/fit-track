@@ -8,8 +8,7 @@ MESSAGES: dict[str, str] = {
     "choose_language": "Выберите язык:",
     "language_changed": "{check} Язык изменён на {flag} <b>Русский</b>.",
     "start_welcome": (
-        "{wave} Добро пожаловать в <b>FitTrack</b>! {salad} Я помогу вам считать макросы (БЖУ) "
-        "и менять состав тела. {muscle}\n\n"
+        "{wave} Добро пожаловать в <b>FitTrack</b>! Вместе мы построим сильное тело {muscle}\n\n"
         "Нажмите /help, чтобы начать."
     ),
     "help_text": (

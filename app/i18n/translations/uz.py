@@ -8,8 +8,8 @@ MESSAGES: dict[str, str] = {
     "choose_language": "Tilni tanlang:",
     "language_changed": "{check} Til {flag} <b>O'zbekcha</b> ga o'zgartirildi.",
     "start_welcome": (
-        "{wave} <b>FitTrack</b> ga xush kelibsiz! {salad} Men sizga makros (BJU) hisoblab, "
-        "tana tarkibingizni o'zgartirishga yordam beraman. {muscle}\n\n"
+        "{wave} <b>FitTrack</b> ga xush kelibsiz! Birgalikda tanangizni mustahkam quramiz "
+        "{muscle}\n\n"
         "Boshlash uchun /help ni bosing."
     ),
     "help_text": (
