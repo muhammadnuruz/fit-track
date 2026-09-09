@@ -11,16 +11,19 @@
 <style>
   :root {
     --paper: #f6f1ea;
-    --paper-strong: #eee4d8;
-    --card: rgba(255,255,255,0.24);
-    --card-2: rgba(255,255,255,0.7);
+    --paper-strong: #efe7db;
+    --card: #ffffff;
+    --card-2: #ffffff;
     --ink: #1a1917;
     --ink-soft: #5d574f;
-    --line: rgba(26,25,23,0.08);
-    --accent: #9c6f49;
-    --accent-soft: #f0e3d6;
-    --sage-deep: #6b7d5a;
-    --blue: #2d6ad5;
+    --line: rgba(26,25,23,0.10);
+    --green: #1f9d55;
+    --green-deep: #17864a;
+    --navy: #1e4c9a;
+    --coral: #ff705d;
+    --amber: #f5b301;
+    --sky: #2ba0ff;
+    --bad: #e0533f;
     --shadow: 0 12px 28px rgba(26,25,23,0.04);
     --radius-xl: 30px;
     --radius-lg: 20px;
@@ -79,7 +82,7 @@
   }
 
   .brand .g {
-    color: var(--sage-deep);
+    color: var(--green);
   }
 
   .tag {
@@ -109,7 +112,7 @@
   }
 
   .ptop b {
-    color: var(--sage-deep);
+    color: var(--green);
     font-weight: 700;
   }
 
@@ -126,16 +129,16 @@
     width: 0;
     height: 100%;
     border-radius: inherit;
-    background: linear-gradient(90deg, #b7855b 0%, #1b1a18 100%);
+    background: linear-gradient(90deg, var(--green) 0%, var(--navy) 100%);
     transition: width 0.35s ease;
   }
 
   .card {
-    background: rgba(255,255,255,0.24);
+    background: var(--card);
     border: 1px solid var(--line);
     border-radius: 26px;
     padding: 22px 18px 16px;
-    box-shadow: var(--shadow);
+    box-shadow: none;
     animation: rise 0.35s ease both;
   }
 
@@ -227,18 +230,18 @@
   }
 
   input:focus {
-    border-color: var(--blue);
-    box-shadow: 0 0 0 4px rgba(45,106,213,0.08);
+    border-color: var(--navy);
+    box-shadow: 0 0 0 4px rgba(30,76,154,0.12);
   }
 
   input.good {
-    border-color: var(--sage-deep);
-    box-shadow: 0 0 0 4px rgba(142,212,98,0.08);
+    border-color: var(--green);
+    box-shadow: 0 0 0 4px rgba(31,157,85,0.12);
   }
 
   input.bad {
-    border-color: #d55e4d;
-    box-shadow: 0 0 0 4px rgba(213,94,77,0.08);
+    border-color: var(--bad);
+    box-shadow: 0 0 0 4px rgba(224,83,63,0.10);
   }
 
   .tick {
@@ -283,17 +286,35 @@
     gap: 12px;
     min-height: 62px;
     padding: 12px 14px;
-    background: rgba(255,255,255,0.12);
+    background: #ffffff;
     border: 1px solid var(--line);
     border-radius: 16px;
     cursor: pointer;
     transition: border-color 0.15s ease, background 0.15s ease, transform 0.15s ease;
   }
 
+  .opt .ic {
+    flex: none;
+    width: 44px;
+    height: 44px;
+    border-radius: 13px;
+    background: rgba(31,157,85,0.08);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .opt .ic svg {
+    width: 26px;
+    height: 26px;
+    display: block;
+  }
+
   .opt:hover { transform: translateY(-1px); }
 
   .opt .txt {
     flex: 1;
+    min-width: 0;
     font-size: 16px;
     line-height: 1.2;
     font-weight: 600;
@@ -319,12 +340,12 @@
   }
 
   .opt.sel {
-    border-color: rgba(26,25,23,0.18);
-    background: rgba(26,25,23,0.03);
+    border-color: var(--green);
+    background: rgba(31,157,85,0.06);
   }
 
   .opt.sel .rad {
-    border-color: var(--ink);
+    border-color: var(--green);
   }
 
   .opt.sel .rad::after {
@@ -332,7 +353,7 @@
     position: absolute;
     inset: 4px;
     border-radius: 50%;
-    background: var(--ink);
+    background: var(--green);
   }
 
   .nav {
@@ -366,7 +387,7 @@
   .btn:not(.ghost) {
     flex: 1;
     padding: 15px 18px;
-    background: var(--ink);
+    background: linear-gradient(135deg, var(--green) 0%, var(--navy) 100%);
     color: #fff;
     font-weight: 700;
     letter-spacing: 0.02em;
@@ -375,7 +396,7 @@
   }
 
   .btn.cta {
-    background: linear-gradient(135deg, var(--ink) 0%, #433a33 100%);
+    background: linear-gradient(135deg, var(--green) 0%, var(--navy) 100%);
     box-shadow: none;
   }
 
@@ -458,7 +479,18 @@
     display: block;
     font-size: 24px;
     letter-spacing: -0.06em;
-    color: var(--sage-deep);
+    color: var(--green);
+  }
+
+  .macros .mi {
+    display: flex;
+    justify-content: center;
+    margin-bottom: 6px;
+  }
+
+  .macros .mi svg {
+    width: 26px;
+    height: 26px;
   }
 
   .macros span {
@@ -585,11 +617,11 @@ const T = {
     q_height: "Bo'yingiz", s_height: "BMI va normani aniqlash uchun.", height: "Bo'y (sm)",
     q_weight: "Vazningiz", s_weight: "Joriy vaznni kiriting.", weight: "Vazn (kg)",
     q_activity: "Kunlik faollik", s_activity: "Haqiqiy holatingizni tanlang.",
-    a_sedentary: "Kam harakat", a_sedentary_d: "Ofisda ishlash, sport yo'q",
-    a_light: "O'rtacha", a_light_d: "Haftada 3+ kun mashg'ulot",
-    a_moderate: "Faol", a_moderate_d: "Haftada 3+ kun mashg'ulot",
-    a_active: "Juda faol", a_active_d: "Jismoniy mehnat yoki kundalik intensiv mashqlar",
-    a_very_active: "", a_very_active_d: "",
+    a_sedentary: "Kam harakat", a_sedentary_d: "Ofis ishi, deyarli sport yo'q",
+    a_light: "Yengil faollik", a_light_d: "Haftada 1–3 kun yengil mashg'ulot",
+    a_moderate: "O'rtacha faollik", a_moderate_d: "Haftada 3–5 kun mashg'ulot",
+    a_active: "Faol", a_active_d: "Haftada 6–7 kun jadal mashg'ulot",
+    a_very_active: "Juda faol", a_very_active_d: "Og'ir jismoniy mehnat yoki kuniga 2 marta mashq",
     q_goal: "Maqsadingiz", s_goal: "Rejani maqsadga moslaymiz.",
     g_cut: "Vazn kamaytirish", g_cut_d: "Yog'ni yoqish", g_maintain: "Saqlab qolish", g_maintain_d: "Formani saqlash",
     g_bulk: "Massa yig'ish", g_bulk_d: "Mushak qurish",
@@ -615,11 +647,11 @@ const T = {
     q_height: "Рост", s_height: "Для расчёта ИМТ и нормы.", height: "Рост (см)",
     q_weight: "Вес", s_weight: "Укажите текущий вес.", weight: "Вес (кг)",
     q_activity: "Активность", s_activity: "Выберите ваш реальный уровень.",
-    a_sedentary: "Низкая", a_sedentary_d: "Офисная работа, без спорта",
-    a_light: "Средняя", a_light_d: "3+ тренировки в неделю",
-    a_moderate: "Высокая", a_moderate_d: "3+ тренировки в неделю",
-    a_active: "Очень высокая", a_active_d: "Физически тяжёлая работа или интенсивные тренировки каждый день",
-    a_very_active: "", a_very_active_d: "",
+    a_sedentary: "Низкая", a_sedentary_d: "Офисная работа, почти без спорта",
+    a_light: "Лёгкая", a_light_d: "1–3 лёгкие тренировки в неделю",
+    a_moderate: "Средняя", a_moderate_d: "3–5 тренировок в неделю",
+    a_active: "Высокая", a_active_d: "6–7 интенсивных тренировок в неделю",
+    a_very_active: "Очень высокая", a_very_active_d: "Тяжёлый физический труд или тренировки 2 раза в день",
     q_goal: "Ваша цель", s_goal: "Подстроим план под цель.",
     g_cut: "Снижение веса", g_cut_d: "Сжечь жир", g_maintain: "Поддержание", g_maintain_d: "Держать форму",
     g_bulk: "Набор массы", g_bulk_d: "Растить мышцы",
@@ -645,11 +677,11 @@ const T = {
     q_height: "Height", s_height: "To compute BMI and targets.", height: "Height (cm)",
     q_weight: "Weight", s_weight: "Enter your current weight.", weight: "Weight (kg)",
     q_activity: "Activity level", s_activity: "Choose your real routine.",
-    a_sedentary: "Low", a_sedentary_d: "Desk work, little to no exercise",
-    a_light: "Moderate", a_light_d: "3+ workouts a week",
-    a_moderate: "Active", a_moderate_d: "3+ workouts a week",
-    a_active: "Very active", a_active_d: "Physically demanding work or intense daily training",
-    a_very_active: "", a_very_active_d: "",
+    a_sedentary: "Sedentary", a_sedentary_d: "Desk job, little to no exercise",
+    a_light: "Light", a_light_d: "Light exercise 1–3 days a week",
+    a_moderate: "Moderate", a_moderate_d: "Exercise 3–5 days a week",
+    a_active: "Active", a_active_d: "Hard exercise 6–7 days a week",
+    a_very_active: "Very active", a_very_active_d: "Physical job or training twice a day",
     q_goal: "Your goal", s_goal: "We'll tailor the plan.",
     g_cut: "Lose weight", g_cut_d: "Burn fat", g_maintain: "Maintain", g_maintain_d: "Stay in shape",
     g_bulk: "Gain muscle", g_bulk_d: "Build muscle",
@@ -700,7 +732,23 @@ const stepLbl = document.getElementById("stepLbl");
 const pctLbl = document.getElementById("pctLbl");
 const toast = document.getElementById("toast");
 
-const TICK = '<svg class="tick" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="11" fill="#5d9a64"/><path d="M7 12.5l3.2 3.2L17 9" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>';
+const TICK = '<svg class="tick" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="11" fill="#1f9d55"/><path d="M7 12.5l3.2 3.2L17 9" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>';
+
+const ICONS = {
+  gender_male: '<svg viewBox="0 0 24 24" fill="none"><circle cx="10" cy="14" r="5.2" fill="none" stroke="#1e4c9a" stroke-width="2"/><path d="M14.5 9.5 20 4" stroke="#1e4c9a" stroke-width="2" stroke-linecap="round"/><path d="M15.5 4H20v4.5" stroke="#1e4c9a" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>',
+  gender_female: '<svg viewBox="0 0 24 24" fill="none"><circle cx="12" cy="8.5" r="5.2" fill="none" stroke="#ff705d" stroke-width="2"/><path d="M12 13.7V21" stroke="#ff705d" stroke-width="2" stroke-linecap="round"/><path d="M8.5 17.5h7" stroke="#ff705d" stroke-width="2" stroke-linecap="round"/></svg>',
+  act_sedentary: '<svg viewBox="0 0 24 24" fill="none"><path d="M6 4v7h8" stroke="#1e4c9a" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><path d="M6 11h9v0a4 4 0 0 1-4 4H8" stroke="#1e4c9a" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><path d="M8 15v5M17 4v16" stroke="#1e4c9a" stroke-width="2" stroke-linecap="round"/><circle cx="15" cy="6" r="1.6" fill="#1f9d55"/></svg>',
+  act_light: '<svg viewBox="0 0 24 24" fill="none"><circle cx="13" cy="4.6" r="1.9" fill="#1f9d55"/><path d="M12.5 8 10 12l3 2 1 6" stroke="#1e4c9a" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><path d="M13 14l3.5 1M10 12 7 15" stroke="#1e4c9a" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>',
+  act_moderate: '<svg viewBox="0 0 24 24" fill="none"><circle cx="14" cy="4.4" r="1.9" fill="#f5b301"/><path d="M13.5 7.5 10 11l3.2 2.2.8 6.3" stroke="#1e4c9a" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><path d="M13.2 13.2 17 14.4M10 11 6.5 12.5 5 16" stroke="#1e4c9a" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>',
+  act_active: '<svg viewBox="0 0 24 24" fill="none"><circle cx="15" cy="4.3" r="1.9" fill="#1f9d55"/><path d="M14.5 7 10.5 9.5 13 12l1 8" stroke="#1e4c9a" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><path d="M13 11.6 17.5 13M10.5 9.5 6 11l-1.5 4" stroke="#1e4c9a" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><path d="M4 20h5" stroke="#1f9d55" stroke-width="2" stroke-linecap="round"/></svg>',
+  act_very_active: '<svg viewBox="0 0 24 24" fill="none"><path d="M13 2.5c.4 3-1.8 3.8-1.8 6.4A3 3 0 0 0 16 11c1-2 0-3.8-.5-4.7 1.9 1 3.5 3.3 3.5 6.2a6 6 0 1 1-11.6-2.2C8 8 11.4 6.7 13 2.5Z" fill="#ff705d"/><path d="M11.8 13c-.7 1-.4 2.2.6 2.6 1 .3 1.8-.3 1.9-1.3.5.7.7 1.6.4 2.4a2.9 2.9 0 0 1-5.5-.8c0-1.4 1.3-2.3 2.6-2.9Z" fill="#f5b301"/></svg>',
+  goal_cut: '<svg viewBox="0 0 24 24" fill="none"><path d="M12 3v13" stroke="#1f9d55" stroke-width="2" stroke-linecap="round"/><path d="M7 11.5 12 16.5 17 11.5" stroke="#1f9d55" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><path d="M6.5 19.5h11" stroke="#1e4c9a" stroke-width="2" stroke-linecap="round"/></svg>',
+  goal_maintain: '<svg viewBox="0 0 24 24" fill="none"><path d="M12 4v3M12 7 6 9M12 7l6 2" stroke="#1e4c9a" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><path d="M6 9 3.8 13.3a2.3 2.3 0 0 0 4.4 0L6 9Z" fill="#1f9d55" fill-opacity="0.25" stroke="#1f9d55" stroke-width="1.6" stroke-linejoin="round"/><path d="M18 9l-2.2 4.3a2.3 2.3 0 0 0 4.4 0L18 9Z" fill="#1f9d55" fill-opacity="0.25" stroke="#1f9d55" stroke-width="1.6" stroke-linejoin="round"/><path d="M8.5 20h7" stroke="#1e4c9a" stroke-width="2" stroke-linecap="round"/></svg>',
+  goal_bulk: '<svg viewBox="0 0 24 24" fill="none"><path d="M12 21V8" stroke="#1f9d55" stroke-width="2" stroke-linecap="round"/><path d="M7 12.5 12 7.5 17 12.5" stroke="#1f9d55" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><path d="M6.5 4.5h11" stroke="#1e4c9a" stroke-width="2" stroke-linecap="round"/></svg>',
+  macro_protein: '<svg viewBox="0 0 24 24" fill="none"><ellipse cx="12" cy="13" rx="6.3" ry="8" fill="#f5b301" fill-opacity="0.22" stroke="#1e4c9a" stroke-width="1.8"/><circle cx="12" cy="13" r="3" fill="#f5b301"/></svg>',
+  macro_carb: '<svg viewBox="0 0 24 24" fill="none"><path d="M12 3v18" stroke="#1f9d55" stroke-width="1.8" stroke-linecap="round"/><path d="M12 7c-2.4-.6-3.6.6-3 3 2.4.6 3.6-.6 3-3Z" fill="#f5b301"/><path d="M12 7c2.4-.6 3.6.6 3 3-2.4.6-3.6-.6-3-3Z" fill="#f5b301"/><path d="M12 12c-2.4-.6-3.6.6-3 3 2.4.6 3.6-.6 3-3Z" fill="#1f9d55" fill-opacity="0.55"/><path d="M12 12c2.4-.6 3.6.6 3 3-2.4.6-3.6-.6-3-3Z" fill="#1f9d55" fill-opacity="0.55"/></svg>',
+  macro_fat: '<svg viewBox="0 0 24 24" fill="none"><path d="M12 3c3.5 4 5.5 6.7 5.5 9.6a5.5 5.5 0 1 1-11 0C6.5 9.7 8.5 7 12 3Z" fill="#2ba0ff" fill-opacity="0.22" stroke="#1e4c9a" stroke-width="1.8" stroke-linejoin="round"/><path d="M9.6 12.4a2.4 2.4 0 0 0 2.4 2.4" stroke="#2ba0ff" stroke-width="1.8" stroke-linecap="round"/></svg>',
+};
 function esc(s) { const d = document.createElement("div"); d.textContent = s; return d.innerHTML; }
 
 function showReward(i) {
@@ -921,6 +969,7 @@ function choiceStep(key, title, sub, items, finish) {
   card.innerHTML = `<h1>${esc(title)}</h1><p class="sub">${esc(sub)}</p>
     <div class="options">${items.map(it => `
       <div class="opt ${data[key]===it.v?'sel':''}" data-v="${it.v}">
+        ${it.ic ? `<span class="ic">${ICONS[it.ic]||""}</span>` : ""}
         <span class="txt">${esc(it.t)}${it.d ? `<small>${esc(it.d)}</small>` : ""}</span>
         <span class="rad"></span>
       </div>`).join("")}</div>`;
@@ -937,21 +986,22 @@ function choiceStep(key, title, sub, items, finish) {
 
 function renderGender() {
   choiceStep("gender", L.q_gender, L.s_gender, [
-    { v: "male", t: L.male },
-    { v: "female", t: L.female },
+    { v: "male", t: L.male, ic: "gender_male" },
+    { v: "female", t: L.female, ic: "gender_female" },
   ]);
 }
 
 function renderActivity() {
-  choiceStep("activity", L.q_activity, L.s_activity, ["sedentary","light","moderate"].map(v =>
-    ({ v, t: L["a_"+v], d: L["a_"+v+"_d"] })));
+  choiceStep("activity", L.q_activity, L.s_activity,
+    ["sedentary","light","moderate","active","very_active"].map(v =>
+      ({ v, t: L["a_"+v], d: L["a_"+v+"_d"], ic: "act_"+v })));
 }
 
 function renderGoal() {
   choiceStep("goal", L.q_goal, L.s_goal, [
-    { v: "cut", t: L.g_cut, d: L.g_cut_d },
-    { v: "maintain", t: L.g_maintain, d: L.g_maintain_d },
-    { v: "bulk", t: L.g_bulk, d: L.g_bulk_d },
+    { v: "cut", t: L.g_cut, d: L.g_cut_d, ic: "goal_cut" },
+    { v: "maintain", t: L.g_maintain, d: L.g_maintain_d, ic: "goal_maintain" },
+    { v: "bulk", t: L.g_bulk, d: L.g_bulk_d, ic: "goal_bulk" },
   ], true);
 }
 
@@ -993,7 +1043,7 @@ async function submit() {
   }
 }
 
-const OK_SVG = '<svg class="ok" viewBox="0 0 64 64" fill="none"><circle cx="32" cy="32" r="30" fill="#5d9a64"/><path d="M20 33l8 8 16-18" stroke="#fff" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"/></svg>';
+const OK_SVG = '<svg class="ok" viewBox="0 0 64 64" fill="none"><circle cx="32" cy="32" r="30" fill="#1f9d55"/><path d="M20 33l8 8 16-18" stroke="#fff" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"/></svg>';
 
 function showAlready() {
   setProgress(); bar.style.width = "100%";
@@ -1010,9 +1060,9 @@ function showPlan(plan) {
     <div class="big">${plan.target_kcal}</div>
     <div class="kc">${esc(L.kcalLabel)}</div>
     <div class="macros">
-      <div><b>${plan.macros.protein_g}g</b><span>${esc(L.protein)}</span></div>
-      <div><b>${plan.macros.carb_g}g</b><span>${esc(L.carb)}</span></div>
-      <div><b>${plan.macros.fat_g}g</b><span>${esc(L.fat)}</span></div>
+      <div><span class="mi">${ICONS.macro_protein}</span><b>${plan.macros.protein_g}g</b><span>${esc(L.protein)}</span></div>
+      <div><span class="mi">${ICONS.macro_carb}</span><b>${plan.macros.carb_g}g</b><span>${esc(L.carb)}</span></div>
+      <div><span class="mi">${ICONS.macro_fat}</span><b>${plan.macros.fat_g}g</b><span>${esc(L.fat)}</span></div>
     </div>
     <div class="chips"><span class="chip">BMI ${plan.bmi}</span><span class="chip">TDEE ${plan.tdee}</span>${bf}</div>
   </div>`;
