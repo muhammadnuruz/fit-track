@@ -8,9 +8,9 @@ MESSAGES: dict[str, str] = {
     "choose_language": "Tilni tanlang:",
     "language_changed": "{check} Til {flag} <b>O'zbekcha</b> ga o'zgartirildi.",
     "start_welcome": (
-        "{wave} <b>FitTrack</b> ga xush kelibsiz! Birgalikda tanangizni mustahkam quramiz "
-        "{muscle}\n\n"
-        "Boshlash uchun /help ni bosing."
+        "{wave} <b>FitTrack</b>'ga xush kelibsiz! {smile}\n\n"
+        "{salad} Sog'lom hayot va maqsadlaringiz sari ishonchli yordamchingiz {muscle}\n\n"
+        "Boshlash uchun /help ni bosing {point}"
     ),
     "help_text": (
         "<b>Buyruqlar:</b>\n"

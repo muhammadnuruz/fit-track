@@ -8,8 +8,9 @@ MESSAGES: dict[str, str] = {
     "choose_language": "Choose your language:",
     "language_changed": "{check} Language changed to {flag} <b>English</b>.",
     "start_welcome": (
-        "{wave} Welcome to <b>FitTrack</b>! Together, we'll build a stronger body {muscle}\n\n"
-        "Tap /help to get started."
+        "{wave} Welcome to <b>FitTrack</b>! {smile}\n\n"
+        "{salad} Your reliable companion on the way to a healthy life and your goals {muscle}\n\n"
+        "Tap /help to get started {point}"
     ),
     "help_text": (
         "<b>Commands:</b>\n"

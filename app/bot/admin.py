@@ -55,9 +55,7 @@ async def cmd_admin(message: Message) -> None:
 
 
 @router.message(F.text == BACK_MAIN_MENU)
-async def admin_back_to_main_menu(
-    message: Message, state: FSMContext, lang: Lang | None
-) -> None:
+async def admin_back_to_main_menu(message: Message, state: FSMContext, lang: Lang | None) -> None:
     if not is_admin(message.from_user.id if message.from_user else None):
         return
     await state.clear()
@@ -104,12 +102,13 @@ async def admin_broadcast_start(message: Message, state: FSMContext) -> None:
         return
     await state.set_state(AdminBroadcast.waiting_message)
     await message.answer(
-        "<tg-emoji emoji-id=\"5370599459661045441\">📢</tg-emoji> "
+        '<tg-emoji emoji-id="5370599459661045441">📢</tg-emoji> '
         "Send the message to broadcast to every user.\n\n"
         "Any type works: text, photo, video, document, a message with inline "
         "buttons, or a forward.",
         reply_markup=broadcast_keyboard(),
     )
+
 
 @router.message(AdminBroadcast.waiting_message, F.text == BACK_ADMIN_MENU)
 async def admin_broadcast_back(message: Message, state: FSMContext) -> None:

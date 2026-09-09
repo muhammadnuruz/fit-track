@@ -54,7 +54,7 @@ async def _send_welcome(message: Message, lang: Lang) -> None:
         await message.answer(t("start_welcome", lang, **welcome_emojis()), reply_markup=keyboard)
     except TelegramBadRequest:
         await message.answer(
-            t("start_welcome", lang, wave="👋", salad="🥗", muscle="💪"),
+            t("start_welcome", lang, wave="👋", smile="😊", salad="🥗", muscle="💪", point="👇"),
             reply_markup=keyboard,
         )
 

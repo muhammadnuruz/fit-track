@@ -9,10 +9,7 @@ from aiogram.types import CallbackQuery, Chat, Message, TelegramObject
 
 from app.bot.emoji import PRIVATE_CHAT_EMOJI_ID, custom_emoji
 
-GROUP_NOTICE = (
-    f'{custom_emoji(PRIVATE_CHAT_EMOJI_ID, "🔒")} '
-    "Sorry, I only work in private chats."
-)
+GROUP_NOTICE = f"{custom_emoji(PRIVATE_CHAT_EMOJI_ID, '🔒')} Sorry, I only work in private chats."
 
 
 class PrivateOnlyMiddleware(BaseMiddleware):
