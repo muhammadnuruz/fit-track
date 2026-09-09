@@ -56,3 +56,57 @@ def test_expired_init_data_rejected() -> None:
 def test_empty_init_data_rejected() -> None:
     with pytest.raises(InitDataError):
         validate_init_data("", TOKEN)
+
+
+def test_onboarding_rejects_blank_name() -> None:
+    from app.api.schemas import OnboardingIn
+
+    payload = {
+        "init_data": _build_init_data({"id": 42}, int(time.time())),
+        "name": "   ",
+        "gender": "male",
+        "age": 30,
+        "height_cm": 175,
+        "weight_kg": 72,
+        "activity": "moderate",
+        "goal": "maintain",
+    }
+
+    with pytest.raises(Exception):
+        OnboardingIn.model_validate(payload)
+
+
+def test_onboarding_rejects_non_alpha_name() -> None:
+    from app.api.schemas import OnboardingIn
+
+    payload = {
+        "init_data": _build_init_data({"id": 42}, int(time.time())),
+        "name": "John123",
+        "gender": "male",
+        "age": 30,
+        "height_cm": 175,
+        "weight_kg": 72,
+        "activity": "moderate",
+        "goal": "maintain",
+    }
+
+    with pytest.raises(Exception):
+        OnboardingIn.model_validate(payload)
+
+
+def test_onboarding_rejects_negative_measurements() -> None:
+    from app.api.schemas import OnboardingIn
+
+    payload = {
+        "init_data": _build_init_data({"id": 42}, int(time.time())),
+        "name": "John",
+        "gender": "male",
+        "age": 30,
+        "height_cm": -10,
+        "weight_kg": 72,
+        "activity": "moderate",
+        "goal": "maintain",
+    }
+
+    with pytest.raises(Exception):
+        OnboardingIn.model_validate(payload)

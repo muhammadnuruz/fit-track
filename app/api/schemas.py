@@ -1,8 +1,12 @@
 from __future__ import annotations
 
-from pydantic import BaseModel, Field
+import re
+
+from pydantic import BaseModel, Field, field_validator
 
 from app.models.enums import ActivityLevel, Gender, Goal
+
+_NAME_PATTERN = re.compile(r"^[A-Za-zА-Яа-яЁё'\- ]+$")
 
 
 class OnboardingIn(BaseModel):
@@ -17,6 +21,27 @@ class OnboardingIn(BaseModel):
     waist_cm: float | None = Field(default=None, ge=30, le=250)
     neck_cm: float | None = Field(default=None, ge=15, le=100)
     hip_cm: float | None = Field(default=None, ge=40, le=250)
+
+    @field_validator("name")
+    @classmethod
+    def validate_name(cls, value: str) -> str:
+        cleaned = value.strip()
+        if not cleaned:
+            raise ValueError("name is required")
+        if len(cleaned) < 2:
+            raise ValueError("name must be at least 2 characters long")
+        if not _NAME_PATTERN.fullmatch(cleaned):
+            raise ValueError("name contains unsupported characters")
+        return cleaned
+
+    @field_validator("height_cm", "weight_kg", "waist_cm", "neck_cm", "hip_cm")
+    @classmethod
+    def validate_positive_measurements(cls, value: float | None) -> float | None:
+        if value is None:
+            return value
+        if value <= 0:
+            raise ValueError("measurement must be positive")
+        return value
 
 
 class MacrosOut(BaseModel):

@@ -4,129 +4,499 @@
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
 <title>FitTrack</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 <script src="https://telegram.org/js/telegram-web-app.js"></script>
 <style>
   :root {
-    --green: #24a25a;
-    --green-d: #1b8049;
-    --navy: #1e4c9a;
-    --navy-d: #163a75;
-    --bg: #eef3f8;
-    --card: #ffffff;
-    --text: #14213d;
-    --hint: #6b7a90;
-    --border: #e1e8f0;
-    --ok: #24a25a;
-    --err: #e5484d;
-    --shadow: 0 10px 30px rgba(20, 33, 61, 0.08);
+    --paper: #f6f1ea;
+    --paper-strong: #eee4d8;
+    --card: rgba(255,255,255,0.24);
+    --card-2: rgba(255,255,255,0.7);
+    --ink: #1a1917;
+    --ink-soft: #5d574f;
+    --line: rgba(26,25,23,0.08);
+    --accent: #9c6f49;
+    --accent-soft: #f0e3d6;
+    --sage-deep: #6b7d5a;
+    --blue: #2d6ad5;
+    --shadow: 0 12px 28px rgba(26,25,23,0.04);
+    --radius-xl: 30px;
+    --radius-lg: 20px;
+    --radius-md: 15px;
   }
+
   * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
   html, body { height: 100%; }
   body {
     margin: 0;
-    background:
-      radial-gradient(1200px 500px at 50% -10%, rgba(36, 162, 90, 0.10), transparent 60%),
-      radial-gradient(1000px 500px at 50% 110%, rgba(30, 76, 154, 0.08), transparent 60%),
-      var(--bg);
-    color: var(--text);
-    font-family: -apple-system, "Segoe UI", Roboto, "Helvetica Neue", sans-serif;
-    display: flex; justify-content: center;
-    padding: 16px;
+    background: var(--paper);
+    color: var(--ink);
+    font-family: "Inter", -apple-system, "Segoe UI", sans-serif;
+    display: flex;
+    justify-content: center;
+    padding: 18px 16px 20px;
   }
-  .app { width: 100%; max-width: 460px; }
-  .head { display: flex; flex-direction: column; align-items: center; margin: 8px 0 14px; }
-  .logo { width: 68px; height: 64px; }
-  .brand { font-size: 22px; font-weight: 800; letter-spacing: -0.5px; margin-top: 6px; color: var(--navy); }
-  .brand .g { color: var(--green); }
-  .tag { font-size: 13px; color: var(--hint); margin-top: 2px; }
 
-  .pwrap { margin: 6px 0 16px; }
-  .ptop { display: flex; justify-content: space-between; font-size: 12px; color: var(--hint); margin-bottom: 6px; }
-  .ptop b { color: var(--green-d); }
-  .bar { height: 8px; background: #dde6ef; border-radius: 8px; overflow: hidden; }
-  .bar > i { display: block; height: 100%; width: 0;
-    background: linear-gradient(90deg, var(--green), var(--navy)); transition: width .4s cubic-bezier(.4,0,.2,1); }
+  .app {
+    width: 100%;
+    max-width: 440px;
+  }
+
+  .head {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin: 8px 0 20px;
+  }
+
+  .brand-wrap {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+    padding: 0;
+    border-radius: 999px;
+    background: transparent;
+    border: none;
+  }
+
+  .logo {
+    width: 170px;
+    height: auto;
+    display: block;
+    flex: none;
+    background: transparent;
+    filter: none;
+  }
+
+  .brand {
+    font-size: 20px;
+    font-weight: 800;
+    letter-spacing: -0.06em;
+    color: var(--ink);
+  }
+
+  .brand .g {
+    color: var(--sage-deep);
+  }
+
+  .tag {
+    margin-top: 10px;
+    color: var(--ink-soft);
+    font-size: 11px;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    text-align: center;
+    font-weight: 600;
+  }
+
+  .pwrap {
+    margin: 0 0 18px;
+  }
+
+  .ptop {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 8px;
+    font-size: 11px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--ink-soft);
+  }
+
+  .ptop b {
+    color: var(--sage-deep);
+    font-weight: 700;
+  }
+
+  .bar {
+    height: 10px;
+    background: rgba(44,46,42,0.08);
+    border-radius: 999px;
+    overflow: hidden;
+    position: relative;
+  }
+
+  .bar > i {
+    display: block;
+    width: 0;
+    height: 100%;
+    border-radius: inherit;
+    background: linear-gradient(90deg, #b7855b 0%, #1b1a18 100%);
+    transition: width 0.35s ease;
+  }
 
   .card {
-    background: var(--card); border-radius: 20px; padding: 22px 20px;
-    box-shadow: var(--shadow); animation: rise .35s ease both;
+    background: rgba(255,255,255,0.24);
+    border: 1px solid var(--line);
+    border-radius: 26px;
+    padding: 22px 18px 16px;
+    box-shadow: var(--shadow);
+    animation: rise 0.35s ease both;
   }
-  @keyframes rise { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: none; } }
 
-  h1 { font-size: 21px; margin: 0 0 4px; letter-spacing: -0.3px; }
-  p.sub { color: var(--hint); font-size: 14px; margin: 0 0 18px; line-height: 1.4; }
+  @keyframes rise {
+    from { opacity: 0; transform: translateY(8px); }
+    to { opacity: 1; transform: none; }
+  }
 
-  .field { position: relative; margin-bottom: 12px; }
-  label { display: block; font-size: 13px; color: var(--hint); margin-bottom: 6px; font-weight: 500; }
+  h1 {
+    margin: 0 0 8px;
+    font-size: clamp(26px, 5vw, 34px);
+    line-height: 1.08;
+    letter-spacing: -0.06em;
+    font-weight: 700;
+  }
+
+  p.sub {
+    margin: 0 0 18px;
+    color: var(--ink-soft);
+    font-size: 14px;
+    line-height: 1.5;
+  }
+
+  .field {
+    position: relative;
+    margin-bottom: 14px;
+  }
+
+  .dob-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1.4fr;
+    gap: 10px;
+    margin-top: 6px;
+  }
+
+  .dob-box {
+    background: rgba(255,255,255,0.7);
+    border: 1px solid var(--line);
+    border-radius: 18px;
+    padding: 10px 10px 8px;
+    min-height: 62px;
+  }
+
+  .dob-box label {
+    display: block;
+    margin-bottom: 6px;
+    font-size: 10px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--ink-soft);
+  }
+
+  .dob-box input {
+    width: 100%;
+    border: none;
+    background: transparent;
+    padding: 0;
+    font-size: 18px;
+    color: var(--ink);
+    text-align: center;
+    outline: none;
+  }
+
+  .dob-box input::placeholder {
+    color: rgba(44,46,42,0.35);
+  }
+
+  label {
+    display: block;
+    margin-bottom: 8px;
+    color: var(--ink-soft);
+    font-size: 12px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    font-weight: 600;
+  }
+
   input {
-    width: 100%; padding: 15px 44px 15px 15px; font-size: 17px; border-radius: 14px;
-    border: 1.5px solid var(--border); background: #fbfcfe; color: var(--text); outline: none;
-    transition: border-color .15s, box-shadow .15s;
+    width: 100%;
+    padding: 16px 48px 16px 16px;
+    border-radius: var(--radius-md);
+    border: 1px solid var(--line);
+    background: rgba(255,255,255,0.8);
+    color: var(--ink);
+    font-size: 17px;
+    font-family: inherit;
+    outline: none;
+    transition: border-color 0.15s ease, box-shadow 0.15s ease, transform 0.15s ease;
   }
-  input:focus { border-color: var(--navy); box-shadow: 0 0 0 4px rgba(30, 76, 154, 0.10); }
-  input.good { border-color: var(--green); }
-  input.bad { border-color: var(--err); }
-  .tick { position: absolute; right: 14px; top: 39px; width: 22px; height: 22px; opacity: 0; transform: scale(.6); transition: .2s; }
-  .tick.show { opacity: 1; transform: scale(1); }
-  .micro { font-size: 12px; color: var(--hint); margin: 4px 2px 0; }
-  .ferr { font-size: 12px; color: var(--err); margin: 5px 2px 0; min-height: 14px; }
 
-  .options { display: grid; gap: 10px; }
+  input:focus {
+    border-color: var(--blue);
+    box-shadow: 0 0 0 4px rgba(45,106,213,0.08);
+  }
+
+  input.good {
+    border-color: var(--sage-deep);
+    box-shadow: 0 0 0 4px rgba(142,212,98,0.08);
+  }
+
+  input.bad {
+    border-color: #d55e4d;
+    box-shadow: 0 0 0 4px rgba(213,94,77,0.08);
+  }
+
+  .tick {
+    position: absolute;
+    right: 13px;
+    top: 40px;
+    width: 22px;
+    height: 22px;
+    opacity: 0;
+    transform: scale(0.7);
+    transition: opacity 0.2s ease, transform 0.2s ease;
+  }
+
+  .tick.show {
+    opacity: 1;
+    transform: scale(1);
+  }
+
+  .micro, .ferr {
+    margin: 4px 2px 0;
+    font-size: 12px;
+    line-height: 1.4;
+  }
+
+  .micro {
+    color: var(--ink-soft);
+  }
+
+  .ferr {
+    color: #c14c3d;
+    min-height: 18px;
+  }
+
+  .options {
+    display: grid;
+    gap: 10px;
+  }
+
   .opt {
-    display: flex; align-items: center; gap: 12px;
-    padding: 15px 16px; border-radius: 14px; border: 2px solid var(--border);
-    background: #fbfcfe; cursor: pointer; transition: .15s; font-size: 16px; font-weight: 600;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    min-height: 62px;
+    padding: 12px 14px;
+    background: rgba(255,255,255,0.12);
+    border: 1px solid var(--line);
+    border-radius: 16px;
+    cursor: pointer;
+    transition: border-color 0.15s ease, background 0.15s ease, transform 0.15s ease;
   }
-  .opt small { display: block; color: var(--hint); font-size: 12px; font-weight: 400; margin-top: 2px; }
-  .opt .ic { font-size: 22px; line-height: 1; }
-  .opt .txt { flex: 1; }
-  .opt .rad { width: 22px; height: 22px; border-radius: 50%; border: 2px solid var(--border); flex: none; position: relative; }
-  .opt.sel { border-color: var(--green); background: rgba(36, 162, 90, 0.06); }
-  .opt.sel .rad { border-color: var(--green); }
-  .opt.sel .rad::after { content: ""; position: absolute; inset: 4px; border-radius: 50%; background: var(--green); }
-  .row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
 
-  .nav { display: flex; gap: 10px; margin-top: 20px; }
-  button.btn {
-    flex: 1; padding: 16px; font-size: 16px; font-weight: 700; border: none; border-radius: 14px;
-    color: #fff; cursor: pointer; transition: .15s; letter-spacing: .2px;
-    background: linear-gradient(135deg, var(--navy), var(--navy-d));
+  .opt:hover { transform: translateY(-1px); }
+
+  .opt .txt {
+    flex: 1;
+    font-size: 16px;
+    line-height: 1.2;
+    font-weight: 600;
+    letter-spacing: -0.02em;
   }
-  button.cta { background: linear-gradient(135deg, var(--green), var(--navy)); box-shadow: 0 8px 20px rgba(30, 76, 154, .25); }
-  button.ghost { flex: 0 0 auto; padding: 16px 18px; background: #fff; color: var(--navy); border: 1.5px solid var(--border); }
-  button.btn:disabled { opacity: .45; cursor: default; box-shadow: none; }
-  button.btn:active:not(:disabled) { transform: translateY(1px); }
+
+  .opt small {
+    display: block;
+    margin-top: 3px;
+    color: var(--ink-soft);
+    font-weight: 500;
+    font-size: 12px;
+    line-height: 1.4;
+  }
+
+  .opt .rad {
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    border: 1.5px solid rgba(27, 26, 24, 0.28);
+    position: relative;
+    flex: none;
+  }
+
+  .opt.sel {
+    border-color: rgba(26,25,23,0.18);
+    background: rgba(26,25,23,0.03);
+  }
+
+  .opt.sel .rad {
+    border-color: var(--ink);
+  }
+
+  .opt.sel .rad::after {
+    content: "";
+    position: absolute;
+    inset: 4px;
+    border-radius: 50%;
+    background: var(--ink);
+  }
+
+  .nav {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-top: 18px;
+  }
+
+  button.btn {
+    appearance: none;
+    border: 0;
+    font: inherit;
+    cursor: pointer;
+    border-radius: 999px;
+    transition: transform 0.15s ease, opacity 0.15s ease, box-shadow 0.15s ease;
+  }
+
+  .btn:active:not(:disabled) { transform: translateY(1px); }
+  .btn:disabled { opacity: 0.45; cursor: not-allowed; }
+
+  .btn.ghost {
+    flex: 0 0 auto;
+    padding: 14px 18px;
+    background: rgba(255,255,255,0.42);
+    border: 1px solid rgba(44,46,42,0.08);
+    color: var(--ink);
+    font-weight: 600;
+  }
+
+  .btn:not(.ghost) {
+    flex: 1;
+    padding: 15px 18px;
+    background: var(--ink);
+    color: #fff;
+    font-weight: 700;
+    letter-spacing: 0.02em;
+    box-shadow: none;
+    text-transform: none;
+  }
+
+  .btn.cta {
+    background: linear-gradient(135deg, var(--ink) 0%, #433a33 100%);
+    box-shadow: none;
+  }
 
   .toast {
-    position: fixed; left: 50%; top: 14px; transform: translate(-50%, -80px);
-    background: var(--green-d); color: #fff; padding: 11px 18px; border-radius: 999px;
-    font-size: 14px; font-weight: 600; box-shadow: var(--shadow); opacity: 0; transition: .35s; z-index: 9;
+    position: fixed;
+    left: 50%;
+    top: 16px;
+    transform: translate(-50%, -80px);
+    background: rgba(44,46,42,0.94);
+    color: #fff;
+    padding: 12px 18px;
+    border-radius: 999px;
+    font-size: 13px;
+    font-weight: 600;
+    letter-spacing: 0.02em;
+    box-shadow: var(--shadow);
+    opacity: 0;
+    transition: transform 0.3s ease, opacity 0.3s ease;
+    z-index: 9;
   }
-  .toast.show { transform: translate(-50%, 0); opacity: 1; }
 
-  .plan { text-align: center; }
-  .plan .ok { width: 64px; height: 64px; margin: 4px auto 8px; animation: pop .5s ease both; }
-  @keyframes pop { 0% { transform: scale(0); } 70% { transform: scale(1.15); } 100% { transform: scale(1); } }
-  .plan .big { font-size: 40px; font-weight: 800; color: var(--navy); margin: 6px 0 0; }
-  .plan .kc { color: var(--hint); font-size: 14px; }
-  .macros { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin: 22px 0 6px; }
-  .macros div { background: #f4f8fb; border-radius: 14px; padding: 14px 6px; }
-  .macros b { display: block; font-size: 19px; color: var(--green-d); }
-  .macros span { color: var(--hint); font-size: 12px; }
-  .chips { display: flex; justify-content: center; gap: 8px; flex-wrap: wrap; margin-top: 6px; }
-  .chip { background: #eef3f8; border-radius: 999px; padding: 6px 12px; font-size: 13px; color: var(--navy); font-weight: 600; }
+  .toast.show {
+    transform: translate(-50%, 0);
+    opacity: 1;
+  }
+
+  .plan {
+    text-align: center;
+  }
+
+  .plan .ok {
+    width: 72px;
+    height: 72px;
+    margin: 6px auto 10px;
+    animation: pop 0.42s ease both;
+  }
+
+  @keyframes pop {
+    0% { transform: scale(0.8); opacity: 0; }
+    70% { transform: scale(1.08); opacity: 1; }
+    100% { transform: scale(1); opacity: 1; }
+  }
+
+  .plan h1 {
+    font-size: clamp(30px, 7vw, 40px);
+    margin-top: 10px;
+  }
+
+  .plan .big {
+    margin-top: 10px;
+    font-size: clamp(42px, 11vw, 62px);
+    line-height: 0.9;
+    font-weight: 800;
+    letter-spacing: -0.08em;
+    color: var(--ink);
+  }
+
+  .plan .kc {
+    color: var(--ink-soft);
+    font-size: 12px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+  }
+
+  .macros {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0,1fr));
+    gap: 10px;
+    margin-top: 20px;
+  }
+
+  .macros div {
+    background: var(--card-2);
+    border: 1px solid rgba(44,46,42,0.08);
+    border-radius: 22px;
+    padding: 14px 8px 12px;
+  }
+
+  .macros b {
+    display: block;
+    font-size: 24px;
+    letter-spacing: -0.06em;
+    color: var(--sage-deep);
+  }
+
+  .macros span {
+    display: block;
+    margin-top: 2px;
+    color: var(--ink-soft);
+    font-size: 11px;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+  }
+
+  .chips {
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-top: 16px;
+  }
+
+  .chip {
+    display: inline-flex;
+    align-items: center;
+    padding: 8px 12px;
+    background: rgba(255,255,255,0.5);
+    border: 1px solid rgba(44,46,42,0.08);
+    border-radius: 999px;
+    color: var(--ink);
+    font-size: 12px;
+    font-weight: 700;
+  }
 </style>
 </head>
 <body>
 <div class="app">
   <div class="head">
-    <svg class="logo" viewBox="0 0 64 60" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
-      <path d="M32,55 C6,39 4,18 18,13 C26,10 31,14 32,20 C33,14 38,10 46,13 C60,18 58,39 32,55 Z"
-            fill="none" stroke="#24a25a" stroke-width="4" stroke-linejoin="round"/>
-      <polyline points="7,31 20,31 25,20 31,44 36,31 57,31"
-                fill="none" stroke="#1e4c9a" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
-    </svg>
-    <div class="brand">Fit<span class="g">Track</span></div>
+    <div class="brand-wrap">
+      <img class="logo" src="assets/logo_transparent.png" alt="FitTrack logo" />
+    </div>
     <div class="tag" id="tagline"></div>
   </div>
 
@@ -153,27 +523,27 @@ const T = {
   uz: {
     tagline: "Sog'lom hayot yo'lidagi hamrohingiz",
     step: "Qadam", of: "dan", done: "bosib o'tildi",
-    q_name: "Tanishamiz", s_name: "Sizni ismingiz bilan shaxsiy tabriklaymiz.",
-    first: "Ism", last: "Familiya", m_name: "Bu ma'lumot faqat shaxsiy murojaat uchun ishlatiladi.",
+    q_name: "Keling, tanishib olamiz", s_name: "Ismingiz va familiyangizni kiriting.",
+    first: "Ismingiz", last: "Familiyangiz", m_name: "",
     q_gender: "Jinsingiz", s_gender: "Kaloriya hisobi jinsga bog'liq.", male: "Erkak", female: "Ayol",
-    q_age: "Yoshingiz", s_age: "Metabolizm yosh bilan o'zgaradi.", age: "Yosh (to'liq yil)",
+    q_age: "Tug'ilgan sanangiz", s_age: "Sanani kiriting.", age: "dd.mm.yyyy",
     q_height: "Bo'yingiz", s_height: "BMI va normani aniqlash uchun.", height: "Bo'y (sm)",
     q_weight: "Vazningiz", s_weight: "Joriy vaznni kiriting.", weight: "Vazn (kg)",
     q_activity: "Kunlik faollik", s_activity: "Haqiqiy holatingizni tanlang.",
-    a_sedentary: "Kam harakat", a_sedentary_d: "Ofis ishi, sport yo'q",
-    a_light: "Yengil", a_light_d: "Haftada 1-3 kun mashg'ulot",
-    a_moderate: "O'rtacha", a_moderate_d: "Haftada 3-5 kun mashg'ulot",
-    a_active: "Faol", a_active_d: "Haftada 6-7 kun mashg'ulot",
-    a_very_active: "Juda faol", a_very_active_d: "Og'ir jismoniy ish / kuniga 2 marta",
+    a_sedentary: "Kam harakat", a_sedentary_d: "Ofisda ishlash, sport yo'q",
+    a_light: "O'rtacha", a_light_d: "Haftada 3+ kun mashg'ulot",
+    a_moderate: "Faol", a_moderate_d: "Haftada 3+ kun mashg'ulot",
+    a_active: "Juda faol", a_active_d: "Jismoniy mehnat yoki kundalik intensiv mashqlar",
+    a_very_active: "", a_very_active_d: "",
     q_goal: "Maqsadingiz", s_goal: "Rejani maqsadga moslaymiz.",
-    g_cut: "Vazn kamaytirish", g_cut_d: "Yog'ni yoqish", g_maintain: "Saqlab qolish", g_maintain_d: "Formani ushlash",
+    g_cut: "Vazn kamaytirish", g_cut_d: "Yog'ni yoqish", g_maintain: "Saqlab qolish", g_maintain_d: "Formani saqlash",
     g_bulk: "Massa yig'ish", g_bulk_d: "Mushak qurish",
     q_measures: "Tana o'lchovlari", s_measures: "Tana yog'ini aniqroq hisoblash uchun — ixtiyoriy.",
     waist: "Bel (sm)", neck: "Bo'yin (sm)", hip: "Son (sm)",
     m_measures: "Bu maydonlarni o'tkazib yuborsangiz ham reja tuziladi.",
     hipNote: "Ayollar uchun son o'lchovi tana yog'ini hisoblashga kerak.",
     back: "Orqaga", next: "Davom etish", skip: "O'tkazib yuborish", finish: "Hisobni yaratish va boshlash",
-    rewards: ["Ajoyib boshlanish! 🎉","Zo'r! 👏","Davom etamiz 💪","Yarmidan oshdik! 🔥","Ajoyib ketyapsiz! ⭐","Oz qoldi! 🚀","Deyarli tayyor! ✨"],
+    rewards: ["Ajoyib boshlanish", "Zo'r natija", "Davom etamiz", "Yarmidan oshdik", "Ajoyib", "So'nggi qadam", "Deyarli tayyor"],
     planTitle: "Rejangiz tayyor!", kcalLabel: "kunlik kaloriya",
     protein: "Protein", carb: "Uglevod", fat: "Yog'", close: "Yopish",
     already: "Siz allaqachon ro'yxatdan o'tgansiz.",
@@ -183,18 +553,18 @@ const T = {
   ru: {
     tagline: "Ваш спутник на пути к здоровью",
     step: "Шаг", of: "из", done: "пройдено",
-    q_name: "Знакомимся", s_name: "Будем обращаться к вам по имени.",
-    first: "Имя", last: "Фамилия", m_name: "Используется только для личного обращения.",
+    q_name: "Давайте познакомимся", s_name: "Введите ваше имя и фамилию.",
+    first: "Имя", last: "Фамилия", m_name: "",
     q_gender: "Пол", s_gender: "Расчёт калорий зависит от пола.", male: "Мужской", female: "Женский",
-    q_age: "Возраст", s_age: "Метаболизм меняется с возрастом.", age: "Возраст (полных лет)",
+    q_age: "Дата рождения", s_age: "Укажите дату.", age: "dd.mm.yyyy",
     q_height: "Рост", s_height: "Для расчёта ИМТ и нормы.", height: "Рост (см)",
     q_weight: "Вес", s_weight: "Укажите текущий вес.", weight: "Вес (кг)",
-    q_activity: "Активность", s_activity: "Выберите реальный уровень.",
-    a_sedentary: "Малоподвижный", a_sedentary_d: "Офис, без спорта",
-    a_light: "Лёгкая", a_light_d: "1-3 тренировки в неделю",
-    a_moderate: "Средняя", a_moderate_d: "3-5 тренировок в неделю",
-    a_active: "Высокая", a_active_d: "6-7 тренировок в неделю",
-    a_very_active: "Очень высокая", a_very_active_d: "Тяжёлый труд / 2 раза в день",
+    q_activity: "Активность", s_activity: "Выберите ваш реальный уровень.",
+    a_sedentary: "Низкая", a_sedentary_d: "Офисная работа, без спорта",
+    a_light: "Средняя", a_light_d: "3+ тренировки в неделю",
+    a_moderate: "Высокая", a_moderate_d: "3+ тренировки в неделю",
+    a_active: "Очень высокая", a_active_d: "Физически тяжёлая работа или интенсивные тренировки каждый день",
+    a_very_active: "", a_very_active_d: "",
     q_goal: "Ваша цель", s_goal: "Подстроим план под цель.",
     g_cut: "Снижение веса", g_cut_d: "Сжечь жир", g_maintain: "Поддержание", g_maintain_d: "Держать форму",
     g_bulk: "Набор массы", g_bulk_d: "Растить мышцы",
@@ -203,7 +573,7 @@ const T = {
     m_measures: "План составится даже если пропустить.",
     hipNote: "Для женщин замер бёдер нужен для расчёта жира.",
     back: "Назад", next: "Продолжить", skip: "Пропустить", finish: "Создать аккаунт и начать",
-    rewards: ["Отличный старт! 🎉","Супер! 👏","Продолжаем 💪","Больше половины! 🔥","Отлично идёте! ⭐","Немного осталось! 🚀","Почти готово! ✨"],
+    rewards: ["Отличный старт", "Супер результат", "Продолжаем", "Больше половины", "Хорошо идёте", "Последний шаг", "Почти готово"],
     planTitle: "Ваш план готов!", kcalLabel: "калорий в день",
     protein: "Белки", carb: "Углеводы", fat: "Жиры", close: "Закрыть",
     already: "Вы уже зарегистрированы.",
@@ -213,18 +583,18 @@ const T = {
   en: {
     tagline: "Your companion on the way to health",
     step: "Step", of: "of", done: "completed",
-    q_name: "Nice to meet you", s_name: "We'll greet you by your name.",
-    first: "First name", last: "Last name", m_name: "Used only to address you personally.",
+    q_name: "Let’s get acquainted", s_name: "Enter your first and last name.",
+    first: "First name", last: "Last name", m_name: "",
     q_gender: "Gender", s_gender: "Calorie math depends on gender.", male: "Male", female: "Female",
-    q_age: "Age", s_age: "Metabolism changes with age.", age: "Age (full years)",
+    q_age: "Date of birth", s_age: "Enter your date.", age: "dd.mm.yyyy",
     q_height: "Height", s_height: "To compute BMI and targets.", height: "Height (cm)",
     q_weight: "Weight", s_weight: "Enter your current weight.", weight: "Weight (kg)",
-    q_activity: "Activity level", s_activity: "Pick your real level.",
-    a_sedentary: "Sedentary", a_sedentary_d: "Office job, no sport",
-    a_light: "Light", a_light_d: "1-3 workouts per week",
-    a_moderate: "Moderate", a_moderate_d: "3-5 workouts per week",
-    a_active: "Active", a_active_d: "6-7 workouts per week",
-    a_very_active: "Very active", a_very_active_d: "Hard labor / twice a day",
+    q_activity: "Activity level", s_activity: "Choose your real routine.",
+    a_sedentary: "Low", a_sedentary_d: "Desk work, little to no exercise",
+    a_light: "Moderate", a_light_d: "3+ workouts a week",
+    a_moderate: "Active", a_moderate_d: "3+ workouts a week",
+    a_active: "Very active", a_active_d: "Physically demanding work or intense daily training",
+    a_very_active: "", a_very_active_d: "",
     q_goal: "Your goal", s_goal: "We'll tailor the plan.",
     g_cut: "Lose weight", g_cut_d: "Burn fat", g_maintain: "Maintain", g_maintain_d: "Stay in shape",
     g_bulk: "Gain muscle", g_bulk_d: "Build muscle",
@@ -233,7 +603,7 @@ const T = {
     m_measures: "The plan works even if you skip these.",
     hipNote: "For women, hip measurement is needed for body fat.",
     back: "Back", next: "Continue", skip: "Skip", finish: "Create account & start",
-    rewards: ["Great start! 🎉","Awesome! 👏","Keep going 💪","Over halfway! 🔥","Doing great! ⭐","Almost there! 🚀","Nearly done! ✨"],
+    rewards: ["Great start", "Perfect momentum", "Keep going", "Over halfway", "Doing great", "Final step", "Nearly done"],
     planTitle: "Your plan is ready!", kcalLabel: "daily calories",
     protein: "Protein", carb: "Carbs", fat: "Fat", close: "Close",
     already: "You are already registered.",
@@ -246,7 +616,6 @@ document.getElementById("tagline").textContent = L.tagline;
 
 const LS_KEY = "fittrack_onb_" + (tgUser.id || "anon");
 const RANGES = { age: [10, 100], height_cm: [100, 250], weight_kg: [30, 350] };
-
 const data = {
   first_name: tgUser.first_name || "", last_name: tgUser.last_name || "",
   gender: null, age: null, height_cm: null, weight_kg: null,
@@ -264,6 +633,7 @@ let step = 0;
     }
   } catch (e) {}
 })();
+
 function persist() { try { localStorage.setItem(LS_KEY, JSON.stringify({ data, step })); } catch (e) {} }
 function clearStore() { try { localStorage.removeItem(LS_KEY); } catch (e) {} }
 
@@ -275,7 +645,7 @@ const stepLbl = document.getElementById("stepLbl");
 const pctLbl = document.getElementById("pctLbl");
 const toast = document.getElementById("toast");
 
-const TICK = '<svg class="tick" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="11" fill="#24a25a"/><path d="M7 12.5l3.2 3.2L17 9" stroke="#fff" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg>';
+const TICK = '<svg class="tick" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="11" fill="#5d9a64"/><path d="M7 12.5l3.2 3.2L17 9" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>';
 function esc(s) { const d = document.createElement("div"); d.textContent = s; return d.innerHTML; }
 
 function showReward(i) {
@@ -320,9 +690,10 @@ function navBtns(primaryLabel, onPrimary, opts) {
   nav.appendChild(p);
   return p;
 }
+
 function setPrimaryEnabled(on) { const p = document.getElementById("primary"); if (p) p.disabled = !on; }
 
-function render() {
+function render() { 
   setProgress();
   const r = [renderName, renderGender, renderAge, renderHeight, renderWeight, renderActivity, renderGoal][step];
   r();
@@ -334,7 +705,7 @@ function renderName() {
       <input id="fn" type="text" maxlength="64" value="${esc(data.first_name)}" autocomplete="given-name" />${TICK}</div>
     <div class="field"><label>${esc(L.last)}</label>
       <input id="ln" type="text" maxlength="64" value="${esc(data.last_name)}" autocomplete="family-name" />${TICK}</div>
-    <p class="micro">${esc(L.m_name)}</p>`;
+    ${L.m_name ? `<p class="micro">${esc(L.m_name)}</p>` : ""}`;
   const fn = document.getElementById("fn"), ln = document.getElementById("ln");
   const ticks = card.querySelectorAll(".tick");
   const check = () => {
@@ -376,7 +747,118 @@ function renderNumber(key, title, sub, label, extraMicro) {
   }, { disabled: true });
   check();
 }
-function renderAge() { renderNumber("age", L.q_age, L.s_age, L.age); }
+
+function formatDateInput(raw) {
+  const digits = String(raw || "").replace(/\D/g, "").slice(0, 8);
+  if (!digits) return "";
+
+  let out = digits;
+  if (digits.length > 2) out = `${digits.slice(0, 2)}.${digits.slice(2)}`;
+  if (digits.length > 4) out = `${out.slice(0, 5)}.${out.slice(5)}`;
+
+  const parts = out.split(".");
+  if (parts[0] && Number(parts[0]) > 31) parts[0] = "31";
+  if (parts[1] && Number(parts[1]) > 12) parts[1] = "12";
+  out = parts.join(".");
+
+  return out;
+}
+
+function parseBirthDate(raw) {
+  const s = String(raw || "").trim();
+  if (!s) return null;
+
+  const normalized = s.replace(/,/g, ".").replace(/\s+/g, "");
+  const match = normalized.match(/^([0-9]{1,2})\.([0-9]{1,2})\.([0-9]{4})$/);
+  if (!match) return null;
+
+  const day = Number(match[1]);
+  const month = Number(match[2]);
+  const year = Number(match[3]);
+  if (!day || !month || !year) return null;
+
+  const date = new Date(year, month - 1, day);
+  const valid = date.getFullYear() === year && date.getMonth() === month - 1 && date.getDate() === day;
+  if (!valid || year < 1950 || year > new Date().getFullYear()) return null;
+
+  return { day, month, year };
+}
+
+function calcAgeFromBirthDate(date) {
+  const now = new Date();
+  const birth = new Date(date.year, date.month - 1, date.day);
+  let age = now.getFullYear() - birth.getFullYear();
+  const hasBirthdayPassed =
+    now.getMonth() > birth.getMonth() ||
+    (now.getMonth() === birth.getMonth() && now.getDate() >= birth.getDate());
+  if (!hasBirthdayPassed) age -= 1;
+  return age;
+}
+
+function renderAge() {
+  const saved = data.birth_date || "";
+
+  card.innerHTML = `<h1>${esc(L.q_age)}</h1><p class="sub">${esc(L.s_age)}</p>
+    <div class="field">
+      <label>${esc(L.age)}</label>
+      <input id="dob" type="text" inputmode="numeric" maxlength="10" value="${esc(saved)}" placeholder="dd.mm.yyyy" />
+      <div class="ferr" id="dob-fe"></div>
+    </div>`;
+
+  const dobEl = document.getElementById("dob");
+  const fe = document.getElementById("dob-fe");
+
+  const check = () => {
+    dobEl.value = formatDateInput(dobEl.value);
+
+    const raw = dobEl.value.trim();
+    const parsed = parseBirthDate(raw);
+
+    if (!raw) {
+      dobEl.classList.remove("good", "bad");
+      fe.textContent = "";
+      setPrimaryEnabled(false);
+      return;
+    }
+
+    if (!parsed) {
+      dobEl.classList.remove("good");
+      dobEl.classList.add("bad");
+      fe.textContent = `${L.errRange}: ${L.age}`;
+      setPrimaryEnabled(false);
+      return;
+    }
+
+    const age = calcAgeFromBirthDate(parsed);
+    if (age < 10 || age > 100) {
+      dobEl.classList.remove("good");
+      dobEl.classList.add("bad");
+      fe.textContent = `${L.errRange}: 10–100`;
+      setPrimaryEnabled(false);
+      return;
+    }
+
+    dobEl.classList.remove("bad");
+    dobEl.classList.add("good");
+    fe.textContent = "";
+    setPrimaryEnabled(true);
+  };
+
+  dobEl.addEventListener("input", check);
+
+  navBtns(L.next, () => {
+    const parsed = parseBirthDate(dobEl.value);
+    if (!parsed) return;
+    const age = calcAgeFromBirthDate(parsed);
+    data.birth_date = `${parsed.day.toString().padStart(2, "0")}.${parsed.month.toString().padStart(2, "0")}.${parsed.year}`;
+    data.age = age;
+    persist();
+    go(step + 1);
+  }, { disabled: true });
+
+  check();
+}
+
 function renderHeight() { renderNumber("height_cm", L.q_height, L.s_height, L.height); }
 function renderWeight() { renderNumber("weight_kg", L.q_weight, L.s_weight, L.weight); }
 
@@ -384,7 +866,6 @@ function choiceStep(key, title, sub, items, finish) {
   card.innerHTML = `<h1>${esc(title)}</h1><p class="sub">${esc(sub)}</p>
     <div class="options">${items.map(it => `
       <div class="opt ${data[key]===it.v?'sel':''}" data-v="${it.v}">
-        ${it.ic ? `<span class="ic">${it.ic}</span>` : ""}
         <span class="txt">${esc(it.t)}${it.d ? `<small>${esc(it.d)}</small>` : ""}</span>
         <span class="rad"></span>
       </div>`).join("")}</div>`;
@@ -401,18 +882,21 @@ function choiceStep(key, title, sub, items, finish) {
 
 function renderGender() {
   choiceStep("gender", L.q_gender, L.s_gender, [
-    { v: "male", t: L.male, ic: "👨" }, { v: "female", t: L.female, ic: "👩" },
+    { v: "male", t: L.male },
+    { v: "female", t: L.female },
   ]);
 }
+
 function renderActivity() {
-  choiceStep("activity", L.q_activity, L.s_activity, ["sedentary","light","moderate","active","very_active"].map(v =>
+  choiceStep("activity", L.q_activity, L.s_activity, ["sedentary","light","moderate"].map(v =>
     ({ v, t: L["a_"+v], d: L["a_"+v+"_d"] })));
 }
+
 function renderGoal() {
   choiceStep("goal", L.q_goal, L.s_goal, [
-    { v: "cut", t: L.g_cut, d: L.g_cut_d, ic: "🔻" },
-    { v: "maintain", t: L.g_maintain, d: L.g_maintain_d, ic: "⚖️" },
-    { v: "bulk", t: L.g_bulk, d: L.g_bulk_d, ic: "🔺" },
+    { v: "cut", t: L.g_cut, d: L.g_cut_d },
+    { v: "maintain", t: L.g_maintain, d: L.g_maintain_d },
+    { v: "bulk", t: L.g_bulk, d: L.g_bulk_d },
   ], true);
 }
 
@@ -445,7 +929,7 @@ async function submit() {
   }
 }
 
-const OK_SVG = '<svg class="ok" viewBox="0 0 64 64" fill="none"><circle cx="32" cy="32" r="30" fill="#24a25a"/><path d="M20 33l8 8 16-18" stroke="#fff" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"/></svg>';
+const OK_SVG = '<svg class="ok" viewBox="0 0 64 64" fill="none"><circle cx="32" cy="32" r="30" fill="#5d9a64"/><path d="M20 33l8 8 16-18" stroke="#fff" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"/></svg>';
 
 function showAlready() {
   setProgress(); bar.style.width = "100%";
@@ -456,7 +940,7 @@ function showAlready() {
 function showPlan(plan) {
   bar.style.width = "100%";
   stepLbl.textContent = ""; pctLbl.textContent = `100% ${L.done}`;
-  const bf = plan.body_fat_pct != null ? `<span class="chip">🧬 ${plan.body_fat_pct}%</span>` : "";
+  const bf = plan.body_fat_pct != null ? `<span class="chip">Body fat ${plan.body_fat_pct}%</span>` : "";
   card.innerHTML = `<div class="plan">${OK_SVG}
     <h1>${esc(L.planTitle)}</h1>
     <div class="big">${plan.target_kcal}</div>

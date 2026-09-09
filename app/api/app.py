@@ -4,7 +4,8 @@ from pathlib import Path
 
 from aiogram import Bot, Dispatcher
 from aiogram.types import Update
-from fastapi import FastAPI, Request
+from fastapi import FastAPI, HTTPException, Request
+from fastapi.exceptions import RequestValidationError
 from fastapi.responses import FileResponse, JSONResponse
 
 from app.api.routes.onboarding import router as onboarding_router
@@ -18,6 +19,23 @@ def create_app(bot: Bot, dp: Dispatcher) -> FastAPI:
     app.state.bot = bot
     app.state.dp = dp
     app.include_router(onboarding_router)
+
+    @app.exception_handler(RequestValidationError)
+    async def validation_exception_handler(_: Request, exc: RequestValidationError) -> JSONResponse:
+        return JSONResponse(
+            status_code=422,
+            content={
+                "detail": "Invalid request payload",
+                "errors": [
+                    {"loc": list(error["loc"]), "msg": error["msg"], "type": error["type"]}
+                    for error in exc.errors()
+                ],
+            },
+        )
+
+    @app.exception_handler(HTTPException)
+    async def http_exception_handler(_: Request, exc: HTTPException) -> JSONResponse:
+        return JSONResponse(status_code=exc.status_code, content={"detail": exc.detail})
 
     @app.get("/health")
     async def health() -> dict[str, str]:
