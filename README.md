@@ -39,29 +39,31 @@ tests/                 # pytest (formulalar to'liq qamrovda)
 
 ## Ishga tushirish (lokal)
 
-**Talab:** Python 3.10–3.12, Docker (Postgres uchun).
+**Talab:** Python 3.10–3.12, Docker Desktop.
 
+**Bir martalik sozlash:**
 ```bash
-# 1. Virtualenv + bog'liqliklar (python3.10)
 python3.10 -m venv .venv
 source .venv/bin/activate
 pip install -e ".[dev]"
-
-# 2. Muhit
 cp .env.example .env      # BOT_TOKEN ni to'ldiring
+```
 
-# 3. DB (pgvector) ni ko'tarish
-make db-up                # yoki: docker compose up -d db
-
-# 4. Migratsiya
-make migrate              # alembic upgrade head
-
-# 5. Testlar
-make test
-
-# 6. Botni ishga tushirish
+**So'ng — bitta buyruq hammasini qiladi:**
+```bash
 make run
 ```
+`make run` avtomatik ravishda: Docker DB'ni ko'taradi (Docker Desktop o'chiq bo'lsa
+uni ochadi va kutadi) → migratsiyalarni qo'llaydi → botni host'da ishga tushiradi.
+
+### Ikki rejim
+
+| Rejim | Buyruq | Bot qayerda | Qachon |
+|---|---|---|---|
+| **Host** (tavsiya) | `make run` | host (venv) | kundalik ishlab chiqish — tez qayta ishga tushadi |
+| **To'liq Docker** | `make up` | Docker | "hammasi konteynerda" — deploy'ga yaqin |
+
+To'liq Docker rejimida: `make up` (fon), `make logs` (loglar), `make down` (to'xtatish).
 
 Barcha buyruqlar: `make help`.
 

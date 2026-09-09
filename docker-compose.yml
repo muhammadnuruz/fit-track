@@ -28,7 +28,9 @@ services:
         condition: service_healthy
     env_file: .env
     environment:
+      # Konteyner ichida DB 'db' xostida va ICHKI 5432 portida (host'dagi 5433 emas).
       POSTGRES_HOST: db
+      POSTGRES_PORT: 5432
     profiles: ["full"]  # `docker compose --profile full up` bilan yoqiladi
 
 volumes:

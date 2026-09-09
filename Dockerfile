@@ -11,9 +11,10 @@ ENV PYTHONUNBUFFERED=1 \
 
 WORKDIR /app
 
-# Bog'liqliklarni alohida qatlamda o'rnatish (kesh uchun)
+# Bog'liqliklarni alohida qatlamda o'rnatish (kesh uchun).
+# Faqat asosiy to'plam — embeddings (torch) Bosqich 1 da qo'shiladi.
 COPY pyproject.toml README.md ./
-RUN pip install --upgrade pip && pip install ".[embeddings]"
+RUN pip install --upgrade pip && pip install "."
 
 COPY . .
 

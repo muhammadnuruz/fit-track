@@ -1,4 +1,4 @@
-.PHONY: help install install-ml db-up db-down migrate revision run test lint fmt typecheck clean
+.PHONY: help install install-ml db-ensure db-up db-down migrate revision run up up-build logs down test lint fmt typecheck clean
 
 help:  ## Buyruqlar ro'yxati
 	@grep -E '^[a-zA-Z_-]+:.*?## .*$$' $(MAKEFILE_LIST) | \
@@ -11,20 +11,38 @@ install:  ## Virtualenv yaratib, dev bog'liqliklarni o'rnatish
 install-ml:  ## Embedding (sentence-transformers) qo'shimchasini o'rnatish
 	. .venv/bin/activate && pip install -e ".[embeddings]"
 
-db-up:  ## Postgres (pgvector) konteynerini ko'tarish
-	docker compose up -d db
+db-ensure:  ## Docker DB ni ko'tarib, sog'lom bo'lguncha kutish (daemon o'chiq bo'lsa ham)
+	@bash scripts/db_ensure.sh
+
+db-up: db-ensure  ## db-ensure ning aliasi
 
 db-down:  ## DB konteynerini to'xtatish
 	docker compose down
 
-migrate:  ## Migratsiyalarni qo'llash (head gacha)
+migrate: db-ensure  ## DB ni ko'tarib, migratsiyalarni qo'llash
 	. .venv/bin/activate && alembic upgrade head
 
 revision:  ## Yangi migratsiya yaratish:  make revision m="izoh"
 	. .venv/bin/activate && alembic revision --autogenerate -m "$(m)"
 
-run:  ## Botni lokal ishga tushirish
+# --- HOST rejimi: DB Docker'da, bot host'da (tez iteratsiya uchun tavsiya etiladi) ---
+run: db-ensure migrate  ## DB (Docker) + migratsiya + botni host'da ishga tushirish — HAMMASI birga
 	. .venv/bin/activate && python -m app.main
+
+# --- TO'LIQ DOCKER rejimi: bot ham, DB ham Docker'da ---
+up: db-ensure  ## Bot + DB ni to'liq Docker'da ishga tushirish (fon rejimida)
+	docker compose --profile full up -d
+	@echo "✅ Bot Docker'da ishlayapti. Loglar:  make logs"
+
+up-build:  ## Bot image'ini qayta qurib, to'liq Docker'da ishga tushirish
+	docker compose --profile full up -d --build
+	@echo "✅ Bot qayta qurildi va ishga tushdi. Loglar:  make logs"
+
+logs:  ## Docker'dagi bot loglarini kuzatish
+	docker compose logs -f bot
+
+down:  ## Barcha konteynerlarni to'xtatish
+	docker compose --profile full down
 
 test:  ## Testlarni ishga tushirish
 	. .venv/bin/activate && pytest

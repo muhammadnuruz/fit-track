@@ -1,0 +1,19 @@
+# Docker image'iga tushmasligi kerak bo'lgan narsalar
+.venv/
+venv/
+env/
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.coverage
+htmlcov/
+.git/
+.idea/
+.vscode/
+.env
+*.log
+.cache/
+models/
+data/
