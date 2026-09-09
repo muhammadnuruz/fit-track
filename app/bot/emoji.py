@@ -73,8 +73,8 @@ CALORIES_EMOJI_ID = "5420315771991497307"  # 🔥
 PROTEIN_EMOJI_ID = "5470159421512359552"  # 🍖
 FAT_EMOJI_ID = "5454298326331571916"  # 🥑
 BMI_EMOJI_ID = STATISTICS_EMOJI_ID  # 📊
-CARB_EMOJI_ID = ""  # 🍚 — kutilmoqda
-BODYFAT_EMOJI_ID = ""  # 🧬 — kutilmoqda
+CARB_EMOJI_ID = "5195018946037712661"  # 🍚
+BODYFAT_EMOJI_ID = "5217444336089714383"  # 😖
 
 
 def _emoji_or_plain(emoji_id: str, fallback: str) -> str:
@@ -102,6 +102,7 @@ def plan_emojis(*, plain: bool = False) -> dict[str, str]:
 
 
 def bodyfat_emoji(*, plain: bool = False) -> str:
+    # Premium fallback belgisi ID bazasiga mos bo'lishi kerak (😖); oddiy holatda 🧬
     if plain:
         return "🧬"
-    return _emoji_or_plain(BODYFAT_EMOJI_ID, "🧬")
+    return _emoji_or_plain(BODYFAT_EMOJI_ID, "😖")
