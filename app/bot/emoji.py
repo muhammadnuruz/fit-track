@@ -13,6 +13,7 @@ FLAG_EMOJI_IDS: dict[Lang, str] = {
 FALLBACK_FLAG: dict[Lang, str] = {Lang.UZ: "🇺🇿", Lang.RU: "🇷🇺", Lang.EN: "🇬🇧"}
 
 POINT_DOWN_EMOJI_ID = "5470177992950946662"
+PLAY_EMOJI_ID = "4969785943297884856"
 
 WELCOME_WAVE_EMOJI_ID = "5472055112702629499"
 WELCOME_SMILE_EMOJI_ID = "5370738629486319646"
@@ -49,6 +50,10 @@ def flag_emoji(lang: Lang) -> str:
 
 def point_down() -> str:
     return custom_emoji(POINT_DOWN_EMOJI_ID, "👇")
+
+
+def play_emoji() -> str:
+    return custom_emoji(PLAY_EMOJI_ID, "▶️")
 
 
 def welcome_emojis() -> dict[str, str]:

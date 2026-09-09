@@ -25,6 +25,7 @@ from app.bot.keyboards.language import (
 from app.bot.notifications import notify_admins_new_user
 from app.i18n import DEFAULT_LANG, LANGUAGES, Lang, parse_lang, t
 from app.services.settings import has_language, set_language
+from app.services.users import user_exists
 
 router = Router(name="common")
 
@@ -48,8 +49,8 @@ async def _send_language_picker(message: Message, prompt_lang: Lang = DEFAULT_LA
         await message.answer("\n".join(plain), reply_markup=keyboard)
 
 
-async def _send_welcome(message: Message, lang: Lang) -> None:
-    keyboard = main_reply_keyboard(lang)
+async def _send_welcome(message: Message, lang: Lang, *, show_onboarding: bool) -> None:
+    keyboard = main_reply_keyboard(lang, show_onboarding=show_onboarding)
     try:
         await message.answer(t("start_welcome", lang, **welcome_emojis()), reply_markup=keyboard)
     except TelegramBadRequest:
@@ -60,11 +61,12 @@ async def _send_welcome(message: Message, lang: Lang) -> None:
 
 
 @router.message(CommandStart())
-async def cmd_start(message: Message, lang: Lang | None) -> None:
+async def cmd_start(message: Message, lang: Lang | None, session: AsyncSession) -> None:
     if lang is None:
         await _send_language_picker(message)
         return
-    await _send_welcome(message, lang)
+    show_onboarding = not await user_exists(session, message.from_user.id)
+    await _send_welcome(message, lang, show_onboarding=show_onboarding)
 
 
 @router.message(F.text.in_(_CHANGE_LANG_LABELS))
@@ -90,21 +92,18 @@ async def on_language_selected(callback: CallbackQuery, session: AsyncSession) -
             await callback.message.edit_text(
                 t("language_changed", chosen, check="✅", flag=FALLBACK_FLAG[chosen])
             )
-        await _send_welcome(callback.message, chosen)
+        show_onboarding = not await user_exists(session, callback.from_user.id)
+        await _send_welcome(callback.message, chosen, show_onboarding=show_onboarding)
         if is_new:
             await notify_admins_new_user(callback.bot, callback.from_user, chosen)
 
 
 @router.message(Command("help"))
-async def cmd_help(message: Message, lang: Lang | None) -> None:
+async def cmd_help(message: Message, lang: Lang | None, session: AsyncSession) -> None:
     effective = lang or DEFAULT_LANG
+    show_onboarding = not await user_exists(session, message.from_user.id)
+    keyboard = main_reply_keyboard(effective, show_onboarding=show_onboarding)
     try:
-        await message.answer(
-            t("help_text", effective, globe=globe_emoji()),
-            reply_markup=main_reply_keyboard(effective),
-        )
+        await message.answer(t("help_text", effective, globe=globe_emoji()), reply_markup=keyboard)
     except TelegramBadRequest:
-        await message.answer(
-            t("help_text", effective, globe="🌐"),
-            reply_markup=main_reply_keyboard(effective),
-        )
+        await message.answer(t("help_text", effective, globe="🌐"), reply_markup=keyboard)

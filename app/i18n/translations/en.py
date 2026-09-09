@@ -5,6 +5,16 @@ MESSAGES: dict[str, str] = {
     "cmd_language_desc": "Change language",
     "cmd_help_desc": "Help",
     "btn_change_language": "Change language",
+    "btn_start_onboarding": "Start",
+    "plan_ready": (
+        "✅ <b>{name}</b>, your plan is ready!\n\n"
+        "🔥 Daily calories: <b>{kcal} kcal</b>\n"
+        "🥩 Protein: <b>{protein} g</b>\n"
+        "🍚 Carbs: <b>{carb} g</b>\n"
+        "🥑 Fat: <b>{fat} g</b>\n\n"
+        "📊 BMI: <b>{bmi}</b> · TDEE: <b>{tdee} kcal</b>"
+    ),
+    "plan_bodyfat": "🧬 Body fat: <b>{bf}%</b>",
     "choose_language": "Choose your language:",
     "language_changed": "{check} Language changed to {flag} <b>English</b>.",
     "start_welcome": (

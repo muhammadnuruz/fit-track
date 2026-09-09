@@ -20,6 +20,7 @@ class Settings(BaseSettings):
     webhook_url: str = ""
     webhook_path: str = "/webhook"
     webhook_secret: str = ""
+    webapp_url: str = ""
 
     postgres_user: str = "fittrack"
     postgres_password: str = "fittrack"
