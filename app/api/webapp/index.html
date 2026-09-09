@@ -39,24 +39,31 @@
     font-family: "Inter", -apple-system, "Segoe UI", sans-serif;
     display: flex;
     justify-content: center;
-    overflow-x: hidden;
+    height: 100vh;
+    height: 100dvh;
+    overflow: hidden;
     padding:
-      calc(18px + env(safe-area-inset-top))
+      calc(12px + env(safe-area-inset-top))
       calc(16px + env(safe-area-inset-right))
-      calc(28px + env(safe-area-inset-bottom))
+      calc(14px + env(safe-area-inset-bottom))
       calc(16px + env(safe-area-inset-left));
   }
 
   .app {
     width: 100%;
     max-width: 440px;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    min-height: 0;
   }
 
   .head {
+    flex: none;
     display: flex;
     flex-direction: column;
     align-items: center;
-    margin: 8px 0 20px;
+    margin: 2px 0 12px;
   }
 
   .brand-wrap {
@@ -71,7 +78,7 @@
   }
 
   .logo {
-    width: 170px;
+    width: 116px;
     height: auto;
     display: block;
     flex: none;
@@ -91,7 +98,7 @@
   }
 
   .tag {
-    margin-top: 10px;
+    margin-top: 6px;
     color: var(--ink-soft);
     font-size: 11px;
     letter-spacing: 0.12em;
@@ -101,7 +108,8 @@
   }
 
   .pwrap {
-    margin: 0 0 18px;
+    flex: none;
+    margin: 0 0 12px;
   }
 
   .ptop {
@@ -139,10 +147,17 @@
   }
 
   .card {
+    flex: 1 1 auto;
+    min-height: 0;
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
     background: var(--card);
     border: 1px solid var(--line);
-    border-radius: 26px;
-    padding: 22px 18px 16px;
+    border-radius: 22px;
+    padding: 18px 16px 14px;
     box-shadow: none;
     animation: rise 0.35s ease both;
   }
@@ -153,18 +168,18 @@
   }
 
   h1 {
-    margin: 0 0 8px;
-    font-size: clamp(26px, 5vw, 34px);
+    margin: 0 0 6px;
+    font-size: clamp(22px, 4.6vw, 30px);
     line-height: 1.08;
     letter-spacing: -0.06em;
     font-weight: 700;
   }
 
   p.sub {
-    margin: 0 0 18px;
+    margin: 0 0 14px;
     color: var(--ink-soft);
     font-size: 14px;
-    line-height: 1.5;
+    line-height: 1.45;
   }
 
   .field {
@@ -321,8 +336,8 @@
     display: flex;
     align-items: center;
     gap: 12px;
-    min-height: 62px;
-    padding: 12px 14px;
+    min-height: 54px;
+    padding: 10px 14px;
     background: #ffffff;
     border: 1px solid var(--line);
     border-radius: 16px;
@@ -394,10 +409,11 @@
   }
 
   .nav {
+    flex: none;
     display: flex;
     align-items: center;
     gap: 12px;
-    margin-top: 18px;
+    padding-top: 12px;
   }
 
   button.btn {
@@ -465,9 +481,9 @@
   }
 
   .plan .ok {
-    width: 72px;
-    height: 72px;
-    margin: 6px auto 10px;
+    width: 56px;
+    height: 56px;
+    margin: 2px auto 8px;
     animation: pop 0.42s ease both;
   }
 
@@ -502,7 +518,7 @@
     display: grid;
     grid-template-columns: repeat(3, minmax(0,1fr));
     gap: 10px;
-    margin-top: 20px;
+    margin-top: 14px;
   }
 
   .macros div {
@@ -573,34 +589,50 @@
     }
 
     .head {
-      margin: 6px 0 16px;
+      margin: 2px 0 10px;
     }
 
     .logo {
-      width: 150px;
+      width: 100px;
+    }
+
+    .tag {
+      margin-top: 4px;
+    }
+
+    .pwrap {
+      margin: 0 0 10px;
     }
 
     .card {
-      padding: 18px 14px 12px;
-      border-radius: 22px;
+      padding: 16px 14px 12px;
+      border-radius: 20px;
     }
 
     h1 {
-      font-size: clamp(24px, 7vw, 30px);
+      font-size: clamp(20px, 6vw, 26px);
+    }
+
+    p.sub {
+      margin: 0 0 12px;
     }
 
     .opt {
-      min-height: 58px;
-      padding: 10px 12px;
+      min-height: 50px;
+      padding: 9px 12px;
     }
 
     .opt .txt {
       font-size: 15px;
     }
 
+    .options {
+      gap: 8px;
+    }
+
     .nav {
       gap: 8px;
-      margin-top: 14px;
+      padding-top: 10px;
     }
 
     .btn.ghost,
@@ -1011,16 +1043,23 @@ async function submit() {
   bar.style.width = "100%";
   nav.querySelectorAll("button").forEach(b => b.disabled = true);
   const p = document.getElementById("primary"); if (p) p.textContent = L.sending;
-  const initData = tg ? tg.initData : "";
-  const body = {
-    init_data: initData,
-    name: (data.first_name + " " + data.last_name).trim(),
-    gender: data.gender, age: Math.round(data.age),
-    height_cm: data.height_cm, weight_kg: data.weight_kg,
-    activity: data.activity, goal: data.goal,
-    waist_cm: data.waist_cm, neck_cm: data.neck_cm, hip_cm: data.hip_cm,
-  };
   try {
+    const initData = tg ? tg.initData : "";
+    if (!initData) {
+      const reason = !window.Telegram ? "SDK yuklanmadi"
+        : !tg ? "WebApp yo'q"
+        : (tg.initDataUnsafe && tg.initDataUnsafe.user) ? "imzosiz launch"
+        : "kontekst yo'q";
+      throw new Error(`initData bo'sh · ${reason} · v${tg?.version || "?"}/${tg?.platform || "?"}`);
+    }
+    const body = {
+      init_data: initData,
+      name: (data.first_name + " " + data.last_name).trim(),
+      gender: data.gender, age: Math.round(data.age),
+      height_cm: data.height_cm, weight_kg: data.weight_kg,
+      activity: data.activity, goal: data.goal,
+      waist_cm: data.waist_cm, neck_cm: data.neck_cm, hip_cm: data.hip_cm,
+    };
     const res = await fetch("/api/onboarding", {
       method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(body),
     });
