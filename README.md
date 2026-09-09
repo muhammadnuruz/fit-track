@@ -39,31 +39,44 @@ tests/                 # pytest (formulalar to'liq qamrovda)
 
 ## Ishga tushirish (lokal)
 
-**Talab:** Python 3.10–3.12, Docker Desktop.
+**Talab:** Docker Desktop.
 
-**Bir martalik sozlash:**
+**Asosiy yo'l — Docker-first (tavsiya etiladi):**
 ```bash
-python3.10 -m venv .venv
-source .venv/bin/activate
-pip install -e ".[dev]"
-cp .env.example .env      # BOT_TOKEN ni to'ldiring
+cp .env.example .env          # BOT_TOKEN ni to'ldiring
+docker compose up --build     # DB + migratsiya + bot — hammasi
+```
+Bitta buyruq bilan: DB ko'tariladi, sog'lom bo'lguncha kutiladi, migratsiyalar
+qo'llanadi va bot ishga tushadi.
+
+Kodni tahrirlagach, image'ni qayta qurish shart emas — `app/`, `migrations/`,
+`alembic.ini` va `scripts/` konteynerga live mount qilingan:
+```bash
+docker compose restart bot
 ```
 
-**So'ng — bitta buyruq hammasini qiladi:**
+To'xtatish:
 ```bash
-make run
+docker compose down
 ```
-`make run` avtomatik ravishda: Docker DB'ni ko'taradi (Docker Desktop o'chiq bo'lsa
-uni ochadi va kutadi) → migratsiyalarni qo'llaydi → botni host'da ishga tushiradi.
+Loglar `--build` bilan terminalda ko'rinadi; fon rejimida (`-d`) ishga tushirgan
+bo'lsangiz — `docker compose logs -f bot`.
 
-### Ikki rejim
+> **Muhim:** testlar va lint (`pytest`, `ruff`) Docker image'ida YO'Q — image'da
+> faqat asosiy (runtime) bog'liqliklar o'rnatilgan. Test/lint uchun lokal venv kerak:
+> ```bash
+> python3.10 -m venv .venv && source .venv/bin/activate && pip install -e ".[dev]"
+> make test    # yoki: pytest
+> ```
+
+### Makefile (ixtiyoriy qisqartmalar)
+
+`Makefile` — Docker buyruqlariga ixtiyoriy qisqartma, xohlasangiz ishlating:
 
 | Rejim | Buyruq | Bot qayerda | Qachon |
 |---|---|---|---|
-| **Host** (tavsiya) | `make run` | host (venv) | kundalik ishlab chiqish — tez qayta ishga tushadi |
-| **To'liq Docker** | `make up` | Docker | "hammasi konteynerda" — deploy'ga yaqin |
-
-To'liq Docker rejimida: `make up` (fon), `make logs` (loglar), `make down` (to'xtatish).
+| **Host** | `make run` | host (venv) | kundalik ishlab chiqish — tez qayta ishga tushadi |
+| **Docker** (tavsiya) | `make up` | Docker | `docker compose up -d` ning qisqartmasi |
 
 Barcha buyruqlar: `make help`.
 

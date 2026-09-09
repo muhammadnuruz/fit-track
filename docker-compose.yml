@@ -18,7 +18,7 @@ services:
       retries: 10
 
   # Bot + API (bitta jarayon). DB tayyor bo'lgach ishga tushadi.
-  # MVP da ixtiyoriy — lokal ishlashda `make run` bilan hostda yuritish mumkin.
+  # `docker compose up` bilan default ravishda ko'tariladi (Docker-first).
   bot:
     build: .
     container_name: fittrack-bot
@@ -31,7 +31,11 @@ services:
       # Konteyner ichida DB 'db' xostida va ICHKI 5432 portida (host'dagi 5433 emas).
       POSTGRES_HOST: db
       POSTGRES_PORT: 5432
-    profiles: ["full"]  # `docker compose --profile full up` bilan yoqiladi
+    volumes:
+      - ./app:/app/app
+      - ./migrations:/app/migrations
+      - ./alembic.ini:/app/alembic.ini
+      - ./scripts:/app/scripts
 
 volumes:
   fittrack_pgdata:

@@ -29,20 +29,20 @@ revision:  ## Yangi migratsiya yaratish:  make revision m="izoh"
 run: db-ensure migrate  ## DB (Docker) + migratsiya + botni host'da ishga tushirish — HAMMASI birga
 	. .venv/bin/activate && python -m app.main
 
-# --- TO'LIQ DOCKER rejimi: bot ham, DB ham Docker'da ---
+# --- TO'LIQ DOCKER rejimi (Docker-first): bot ham, DB ham Docker'da ---
 up: db-ensure  ## Bot + DB ni to'liq Docker'da ishga tushirish (fon rejimida)
-	docker compose --profile full up -d
+	docker compose up -d
 	@echo "✅ Bot Docker'da ishlayapti. Loglar:  make logs"
 
 up-build:  ## Bot image'ini qayta qurib, to'liq Docker'da ishga tushirish
-	docker compose --profile full up -d --build
+	docker compose up -d --build
 	@echo "✅ Bot qayta qurildi va ishga tushdi. Loglar:  make logs"
 
 logs:  ## Docker'dagi bot loglarini kuzatish
 	docker compose logs -f bot
 
 down:  ## Barcha konteynerlarni to'xtatish
-	docker compose --profile full down
+	docker compose down
 
 test:  ## Testlarni ishga tushirish
 	. .venv/bin/activate && pytest
