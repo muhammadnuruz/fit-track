@@ -9,7 +9,7 @@ from aiogram.types import (
 )
 from aiogram.utils.keyboard import InlineKeyboardBuilder, ReplyKeyboardBuilder
 
-from app.bot.emoji import CHANGE_LANG_EMOJI_ID, FLAG_EMOJI_IDS
+from app.bot.emoji import CHANGE_LANG_EMOJI_ID, FLAG_EMOJI_IDS, PLAY_EMOJI_ID
 from app.config import settings
 from app.i18n import LANGUAGES, Lang, t
 
@@ -46,6 +46,7 @@ def onboarding_inline_keyboard(lang: Lang) -> InlineKeyboardMarkup | None:
     builder.add(
         InlineKeyboardButton(
             text=t("btn_start_onboarding", lang),
+            icon_custom_emoji_id=PLAY_EMOJI_ID,
             web_app=WebAppInfo(url=url),
         )
     )
