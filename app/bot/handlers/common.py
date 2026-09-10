@@ -21,18 +21,22 @@ from app.bot.keyboards.language import (
     change_language_labels,
     language_inline_keyboard,
     main_reply_keyboard,
+    my_plan_labels,
     onboarding_inline_keyboard,
+    recalc_inline_keyboard,
 )
 from app.bot.notifications import notify_admins_new_user
 from app.i18n import DEFAULT_LANG, LANGUAGES, Lang, parse_lang, t
+from app.services.plan_message import build_plan_text
 from app.services.settings import has_language, set_language
-from app.services.users import user_exists
+from app.services.users import get_existing_plan, user_exists
 
 router = Router(name="common")
 
 Translator = Callable[..., str]
 
 _CHANGE_LANG_LABELS = change_language_labels()
+_MY_PLAN_LABELS = my_plan_labels()
 
 
 async def _send_language_picker(message: Message, prompt_lang: Lang = DEFAULT_LANG) -> None:
@@ -60,8 +64,27 @@ async def _send_onboarding_cta(message: Message, lang: Lang) -> None:
         await message.answer(t("onboarding_cta", lang, point="👇"), reply_markup=keyboard)
 
 
+async def _send_my_plan(message: Message, lang: Lang, session: AsyncSession) -> None:
+    existing = await get_existing_plan(session, message.from_user.id)
+    if existing is None:
+        await _send_onboarding_cta(message, lang)
+        return
+    user, plan, body_fat_pct = existing
+    keyboard = recalc_inline_keyboard(lang)
+    try:
+        await message.answer(
+            build_plan_text(lang, plan, body_fat_pct, user.name, plain=False),
+            reply_markup=keyboard,
+        )
+    except TelegramBadRequest:
+        await message.answer(
+            build_plan_text(lang, plan, body_fat_pct, user.name, plain=True),
+            reply_markup=keyboard,
+        )
+
+
 async def _send_welcome(message: Message, lang: Lang, *, show_onboarding: bool) -> None:
-    keyboard = main_reply_keyboard(lang)
+    keyboard = main_reply_keyboard(lang, has_plan=not show_onboarding)
     try:
         await message.answer(t("start_welcome", lang, **welcome_emojis()), reply_markup=keyboard)
     except TelegramBadRequest:
@@ -85,6 +108,11 @@ async def cmd_start(message: Message, lang: Lang | None, session: AsyncSession) 
 @router.message(F.text.in_(_CHANGE_LANG_LABELS))
 async def on_change_language_button(message: Message, lang: Lang | None) -> None:
     await _send_language_picker(message)
+
+
+@router.message(F.text.in_(_MY_PLAN_LABELS))
+async def on_my_plan(message: Message, lang: Lang | None, session: AsyncSession) -> None:
+    await _send_my_plan(message, lang or DEFAULT_LANG, session)
 
 
 @router.callback_query(F.data.startswith(f"{LANG_CALLBACK_PREFIX}:"))
@@ -115,7 +143,7 @@ async def on_language_selected(callback: CallbackQuery, session: AsyncSession) -
 async def cmd_help(message: Message, lang: Lang | None, session: AsyncSession) -> None:
     effective = lang or DEFAULT_LANG
     show_onboarding = not await user_exists(session, message.from_user.id)
-    keyboard = main_reply_keyboard(effective)
+    keyboard = main_reply_keyboard(effective, has_plan=not show_onboarding)
     try:
         await message.answer(t("help_text", effective, globe=globe_emoji()), reply_markup=keyboard)
     except TelegramBadRequest:

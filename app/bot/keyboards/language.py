@@ -9,7 +9,13 @@ from aiogram.types import (
 )
 from aiogram.utils.keyboard import InlineKeyboardBuilder, ReplyKeyboardBuilder
 
-from app.bot.emoji import CHANGE_LANG_EMOJI_ID, FLAG_EMOJI_IDS, PLAY_EMOJI_ID
+from app.bot.emoji import (
+    CALORIES_EMOJI_ID,
+    CHANGE_LANG_EMOJI_ID,
+    FLAG_EMOJI_IDS,
+    PLAY_EMOJI_ID,
+    RECALC_EMOJI_ID,
+)
 from app.config import settings
 from app.i18n import LANGUAGES, Lang, t
 
@@ -24,8 +30,15 @@ def onboarding_webapp_url(lang: Lang) -> str | None:
     return f"{base}{separator}lang={lang.value}"
 
 
-def main_reply_keyboard(lang: Lang) -> ReplyKeyboardMarkup:
+def main_reply_keyboard(lang: Lang, *, has_plan: bool = False) -> ReplyKeyboardMarkup:
     builder = ReplyKeyboardBuilder()
+    if has_plan:
+        builder.add(
+            KeyboardButton(
+                text=t("btn_my_plan", lang),
+                icon_custom_emoji_id=CALORIES_EMOJI_ID,
+            )
+        )
     builder.add(
         KeyboardButton(
             text=t("btn_change_language", lang),
@@ -34,6 +47,26 @@ def main_reply_keyboard(lang: Lang) -> ReplyKeyboardMarkup:
     )
     builder.adjust(1)
     return builder.as_markup(resize_keyboard=True, is_persistent=True)
+
+
+def my_plan_labels() -> set[str]:
+    return {t("btn_my_plan", info.code) for info in LANGUAGES}
+
+
+def recalc_inline_keyboard(lang: Lang) -> InlineKeyboardMarkup | None:
+    url = onboarding_webapp_url(lang)
+    if url is None:
+        return None
+    builder = InlineKeyboardBuilder()
+    builder.add(
+        InlineKeyboardButton(
+            text=t("btn_recalc", lang),
+            icon_custom_emoji_id=RECALC_EMOJI_ID,
+            web_app=WebAppInfo(url=url),
+        )
+    )
+    builder.adjust(1)
+    return builder.as_markup()
 
 
 def onboarding_inline_keyboard(lang: Lang) -> InlineKeyboardMarkup | None:

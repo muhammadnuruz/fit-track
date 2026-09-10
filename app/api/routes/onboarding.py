@@ -7,34 +7,20 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.api.schemas import MacrosOut, OnboardingIn, OnboardingOut, PlanOut
 from app.api.security import InitDataError, validate_init_data
-from app.bot.emoji import bodyfat_emoji, plan_emojis
 from app.config import settings
 from app.db.session import get_session
-from app.i18n import parse_lang, t
+from app.i18n import parse_lang
+from app.services.plan_message import build_plan_text
 from app.services.settings import get_language
-from app.services.users import create_from_onboarding, get_existing_plan
+from app.services.users import (
+    create_from_onboarding,
+    get_by_telegram_id,
+    update_from_onboarding,
+)
 
 router = APIRouter(prefix="/api")
 
 log = structlog.get_logger(__name__)
-
-
-def _build_plan_text(lang, plan, body_fat_pct, name, *, plain: bool) -> str:
-    text = t(
-        "plan_ready",
-        lang,
-        name=name,
-        kcal=plan.target_kcal,
-        protein=plan.macros.protein_g,
-        carb=plan.macros.carb_g,
-        fat=plan.macros.fat_g,
-        bmi=plan.bmi,
-        tdee=plan.tdee,
-        **plan_emojis(plain=plain),
-    )
-    if body_fat_pct is not None:
-        text = f"{text}\n{t('plan_bodyfat', lang, bf=body_fat_pct, e_dna=bodyfat_emoji(plain=plain))}"
-    return text
 
 
 async def _send_plan(request: Request, chat_id: int, lang, plan, body_fat_pct, name) -> None:
@@ -42,14 +28,14 @@ async def _send_plan(request: Request, chat_id: int, lang, plan, body_fat_pct, n
     try:
         await bot.send_message(
             chat_id=chat_id,
-            text=_build_plan_text(lang, plan, body_fat_pct, name, plain=False),
+            text=build_plan_text(lang, plan, body_fat_pct, name, plain=False),
         )
     except TelegramBadRequest:
         # Premium emoji ishlamasa — oddiy emoji bilan qayta yuboramiz
         try:
             await bot.send_message(
                 chat_id=chat_id,
-                text=_build_plan_text(lang, plan, body_fat_pct, name, plain=True),
+                text=build_plan_text(lang, plan, body_fat_pct, name, plain=True),
             )
         except Exception as exc:
             log.warning("plan_send_failed", chat_id=chat_id, error=str(exc))
@@ -86,12 +72,10 @@ async def onboarding(
 
     telegram_id = init.user_id
 
-    existing = await get_existing_plan(session, telegram_id)
-    if existing is not None:
-        _, plan, body_fat_pct = existing
-        return OnboardingOut(ok=True, already=True, plan=_plan_out(plan, body_fat_pct))
+    is_existing = await get_by_telegram_id(session, telegram_id) is not None
+    action = update_from_onboarding if is_existing else create_from_onboarding
 
-    user, plan, body_fat_pct = await create_from_onboarding(
+    user, plan, body_fat_pct = await action(
         session,
         telegram_id,
         name=payload.name.strip(),
@@ -110,4 +94,4 @@ async def onboarding(
     lang = await get_language(session, telegram_id) or parse_lang(init.language_code)
     await _send_plan(request, telegram_id, lang, plan, body_fat_pct, user.name)
 
-    return OnboardingOut(ok=True, already=False, plan=_plan_out(plan, body_fat_pct))
+    return OnboardingOut(ok=True, already=is_existing, plan=_plan_out(plan, body_fat_pct))

@@ -142,3 +142,75 @@ async def create_from_onboarding(
     await session.flush()
 
     return user, plan, body_fat_pct
+
+
+async def update_from_onboarding(
+    session: AsyncSession,
+    telegram_id: int,
+    *,
+    name: str,
+    gender: Gender,
+    age: int,
+    height_cm: float,
+    weight_kg: float,
+    activity: ActivityLevel,
+    goal: Goal,
+    waist_cm: float | None,
+    neck_cm: float | None,
+    hip_cm: float | None,
+) -> tuple[User, NutritionPlan, float | None]:
+    """Mavjud foydalanuvchi rejasini qayta hisoblaydi: user maydonlari
+    yangilanadi va yangi o'lchov qo'shiladi. User topilmasa — yaratadi."""
+    user = await get_by_telegram_id(session, telegram_id)
+    if user is None:
+        return await create_from_onboarding(
+            session,
+            telegram_id,
+            name=name,
+            gender=gender,
+            age=age,
+            height_cm=height_cm,
+            weight_kg=weight_kg,
+            activity=activity,
+            goal=goal,
+            waist_cm=waist_cm,
+            neck_cm=neck_cm,
+            hip_cm=hip_cm,
+        )
+
+    plan = build_nutrition_plan(
+        weight_kg=weight_kg,
+        height_cm=height_cm,
+        age=age,
+        gender=gender,
+        activity=activity,
+        goal=goal,
+    )
+    body_fat_pct = _body_fat(gender, height_cm, neck_cm, waist_cm, hip_cm)
+
+    user.name = name
+    user.gender = gender
+    user.age = age
+    user.height_cm = height_cm
+    user.activity_level = activity
+    user.goal = goal
+    user.tdee = plan.tdee
+    user.target_kcal = plan.target_kcal
+    user.target_protein = plan.macros.protein_g
+    user.target_carb = plan.macros.carb_g
+    user.target_fat = plan.macros.fat_g
+
+    session.add(
+        Measurement(
+            user_id=user.id,
+            date=date.today(),
+            weight_kg=weight_kg,
+            waist_cm=waist_cm,
+            neck_cm=neck_cm,
+            hip_cm=hip_cm,
+            body_fat_pct=body_fat_pct,
+        )
+    )
+    await session.flush()
+
+    return user, plan, body_fat_pct

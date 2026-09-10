@@ -6,6 +6,8 @@ MESSAGES: dict[str, str] = {
     "cmd_help_desc": "Help",
     "btn_change_language": "Change language",
     "btn_start_onboarding": "Start",
+    "btn_my_plan": "My daily plan",
+    "btn_recalc": "Recalculate",
     "onboarding_cta": "Complete your profile and get your personal plan {point}",
     "plan_ready": (
         "{e_check} <b>{name}</b>, your plan is ready!\n\n"
