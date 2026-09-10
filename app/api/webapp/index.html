@@ -584,7 +584,7 @@
     font-size: 14px;
     min-height: 20px;
     margin-bottom: 18px;
-    transition: opacity 0.25s ease;
+    transition: opacity 0.3s ease, transform 0.3s ease;
   }
 
   .calc .cbar {
@@ -1094,10 +1094,8 @@ function renderGoal() {
 }
 
 let _calcTimer = null;
+let _calcCount = null;
 function showCalculating() {
-  stepLbl.textContent = "";
-  pctLbl.textContent = "";
-  bar.style.width = "100%";
   nav.innerHTML = "";
   card.innerHTML = `<div class="calc">
       <div class="ring"></div>
@@ -1106,16 +1104,37 @@ function showCalculating() {
       <div class="cbar"><i id="cbari"></i></div>
     </div>`;
   requestAnimationFrame(() => { const b = document.getElementById("cbari"); if (b) b.style.width = "100%"; });
+
+  // Rag'batlantirish: yuqoridagi progress 100% ga to'ladi
+  stepLbl.textContent = "";
+  bar.style.width = "100%";
+  let pc = Math.round((step / TOTAL) * 100);
+  pctLbl.textContent = `${pc}% ${L.done}`;
+  _calcCount = setInterval(() => {
+    pc = Math.min(100, pc + 2);
+    pctLbl.textContent = `${pc}% ${L.done}`;
+    if (pc >= 100) { clearInterval(_calcCount); _calcCount = null; }
+  }, 45);
+
+  // Bosqich matni silliq almashadi (fade + slide)
   let i = 0;
   const el = document.getElementById("cstep");
   _calcTimer = setInterval(() => {
     i = (i + 1) % L.calc_steps.length;
     if (!el) return;
     el.style.opacity = "0";
-    setTimeout(() => { el.textContent = L.calc_steps[i]; el.style.opacity = "1"; }, 220);
-  }, 760);
+    el.style.transform = "translateY(6px)";
+    setTimeout(() => {
+      el.textContent = L.calc_steps[i];
+      el.style.opacity = "1";
+      el.style.transform = "translateY(0)";
+    }, 300);
+  }, 950);
 }
-function stopCalculating() { if (_calcTimer) { clearInterval(_calcTimer); _calcTimer = null; } }
+function stopCalculating() {
+  if (_calcTimer) { clearInterval(_calcTimer); _calcTimer = null; }
+  if (_calcCount) { clearInterval(_calcCount); _calcCount = null; }
+}
 
 async function submit() {
   showCalculating();
