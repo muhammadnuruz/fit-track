@@ -21,6 +21,7 @@ dependencies = [
     "apscheduler>=3.10",
     "matplotlib>=3.9",
     "structlog>=24.4",
+    "redis>=5.0",
 ]
 
 [project.optional-dependencies]

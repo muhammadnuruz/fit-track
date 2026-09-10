@@ -1,11 +1,9 @@
 
 from __future__ import annotations
 
-from pgvector.sqlalchemy import Vector
 from sqlalchemy import Numeric, String
 from sqlalchemy.orm import Mapped, mapped_column
 
-from app.config import settings
 from app.db.base import Base, IntPKMixin, TimestampMixin, pg_enum
 from app.models.enums import FoodSource
 
@@ -26,8 +24,6 @@ class Food(Base, IntPKMixin, TimestampMixin):
         pg_enum(FoodSource, "food_source"), default=FoodSource.MANUAL, nullable=False
     )
     is_approved: Mapped[bool] = mapped_column(default=True, nullable=False)
-
-    embedding: Mapped[list[float] | None] = mapped_column(Vector(settings.embedding_dim))
 
     def __repr__(self) -> str:
         return f"<Food id={self.id} name={self.name!r} kcal={self.kcal}>"

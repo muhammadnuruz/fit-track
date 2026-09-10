@@ -1,8 +1,11 @@
 from __future__ import annotations
 
+import contextlib
+
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
+from app.cache import get_redis
 from app.i18n.languages import Lang
 from app.models.user_settings import UserSettings
 
@@ -20,6 +23,12 @@ async def set_language(session: AsyncSession, telegram_id: int, language: Lang) 
     else:
         row.language = language
     await session.flush()
+
+    # Til cache'ini yangi qiymatga yangilaymiz (eski cache qolib ketmasin).
+    redis = get_redis()
+    if redis is not None:
+        with contextlib.suppress(Exception):
+            await redis.set(f"lang:{telegram_id}", language.value, ex=3600)
     return row
 
 

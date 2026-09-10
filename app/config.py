@@ -40,11 +40,12 @@ class Settings(BaseSettings):
     # bir user uchun /api/onboarding chaqiruvlari orasidagi minimal interval (soniya)
     onboarding_min_interval_seconds: int = 20
 
+    # Redis (bo'sh bo'lsa: FSM/throttle/til-cache in-memory — faqat bitta instans uchun).
+    # Ko'p replica uchun to'ldiring, masalan: redis://redis:6379/0
+    redis_url: str = ""
+
     api_host: str = "0.0.0.0"
     api_port: int = 8000
-
-    embedding_model: str = "sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2"
-    embedding_dim: int = 384
 
     log_level: str = "INFO"
     tz: str = "Asia/Tashkent"

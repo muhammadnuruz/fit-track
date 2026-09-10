@@ -1,11 +1,14 @@
 from __future__ import annotations
 
+import contextlib
 import time
 from collections.abc import Awaitable, Callable
 from typing import Any
 
 from aiogram import BaseMiddleware
 from aiogram.types import TelegramObject, User
+
+from app.cache import get_redis
 
 
 class ThrottlingMiddleware(BaseMiddleware):
@@ -37,12 +40,24 @@ class ThrottlingMiddleware(BaseMiddleware):
         data: dict[str, Any],
     ) -> Any:
         user: User | None = data.get("event_from_user")
-        if user is not None:
-            now = time.monotonic()
-            last = self._last.get(user.id, 0.0)
-            if now - last < self.rate:
-                return None
-            self._last[user.id] = now
-            if len(self._last) % 1000 == 0:
-                self._evict(now)
+        if user is not None and not await self._allow(user.id):
+            return None
         return await handler(event, data)
+
+    async def _allow(self, user_id: int) -> bool:
+        # Redis bo'lsa — replica'lar orasida umumiy throttle (atomik SET NX PX).
+        redis = get_redis()
+        if redis is not None:
+            with contextlib.suppress(Exception):  # redis xato → in-memory
+                ok = await redis.set(
+                    f"thr:{user_id}", "1", nx=True, px=max(1, int(self.rate * 1000))
+                )
+                return bool(ok)
+        now = time.monotonic()
+        last = self._last.get(user_id, 0.0)
+        if now - last < self.rate:
+            return False
+        self._last[user_id] = now
+        if len(self._last) % 1000 == 0:
+            self._evict(now)
+        return True

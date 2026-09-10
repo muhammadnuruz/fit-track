@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import contextlib
 import time
 
 import structlog
@@ -12,6 +13,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from app.api.schemas import MacrosOut, OnboardingIn, OnboardingOut, PlanOut
 from app.api.security import InitDataError, validate_init_data
 from app.bot.keyboards.language import main_reply_keyboard
+from app.cache import get_redis
 from app.config import settings
 from app.core.formulas import NutritionPlan
 from app.db.session import get_session
@@ -28,19 +30,24 @@ router = APIRouter(prefix="/api")
 
 log = structlog.get_logger(__name__)
 
-# Oddiy per-user rate-limit (bir instans uchun). Ko'p-replica'da Redis'ga ko'chirish kerak.
+# Per-user rate-limit. Redis bo'lsa replica'lar orasida umumiy; bo'lmasa in-memory.
 _last_onboard: dict[int, float] = {}
 
 
-def _rate_limited(telegram_id: int) -> bool:
+async def _rate_limited(telegram_id: int) -> bool:
+    interval = settings.onboarding_min_interval_seconds
+    redis = get_redis()
+    if redis is not None:
+        with contextlib.suppress(Exception):  # redis xato → in-memory
+            ok = await redis.set(f"onb:{telegram_id}", "1", nx=True, ex=interval)
+            return not bool(ok)
     now = time.monotonic()
     last = _last_onboard.get(telegram_id, 0.0)
-    if now - last < settings.onboarding_min_interval_seconds:
+    if now - last < interval:
         return True
     _last_onboard[telegram_id] = now
-    # Davriy tozalash (xotira sizishining oldini olish)
-    if len(_last_onboard) % 1000 == 0:
-        cutoff = now - max(settings.onboarding_min_interval_seconds * 5, 300)
+    if len(_last_onboard) % 1000 == 0:  # davriy tozalash
+        cutoff = now - max(interval * 5, 300)
         for uid in [u for u, ts in _last_onboard.items() if ts < cutoff]:
             del _last_onboard[uid]
     return False
@@ -110,7 +117,7 @@ async def onboarding(
 
     telegram_id = init.user_id
 
-    if _rate_limited(telegram_id):
+    if await _rate_limited(telegram_id):
         raise HTTPException(status_code=429, detail="Juda tez-tez. Biroz kuting.")
 
     name = payload.name.strip()
