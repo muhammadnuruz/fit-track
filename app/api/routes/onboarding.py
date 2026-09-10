@@ -7,6 +7,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.api.schemas import MacrosOut, OnboardingIn, OnboardingOut, PlanOut
 from app.api.security import InitDataError, validate_init_data
+from app.bot.keyboards.language import main_reply_keyboard
 from app.config import settings
 from app.core.formulas import NutritionPlan
 from app.db.session import get_session
@@ -33,10 +34,13 @@ async def _send_plan(
     name: str,
 ) -> None:
     bot = request.app.state.bot
+    # Reja xabari bilan birga main menu (Kunlik normam tugmasi) chiqadi
+    keyboard = main_reply_keyboard(lang, has_plan=True)
     try:
         await bot.send_message(
             chat_id=chat_id,
             text=build_plan_text(lang, plan, body_fat_pct, name, plain=False),
+            reply_markup=keyboard,
         )
     except TelegramBadRequest:
         # Premium emoji ishlamasa — oddiy emoji bilan qayta yuboramiz
@@ -44,6 +48,7 @@ async def _send_plan(
             await bot.send_message(
                 chat_id=chat_id,
                 text=build_plan_text(lang, plan, body_fat_pct, name, plain=True),
+                reply_markup=keyboard,
             )
         except Exception as exc:
             log.warning("plan_send_failed", chat_id=chat_id, error=str(exc))
