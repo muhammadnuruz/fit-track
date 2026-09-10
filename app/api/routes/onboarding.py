@@ -8,8 +8,9 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from app.api.schemas import MacrosOut, OnboardingIn, OnboardingOut, PlanOut
 from app.api.security import InitDataError, validate_init_data
 from app.config import settings
+from app.core.formulas import NutritionPlan
 from app.db.session import get_session
-from app.i18n import parse_lang
+from app.i18n import Lang, parse_lang
 from app.services.plan_message import build_plan_text
 from app.services.settings import get_language
 from app.services.users import (
@@ -23,7 +24,14 @@ router = APIRouter(prefix="/api")
 log = structlog.get_logger(__name__)
 
 
-async def _send_plan(request: Request, chat_id: int, lang, plan, body_fat_pct, name) -> None:
+async def _send_plan(
+    request: Request,
+    chat_id: int,
+    lang: Lang,
+    plan: NutritionPlan,
+    body_fat_pct: float | None,
+    name: str,
+) -> None:
     bot = request.app.state.bot
     try:
         await bot.send_message(
@@ -43,7 +51,7 @@ async def _send_plan(request: Request, chat_id: int, lang, plan, body_fat_pct, n
         log.warning("plan_send_failed", chat_id=chat_id, error=str(exc))
 
 
-def _plan_out(plan, body_fat_pct: float | None) -> PlanOut:
+def _plan_out(plan: NutritionPlan, body_fat_pct: float | None) -> PlanOut:
     return PlanOut(
         bmr=plan.bmr,
         tdee=plan.tdee,

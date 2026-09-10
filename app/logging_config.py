@@ -3,6 +3,7 @@ from __future__ import annotations
 import logging
 
 import structlog
+from structlog.typing import Processor
 
 from app.config import settings
 
@@ -11,7 +12,7 @@ def setup_logging() -> None:
     level = getattr(logging, settings.log_level.upper(), logging.INFO)
     logging.basicConfig(level=level, format="%(message)s")
 
-    processors = [
+    processors: list[Processor] = [
         structlog.contextvars.merge_contextvars,
         structlog.processors.add_log_level,
         structlog.processors.TimeStamper(fmt="iso"),

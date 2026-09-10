@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 from datetime import date
+from decimal import Decimal
 
 from sqlalchemy import delete, select
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -25,12 +26,20 @@ async def user_exists(session: AsyncSession, telegram_id: int) -> bool:
 async def delete_user_completely(session: AsyncSession, telegram_id: int) -> bool:
     """Foydalanuvchini bazadan butunlay o'chiradi: users (measurements/food_logs
     DB cascade orqali) + user_settings. Biror narsa o'chirilsa True qaytaradi."""
-    user_res = await session.execute(delete(User).where(User.telegram_id == telegram_id))
-    settings_res = await session.execute(
-        delete(UserSettings).where(UserSettings.telegram_id == telegram_id)
-    )
+    user = await get_by_telegram_id(session, telegram_id)
+    settings_id = (
+        await session.execute(
+            select(UserSettings.telegram_id).where(UserSettings.telegram_id == telegram_id)
+        )
+    ).scalar_one_or_none()
+    if user is None and settings_id is None:
+        return False
+    if user is not None:
+        await session.execute(delete(User).where(User.telegram_id == telegram_id))
+    if settings_id is not None:
+        await session.execute(delete(UserSettings).where(UserSettings.telegram_id == telegram_id))
     await session.commit()
-    return bool(user_res.rowcount) or bool(settings_res.rowcount)
+    return True
 
 
 async def get_existing_plan(
@@ -191,14 +200,14 @@ async def update_from_onboarding(
     user.name = name
     user.gender = gender
     user.age = age
-    user.height_cm = height_cm
+    user.height_cm = Decimal(str(height_cm))
     user.activity_level = activity
     user.goal = goal
-    user.tdee = plan.tdee
-    user.target_kcal = plan.target_kcal
-    user.target_protein = plan.macros.protein_g
-    user.target_carb = plan.macros.carb_g
-    user.target_fat = plan.macros.fat_g
+    user.tdee = Decimal(str(plan.tdee))
+    user.target_kcal = Decimal(str(plan.target_kcal))
+    user.target_protein = Decimal(str(plan.macros.protein_g))
+    user.target_carb = Decimal(str(plan.macros.carb_g))
+    user.target_fat = Decimal(str(plan.macros.fat_g))
 
     session.add(
         Measurement(

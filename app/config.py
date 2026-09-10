@@ -40,7 +40,7 @@ class Settings(BaseSettings):
     env: Literal["development", "production", "test"] = "development"
     admins: str = ""
 
-    @computed_field
+    @computed_field  # type: ignore[prop-decorator]
     @property
     def db_dsn(self) -> str:
         if self.database_url:
@@ -50,7 +50,7 @@ class Settings(BaseSettings):
             f"@{self.postgres_host}:{self.postgres_port}/{self.postgres_db}"
         )
 
-    @computed_field
+    @computed_field  # type: ignore[prop-decorator]
     @property
     def db_dsn_sync(self) -> str:
         return self.db_dsn.replace("+asyncpg", "+psycopg2")

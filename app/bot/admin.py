@@ -59,7 +59,7 @@ async def cmd_admin(message: Message) -> None:
 
 @router.message(F.text == BACK_MAIN_MENU)
 async def admin_back_to_main_menu(message: Message, state: FSMContext, lang: Lang | None) -> None:
-    if not is_admin(message.from_user.id if message.from_user else None):
+    if message.from_user is None or not is_admin(message.from_user.id):
         return
     await state.clear()
     if lang is None:

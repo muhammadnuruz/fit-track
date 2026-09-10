@@ -27,5 +27,6 @@ def build_plan_text(
         **plan_emojis(plain=plain),
     )
     if body_fat_pct is not None:
-        text = f"{text}\n{t('plan_bodyfat', lang, bf=body_fat_pct, e_dna=bodyfat_emoji(plain=plain))}"
+        dna = bodyfat_emoji(plain=plain)
+        text = f"{text}\n{t('plan_bodyfat', lang, bf=body_fat_pct, e_dna=dna)}"
     return text

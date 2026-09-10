@@ -65,6 +65,8 @@ async def _send_onboarding_cta(message: Message, lang: Lang) -> None:
 
 
 async def _send_my_plan(message: Message, lang: Lang, session: AsyncSession) -> None:
+    if message.from_user is None:
+        return
     existing = await get_existing_plan(session, message.from_user.id)
     if existing is None:
         await _send_onboarding_cta(message, lang)
@@ -98,6 +100,8 @@ async def _send_welcome(message: Message, lang: Lang, *, show_onboarding: bool) 
 
 @router.message(CommandStart())
 async def cmd_start(message: Message, lang: Lang | None, session: AsyncSession) -> None:
+    if message.from_user is None:
+        return
     if lang is None:
         await _send_language_picker(message)
         return
@@ -135,12 +139,14 @@ async def on_language_selected(callback: CallbackQuery, session: AsyncSession) -
             )
         show_onboarding = not await user_exists(session, callback.from_user.id)
         await _send_welcome(callback.message, chosen, show_onboarding=show_onboarding)
-        if is_new:
+        if is_new and callback.bot is not None:
             await notify_admins_new_user(callback.bot, callback.from_user, chosen)
 
 
 @router.message(Command("help"))
 async def cmd_help(message: Message, lang: Lang | None, session: AsyncSession) -> None:
+    if message.from_user is None:
+        return
     effective = lang or DEFAULT_LANG
     show_onboarding = not await user_exists(session, message.from_user.id)
     keyboard = main_reply_keyboard(effective, has_plan=not show_onboarding)
