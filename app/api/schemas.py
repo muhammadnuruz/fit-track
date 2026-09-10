@@ -9,8 +9,7 @@ from app.models.enums import ActivityLevel, Gender, Goal
 _NAME_PATTERN = re.compile(r"^[A-Za-zА-Яа-яЁё'\- ]+$")
 
 
-class OnboardingIn(BaseModel):
-    init_data: str
+class ProfileIn(BaseModel):
     name: str = Field(min_length=1, max_length=128)
     gender: Gender
     age: int = Field(ge=10, le=100)
@@ -44,6 +43,10 @@ class OnboardingIn(BaseModel):
         return value
 
 
+class OnboardingIn(ProfileIn):
+    init_data: str
+
+
 class MacrosOut(BaseModel):
     kcal: float
     protein_g: float
@@ -63,4 +66,24 @@ class PlanOut(BaseModel):
 class OnboardingOut(BaseModel):
     ok: bool
     already: bool
+    plan: PlanOut | None = None
+
+
+class MeProfileOut(BaseModel):
+    name: str
+    gender: Gender
+    age: int
+    height_cm: float
+    weight_kg: float | None = None
+    activity: ActivityLevel
+    goal: Goal
+    waist_cm: float | None = None
+    neck_cm: float | None = None
+    hip_cm: float | None = None
+    avatar_url: str | None = None
+
+
+class MeOut(BaseModel):
+    registered: bool
+    profile: MeProfileOut | None = None
     plan: PlanOut | None = None

@@ -36,6 +36,9 @@ WORKDIR /app
 COPY --from=builder /opt/venv /opt/venv
 COPY --from=builder /app /app
 
+# Yuklangan avatarlar uchun katalog — named volume shu egalik bilan yaratiladi (appuser yozadi)
+RUN mkdir -p /app/uploads/avatars && chown -R appuser /app/uploads
+
 # docker-compose mounts ./app, ./migrations, ./alembic.ini (and ./scripts) over
 # these paths at runtime, so they may be host-owned; appuser only needs to
 # read/execute them (PYTHONDONTWRITEBYTECODE avoids any pyc write attempts).

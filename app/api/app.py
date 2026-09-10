@@ -13,6 +13,8 @@ from fastapi.exceptions import RequestValidationError
 from fastapi.responses import FileResponse, HTMLResponse, JSONResponse
 from fastapi.staticfiles import StaticFiles
 
+from app.api.routes.me import AVATAR_DIR
+from app.api.routes.me import router as me_router
 from app.api.routes.onboarding import router as onboarding_router
 from app.config import settings
 
@@ -50,6 +52,7 @@ def create_app(bot: Bot, dp: Dispatcher) -> FastAPI:
     app.state.landing_html = _render_landing()  # startup'da bir marta render
     app.state.bg_tasks = set()  # background task'larга referens (GC'dan saqlash)
     app.include_router(onboarding_router)
+    app.include_router(me_router)
 
     @app.middleware("http")
     async def security_headers(
@@ -91,6 +94,8 @@ def create_app(bot: Bot, dp: Dispatcher) -> FastAPI:
         return FileResponse(WEBAPP_DIR / "index.html")
 
     app.mount("/assets", StaticFiles(directory=WEBAPP_DIR / "assets"), name="assets")
+    AVATAR_DIR.mkdir(parents=True, exist_ok=True)  # yuklangan avatarlar (doimiy volume)
+    app.mount("/avatars", StaticFiles(directory=AVATAR_DIR), name="avatars")
 
     if settings.bot_mode == "webhook":
         # Webhook rejimida secret majburiy — bo'lmasa soxta update yuborilishi mumkin.
