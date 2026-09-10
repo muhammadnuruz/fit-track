@@ -81,7 +81,7 @@
   }
 
   .logo {
-    width: 150px;
+    width: 200px;
     height: auto;
     display: block;
     flex: none;
@@ -646,7 +646,7 @@
     }
 
     .logo {
-      width: 132px;
+      width: 176px;
     }
 
     .tag {
@@ -766,10 +766,12 @@ function closeWithExitAd() {
   const finish = () => { if (done) return; done = true; tg.close(); };
   window.yaContextCb.push(() => {
     try {
+      const plat = /android|ios|iphone|ipad/i.test((tg && tg.platform) || "") ? "touch"
+        : (tg && tg.platform && tg.platform !== "unknown") ? "desktop" : "touch";
       window.Ya.Context.AdvManager.render({
         blockId: YA_FULLSCREEN_ID,
         type: "fullscreen",
-        platform: "touch",
+        platform: plat,
         onRender: () => { rendered = true; },
         onClose: finish,
         onError: finish,
@@ -892,24 +894,17 @@ document.getElementById("tagline").textContent = L.tagline;
 const LS_KEY = "fittrack_onb_" + (tgUser.id || "anon");
 const RANGES = { age: [10, 100], height_cm: [100, 250], weight_kg: [30, 350] };
 const data = {
-  first_name: tgUser.first_name || "", last_name: tgUser.last_name || "",
+  first_name: "", last_name: "",
   gender: null, age: null, height_cm: null, weight_kg: null,
   activity: "moderate", goal: null, waist_cm: null, neck_cm: null, hip_cm: null,
 };
 let step = 0;
 
-(function restore() {
-  try {
-    const raw = localStorage.getItem(LS_KEY);
-    if (raw) {
-      const saved = JSON.parse(raw);
-      Object.assign(data, saved.data || {});
-      if (typeof saved.step === "number" && saved.step >= 0 && saved.step < 7) step = saved.step;
-    }
-  } catch (e) {}
-})();
+// Saqlash o'chirilgan: har safar (birinchi hisob ham, recalculate ham) toza,
+// ismdan boshlanadi. Eski saqlangan qiymatlar bo'lsa tozalab yuboramiz.
+try { localStorage.removeItem(LS_KEY); } catch (e) {}
 
-function persist() { try { localStorage.setItem(LS_KEY, JSON.stringify({ data, step })); } catch (e) {} }
+function persist() { /* saqlash o'chirilgan */ }
 function clearStore() { try { localStorage.removeItem(LS_KEY); } catch (e) {} }
 
 const TOTAL = 7;
