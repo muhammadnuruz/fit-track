@@ -480,9 +480,9 @@
   }
 
   .plan .ok {
-    width: 56px;
-    height: 56px;
-    margin: 2px auto 8px;
+    width: 48px;
+    height: 48px;
+    margin: 0 auto 6px;
     animation: pop 0.42s ease both;
   }
 
@@ -493,13 +493,13 @@
   }
 
   .plan h1 {
-    font-size: clamp(30px, 7vw, 40px);
-    margin-top: 10px;
+    font-size: clamp(23px, 5.6vw, 32px);
+    margin-top: 4px;
   }
 
   .plan .big {
-    margin-top: 10px;
-    font-size: clamp(42px, 11vw, 62px);
+    margin-top: 6px;
+    font-size: clamp(36px, 9.5vw, 52px);
     line-height: 0.9;
     font-weight: 800;
     letter-spacing: -0.08em;
@@ -516,20 +516,20 @@
   .macros {
     display: grid;
     grid-template-columns: repeat(3, minmax(0,1fr));
-    gap: 10px;
-    margin-top: 14px;
+    gap: 8px;
+    margin-top: 12px;
   }
 
   .macros div {
     background: var(--card-2);
     border: 1px solid rgba(44,46,42,0.08);
-    border-radius: 22px;
-    padding: 14px 8px 12px;
+    border-radius: 18px;
+    padding: 10px 6px 9px;
   }
 
   .macros b {
     display: block;
-    font-size: 24px;
+    font-size: 21px;
     letter-spacing: -0.06em;
     color: var(--green);
   }
@@ -537,12 +537,12 @@
   .macros .mi {
     display: flex;
     justify-content: center;
-    margin-bottom: 6px;
+    margin-bottom: 4px;
   }
 
   .macros .mi svg {
-    width: 26px;
-    height: 26px;
+    width: 22px;
+    height: 22px;
   }
 
   .macros span {
@@ -611,7 +611,7 @@
     justify-content: center;
     flex-wrap: wrap;
     gap: 8px;
-    margin-top: 16px;
+    margin-top: 12px;
   }
 
   .chip {
@@ -692,12 +692,31 @@
       font-size: 15px;
     }
 
+    .plan .ok {
+      width: 42px;
+      height: 42px;
+      margin: 0 auto 4px;
+    }
+
+    .plan h1 {
+      font-size: clamp(21px, 6vw, 26px);
+      margin-top: 2px;
+    }
+
     .plan .big {
-      font-size: clamp(38px, 11vw, 54px);
+      font-size: clamp(32px, 9.5vw, 46px);
     }
 
     .macros {
-      gap: 8px;
+      gap: 6px;
+    }
+
+    .macros div {
+      padding: 8px 4px 7px;
+    }
+
+    .macros b {
+      font-size: 19px;
     }
   }
 </style>
