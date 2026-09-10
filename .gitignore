@@ -27,7 +27,7 @@ coverage.xml
 *.swp
 .DS_Store
 
-*.png
+# *.png
 !docs/**/*.png
 *.sqlite3
 data/
