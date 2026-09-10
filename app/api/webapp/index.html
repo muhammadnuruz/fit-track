@@ -62,6 +62,7 @@
   }
 
   .head {
+    position: relative;
     flex: none;
     display: flex;
     flex-direction: column;
@@ -81,7 +82,7 @@
   }
 
   .logo {
-    width: 200px;
+    width: 142px;
     height: auto;
     display: block;
     flex: none;
@@ -108,6 +109,54 @@
     text-align: center;
     font-weight: 600;
   }
+
+  .menu-btn {
+    position: absolute;
+    top: 0;
+    right: 0;
+    display: none;
+    width: 40px;
+    height: 40px;
+    align-items: center;
+    justify-content: center;
+    border: 1px solid var(--line);
+    border-radius: 12px;
+    background: var(--card);
+    color: var(--ink);
+    cursor: pointer;
+  }
+
+  .menu-btn svg { width: 20px; height: 20px; }
+
+  .menu-panel {
+    position: absolute;
+    z-index: 4;
+    top: 46px;
+    right: 0;
+    display: none;
+    min-width: 150px;
+    padding: 6px;
+    border: 1px solid var(--line);
+    border-radius: 14px;
+    background: var(--card);
+    box-shadow: 0 12px 28px rgba(26,25,23,0.12);
+  }
+
+  .menu-panel.open { display: block; }
+
+  .menu-item {
+    width: 100%;
+    padding: 10px 12px;
+    border: 0;
+    border-radius: 9px;
+    background: transparent;
+    color: var(--ink);
+    font: inherit;
+    text-align: left;
+    cursor: pointer;
+  }
+
+  .menu-item:hover { background: var(--paper-strong); }
 
   .pwrap {
     flex: none;
@@ -646,7 +695,7 @@
     }
 
     .logo {
-      width: 176px;
+        width: 132px;
     }
 
     .tag {
@@ -730,6 +779,14 @@
       <img class="logo" src="assets/logo.png" alt="FitTrack logo" />
     </div>
     <div class="tag" id="tagline"></div>
+    <button class="menu-btn" id="menuBtn" type="button" aria-label="Menu" aria-expanded="false">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+        <path d="M4 6h16M4 12h16M4 18h16" />
+      </svg>
+    </button>
+    <div class="menu-panel" id="menuPanel">
+      <button class="menu-item" id="profileMenuItem" type="button"></button>
+    </div>
   </div>
 
   <div class="pwrap">
@@ -743,14 +800,14 @@
 <div class="toast" id="toast"></div>
 
 <style>
-  .dash { display: flex; flex-direction: column; gap: 16px; }
-  .dhead { display: flex; align-items: center; gap: 14px; }
+  .dashboard-card { padding: 12px 2px 8px; background: transparent; border: 0; }
+  .dash { display: flex; flex-direction: column; gap: 12px; }
+  .dhead { display: flex; align-items: center; gap: 12px; padding: 0 4px; }
   .avwrap { position: relative; flex: none; }
   .avatar {
-    width: 72px; height: 72px; border-radius: 50%; overflow: hidden;
+    width: 54px; height: 54px; border-radius: 50%; overflow: hidden;
     display: flex; align-items: center; justify-content: center;
-    font-weight: 800; font-size: 30px; color: #fff; background: var(--green);
-    box-shadow: var(--shadow);
+    font-weight: 800; font-size: 23px; color: #fff; background: var(--green);
   }
   .avatar img { width: 100%; height: 100%; object-fit: cover; display: block; }
   .avedit {
@@ -773,14 +830,14 @@
     border-radius: var(--radius-md); background: var(--card); color: var(--ink); width: 160px;
   }
   .limitCard {
-    background: var(--card); border: 1px solid var(--line); border-radius: var(--radius-xl);
-    padding: 22px; text-align: center; box-shadow: var(--shadow);
+    background: var(--card); border: 1px solid var(--line); border-radius: 18px;
+    padding: 16px 12px 14px; text-align: center;
   }
   .ph {
-    border: 1px dashed var(--line); border-radius: var(--radius-lg); padding: 26px 16px;
+    border: 1px dashed var(--line); border-radius: 14px; padding: 16px;
     text-align: center; color: var(--ink-soft); font-size: 14px;
   }
-  .edit { display: flex; flex-direction: column; gap: 12px; }
+  .edit { display: flex; flex-direction: column; gap: 10px; }
   .edit h1 { margin: 0 0 4px; font-size: 22px; letter-spacing: -0.02em; }
   .erow {
     display: flex; align-items: center; justify-content: space-between; gap: 12px;
@@ -870,10 +927,6 @@ const T = {
     q_goal: "Maqsadingiz", s_goal: "Rejani maqsadga moslaymiz.",
     g_cut: "Vazn kamaytirish", g_cut_d: "Yog'ni yoqish", g_maintain: "Saqlab qolish", g_maintain_d: "Formani saqlash",
     g_bulk: "Massa yig'ish", g_bulk_d: "Mushak qurish",
-    q_measures: "Tana o'lchovlari", s_measures: "Tana yog'ini aniqroq hisoblash uchun — ixtiyoriy.",
-    waist: "Bel (sm)", neck: "Bo'yin (sm)", hip: "Son (sm)",
-    m_measures: "Bu maydonlarni o'tkazib yuborsangiz ham reja tuziladi.",
-    hipNote: "Ayollar uchun son o'lchovi tana yog'ini hisoblashga kerak.",
     back: "Orqaga", next: "Davom etish", skip: "O'tkazib yuborish", finish: "Hisobni yaratish va boshlash",
     rewards: ["Ajoyib boshlanish", "Zo'r natija", "Davom etamiz", "Yarmidan oshdik", "Ajoyib", "So'nggi qadam", "Deyarli tayyor"],
     planTitle: "Rejangiz tayyor!", kcalLabel: "kunlik kaloriya",
@@ -882,7 +935,7 @@ const T = {
     errReq: "To'ldiring", errRange: "Oralig'i",
     errSend: "Xatolik, qayta urinib ko'ring", sending: "Yaratilmoqda...",
     calc_title: "Rejangiz tayyorlanmoqda", calc_steps: ["Ma'lumotlar tahlil qilinmoqda", "Kaloriya hisoblanmoqda", "Makronutrientlar sozlanmoqda"],
-    recalc: "Qayta hisoblash", save: "Saqlash", changePhoto: "Rasmni o'zgartirish", saved: "Saqlandi", comingSoon: "Tez orada shu yerda ko'proq imkoniyatlar bo'ladi",
+    recalc: "Qayta hisoblash", profile: "Profil", save: "Saqlash", changePhoto: "Rasmni o'zgartirish", saved: "Saqlandi", comingSoon: "Tez orada shu yerda ko'proq imkoniyatlar bo'ladi",
   },
   ru: {
     tagline: "Ваш спутник на пути к здоровью",
@@ -904,10 +957,6 @@ const T = {
     q_goal: "Ваша цель", s_goal: "Подстроим план под цель.",
     g_cut: "Снижение веса", g_cut_d: "Сжечь жир", g_maintain: "Поддержание", g_maintain_d: "Держать форму",
     g_bulk: "Набор массы", g_bulk_d: "Растить мышцы",
-    q_measures: "Замеры тела", s_measures: "Для точного расчёта жира — необязательно.",
-    waist: "Талия (см)", neck: "Шея (см)", hip: "Бёдра (см)",
-    m_measures: "План составится даже если пропустить.",
-    hipNote: "Для женщин замер бёдер нужен для расчёта жира.",
     back: "Назад", next: "Продолжить", skip: "Пропустить", finish: "Создать аккаунт и начать",
     rewards: ["Отличный старт", "Супер результат", "Продолжаем", "Больше половины", "Хорошо идёте", "Последний шаг", "Почти готово"],
     planTitle: "Ваш план готов!", kcalLabel: "калорий в день",
@@ -916,7 +965,7 @@ const T = {
     errReq: "Заполните", errRange: "Диапазон",
     errSend: "Ошибка, попробуйте снова", sending: "Создаём...",
     calc_title: "Готовим ваш план", calc_steps: ["Анализируем данные", "Считаем калории", "Настраиваем БЖУ"],
-    recalc: "Пересчитать", save: "Сохранить", changePhoto: "Изменить фото", saved: "Сохранено", comingSoon: "Скоро здесь появится больше возможностей",
+    recalc: "Пересчитать", profile: "Профиль", save: "Сохранить", changePhoto: "Изменить фото", saved: "Сохранено", comingSoon: "Скоро здесь появится больше возможностей",
   },
   en: {
     tagline: "Your companion on the way to health",
@@ -938,10 +987,6 @@ const T = {
     q_goal: "Your goal", s_goal: "We'll tailor the plan.",
     g_cut: "Lose weight", g_cut_d: "Burn fat", g_maintain: "Maintain", g_maintain_d: "Stay in shape",
     g_bulk: "Gain muscle", g_bulk_d: "Build muscle",
-    q_measures: "Body measurements", s_measures: "For a precise body-fat estimate — optional.",
-    waist: "Waist (cm)", neck: "Neck (cm)", hip: "Hip (cm)",
-    m_measures: "The plan works even if you skip these.",
-    hipNote: "For women, hip measurement is needed for body fat.",
     back: "Back", next: "Continue", skip: "Skip", finish: "Create account & start",
     rewards: ["Great start", "Perfect momentum", "Keep going", "Over halfway", "Doing great", "Final step", "Nearly done"],
     planTitle: "Your plan is ready!", kcalLabel: "daily calories",
@@ -950,7 +995,7 @@ const T = {
     errReq: "Required", errRange: "Range",
     errSend: "Error, please try again", sending: "Creating...",
     calc_title: "Preparing your plan", calc_steps: ["Analyzing your data", "Calculating calories", "Tuning your macros"],
-    recalc: "Recalculate", save: "Save", changePhoto: "Change photo", saved: "Saved", comingSoon: "More features coming here soon",
+    recalc: "Recalculate", profile: "Profile", save: "Save", changePhoto: "Change photo", saved: "Saved", comingSoon: "More features coming here soon",
   },
 };
 const L = T[LANG];
@@ -961,7 +1006,7 @@ const RANGES = { age: [10, 100], height_cm: [100, 250], weight_kg: [30, 350] };
 const data = {
   first_name: "", last_name: "",
   gender: null, age: null, height_cm: null, weight_kg: null,
-  activity: "moderate", goal: null, waist_cm: null, neck_cm: null, hip_cm: null,
+  activity: "moderate", goal: null,
 };
 let step = 0;
 
@@ -975,6 +1020,9 @@ function clearStore() { try { localStorage.removeItem(LS_KEY); } catch (e) {} }
 const TOTAL = 7;
 const card = document.getElementById("card");
 const nav = document.getElementById("nav");
+const menuBtn = document.getElementById("menuBtn");
+const menuPanel = document.getElementById("menuPanel");
+const profileMenuItem = document.getElementById("profileMenuItem");
 const bar = document.getElementById("bar");
 const stepLbl = document.getElementById("stepLbl");
 const pctLbl = document.getElementById("pctLbl");
@@ -1269,7 +1317,6 @@ async function submit() {
       gender: data.gender, age: Math.round(data.age),
       height_cm: data.height_cm, weight_kg: data.weight_kg,
       activity: data.activity, goal: data.goal,
-      waist_cm: data.waist_cm, neck_cm: data.neck_cm, hip_cm: data.hip_cm,
     };
     const res = await fetch("/api/onboarding", {
       method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(body),
@@ -1348,6 +1395,23 @@ function toastMsg(m) {
 
 function hideProgress() { const w = document.querySelector(".pwrap"); if (w) w.style.display = "none"; }
 function showProgressBar() { const w = document.querySelector(".pwrap"); if (w) w.style.display = ""; }
+function closeMenu() {
+  menuPanel.classList.remove("open");
+  menuBtn.setAttribute("aria-expanded", "false");
+}
+function showMenu() {
+  menuBtn.style.display = "inline-flex";
+  profileMenuItem.textContent = L.profile;
+  menuBtn.onclick = () => {
+    const open = menuPanel.classList.toggle("open");
+    menuBtn.setAttribute("aria-expanded", String(open));
+  };
+  profileMenuItem.onclick = () => { closeMenu(); showEdit(); };
+}
+function hideMenu() {
+  closeMenu();
+  menuBtn.style.display = "none";
+}
 
 function monogramHTML(name) {
   const ch = ((name || "?").trim().charAt(0) || "?").toUpperCase();
@@ -1362,6 +1426,7 @@ function avatarHTML(p) {
 
 async function boot() {
   hideProgress();
+  hideMenu();
   nav.innerHTML = "";
   card.innerHTML = `<div class="calc"><div class="ring"></div></div>`;
   try {
@@ -1384,6 +1449,8 @@ function macroRow(plan) {
 
 function showDashboard() {
   hideProgress();
+  card.className = "card dashboard-card";
+  showMenu();
   const p = ME.profile, plan = ME.plan;
   const bf = plan && plan.body_fat_pct != null ? `<span class="chip">Body fat ${esc(plan.body_fat_pct)}%</span>` : "";
   const chips = plan ? `<div class="chips"><span class="chip">BMI ${esc(plan.bmi)}</span><span class="chip">TDEE ${esc(plan.tdee)}</span>${bf}</div>` : "";
@@ -1451,7 +1518,6 @@ function buildProfileBody(patch) {
     name: pick("name"), gender: pick("gender"), age: pick("age"),
     height_cm: pick("height_cm"), weight_kg: pick("weight_kg"),
     activity: pick("activity"), goal: pick("goal"),
-    waist_cm: pick("waist_cm"), neck_cm: pick("neck_cm"), hip_cm: pick("hip_cm"),
   };
 }
 
@@ -1474,6 +1540,8 @@ function selVal(id) { const on = document.querySelector(`#${id} .csel.on`); retu
 
 function showEdit() {
   hideProgress();
+  closeMenu();
+  card.className = "card";
   const p = ME.profile;
   const chip = (v, label, cur) => `<button data-v="${v}" class="csel ${cur === v ? "on" : ""}">${esc(label)}</button>`;
   const acts = ["sedentary", "moderate", "active"].map(v => chip(v, L["a_" + v], p.activity)).join("");
@@ -1487,9 +1555,6 @@ function showEdit() {
     <div class="erow"><label>${esc(L.weight)}</label><input id="e_weight" type="number" inputmode="decimal" step="0.1" value="${esc(p.weight_kg == null ? "" : p.weight_kg)}" /></div>
     <div class="erow"><label>${esc(L.q_activity)}</label><div class="chipsel" id="e_activity">${acts}</div></div>
     <div class="erow"><label>${esc(L.q_goal)}</label><div class="chipsel" id="e_goal">${goals}</div></div>
-    <div class="erow"><label>${esc(L.waist)}</label><input id="e_waist" type="number" inputmode="decimal" step="0.1" value="${esc(p.waist_cm == null ? "" : p.waist_cm)}" /></div>
-    <div class="erow"><label>${esc(L.neck)}</label><input id="e_neck" type="number" inputmode="decimal" step="0.1" value="${esc(p.neck_cm == null ? "" : p.neck_cm)}" /></div>
-    <div class="erow"><label>${esc(L.hip)}</label><input id="e_hip" type="number" inputmode="decimal" step="0.1" value="${esc(p.hip_cm == null ? "" : p.hip_cm)}" /></div>
   </div>`;
   card.querySelectorAll(".chipsel").forEach(sel => {
     sel.querySelectorAll(".csel").forEach(b => {
@@ -1515,9 +1580,6 @@ async function onEditSave() {
     weight_kg: parseFloat(document.getElementById("e_weight").value),
     activity: selVal("e_activity"),
     goal: selVal("e_goal"),
-    waist_cm: numOrNull("e_waist"),
-    neck_cm: numOrNull("e_neck"),
-    hip_cm: numOrNull("e_hip"),
   };
   if (!patch.gender || !patch.activity || !patch.goal ||
       !patch.age || !patch.height_cm || !patch.weight_kg) { toastMsg(L.errReq); return; }

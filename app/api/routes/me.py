@@ -3,6 +3,7 @@ from __future__ import annotations
 import asyncio
 import time
 from pathlib import Path
+from uuid import uuid4
 
 from fastapi import APIRouter, Depends, HTTPException, UploadFile
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -58,9 +59,6 @@ def _me_out(data: ProfileData) -> MeOut:
         weight_kg=data.weight_kg,
         activity=data.user.activity_level,
         goal=data.user.goal,
-        waist_cm=data.waist_cm,
-        neck_cm=data.neck_cm,
-        hip_cm=data.hip_cm,
         avatar_url=avatar_url,
     )
     plan = _plan_out(data.plan, data.body_fat_pct) if data.plan is not None else None
@@ -94,9 +92,6 @@ async def patch_me(
         weight_kg=payload.weight_kg,
         activity=payload.activity,
         goal=payload.goal,
-        waist_cm=payload.waist_cm,
-        neck_cm=payload.neck_cm,
-        hip_cm=payload.hip_cm,
     )
     await session.commit()
     data = await load_profile(session, telegram_id)
@@ -121,16 +116,23 @@ async def upload_avatar(
         raise HTTPException(status_code=400, detail="Bo'sh fayl")
 
     AVATAR_DIR.mkdir(parents=True, exist_ok=True)
-    # Eski turli kengaytmali fayllarni tozalaymiz (bir user — bitta avatar)
-    for old in AVATAR_DIR.glob(f"{telegram_id}.*"):
-        await asyncio.to_thread(old.unlink, missing_ok=True)
-    filename = f"{telegram_id}.{ext}"
-    await asyncio.to_thread((AVATAR_DIR / filename).write_bytes, data)
+    filename = f"{telegram_id}-{uuid4().hex}.{ext}"
+    avatar_path = AVATAR_DIR / filename
+    old_files = list(AVATAR_DIR.glob(f"{telegram_id}.*"))
+    await asyncio.to_thread(avatar_path.write_bytes, data)
 
     url_path = f"/avatars/{filename}"
     if not await set_avatar_path(session, telegram_id, url_path):
+        await asyncio.to_thread(avatar_path.unlink, missing_ok=True)
         raise HTTPException(status_code=404, detail="Avval ro'yxatdan o'ting")
-    await session.commit()
+    try:
+        await session.commit()
+    except Exception:
+        await asyncio.to_thread(avatar_path.unlink, missing_ok=True)
+        raise
+    for old in old_files:
+        if old != avatar_path:
+            await asyncio.to_thread(old.unlink, missing_ok=True)
     return {"url": f"{url_path}?v={int(time.time())}"}
 
 
@@ -139,8 +141,9 @@ async def delete_avatar(
     telegram_id: int = Depends(require_telegram_id),
     session: AsyncSession = Depends(get_session),
 ) -> dict[str, bool]:
-    for old in AVATAR_DIR.glob(f"{telegram_id}.*"):
-        await asyncio.to_thread(old.unlink, missing_ok=True)
+    old_files = list(AVATAR_DIR.glob(f"{telegram_id}.*"))
     await set_avatar_path(session, telegram_id, None)
     await session.commit()
+    for old in old_files:
+        await asyncio.to_thread(old.unlink, missing_ok=True)
     return {"ok": True}

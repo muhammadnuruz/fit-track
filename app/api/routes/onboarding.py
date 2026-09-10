@@ -134,9 +134,6 @@ async def onboarding(
             weight_kg=payload.weight_kg,
             activity=payload.activity,
             goal=payload.goal,
-            waist_cm=payload.waist_cm,
-            neck_cm=payload.neck_cm,
-            hip_cm=payload.hip_cm,
         )
         await session.commit()
     except IntegrityError:
@@ -152,9 +149,6 @@ async def onboarding(
             weight_kg=payload.weight_kg,
             activity=payload.activity,
             goal=payload.goal,
-            waist_cm=payload.waist_cm,
-            neck_cm=payload.neck_cm,
-            hip_cm=payload.hip_cm,
         )
         await session.commit()
         is_existing = True

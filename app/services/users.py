@@ -9,7 +9,7 @@ from sqlalchemy import delete, select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.config import settings
-from app.core.formulas import NutritionPlan, build_nutrition_plan, navy_body_fat
+from app.core.formulas import NutritionPlan, build_nutrition_plan
 from app.models.enums import ActivityLevel, Gender, Goal
 from app.models.measurement import Measurement
 from app.models.user import User
@@ -26,10 +26,6 @@ async def _upsert_measurement(
     user_id: int,
     *,
     weight_kg: float,
-    waist_cm: float | None,
-    neck_cm: float | None,
-    hip_cm: float | None,
-    body_fat_pct: float | None,
 ) -> None:
     """Bir kunga bitta o'lchov: bugungi o'lchov bo'lsa yangilaydi, bo'lmasa qo'shadi.
     Bu bir kunда bir necha marta recalculate qilinganda qatorlar cheksiz o'sishini oldini oladi."""
@@ -43,22 +39,12 @@ async def _upsert_measurement(
     ).scalar_one_or_none()
     if existing is not None:
         existing.weight_kg = Decimal(str(weight_kg))
-        existing.waist_cm = Decimal(str(waist_cm)) if waist_cm is not None else None
-        existing.neck_cm = Decimal(str(neck_cm)) if neck_cm is not None else None
-        existing.hip_cm = Decimal(str(hip_cm)) if hip_cm is not None else None
-        existing.body_fat_pct = (
-            Decimal(str(body_fat_pct)) if body_fat_pct is not None else None
-        )
     else:
         session.add(
             Measurement(
                 user_id=user_id,
                 date=day,
                 weight_kg=weight_kg,
-                waist_cm=waist_cm,
-                neck_cm=neck_cm,
-                hip_cm=hip_cm,
-                body_fat_pct=body_fat_pct,
             )
         )
 
@@ -127,9 +113,6 @@ async def get_existing_plan(
 class ProfileData:
     user: User
     weight_kg: float | None
-    waist_cm: float | None
-    neck_cm: float | None
-    hip_cm: float | None
     body_fat_pct: float | None
     plan: NutritionPlan | None
 
@@ -160,9 +143,6 @@ async def load_profile(session: AsyncSession, telegram_id: int) -> ProfileData |
     return ProfileData(
         user=user,
         weight_kg=weight,
-        waist_cm=float(m.waist_cm) if m is not None and m.waist_cm is not None else None,
-        neck_cm=float(m.neck_cm) if m is not None and m.neck_cm is not None else None,
-        hip_cm=float(m.hip_cm) if m is not None and m.hip_cm is not None else None,
         body_fat_pct=(
             float(m.body_fat_pct) if m is not None and m.body_fat_pct is not None else None
         ),
@@ -181,29 +161,6 @@ async def set_avatar_path(
     return True
 
 
-def _body_fat(
-    gender: Gender,
-    height_cm: float,
-    neck_cm: float | None,
-    waist_cm: float | None,
-    hip_cm: float | None,
-) -> float | None:
-    if neck_cm is None or waist_cm is None:
-        return None
-    if gender is Gender.FEMALE and hip_cm is None:
-        return None
-    try:
-        return navy_body_fat(
-            gender=gender,
-            height_cm=height_cm,
-            neck_cm=neck_cm,
-            waist_cm=waist_cm,
-            hip_cm=hip_cm,
-        )
-    except ValueError:
-        return None
-
-
 async def create_from_onboarding(
     session: AsyncSession,
     telegram_id: int,
@@ -215,9 +172,6 @@ async def create_from_onboarding(
     weight_kg: float,
     activity: ActivityLevel,
     goal: Goal,
-    waist_cm: float | None,
-    neck_cm: float | None,
-    hip_cm: float | None,
 ) -> tuple[User, NutritionPlan, float | None]:
     plan = build_nutrition_plan(
         weight_kg=weight_kg,
@@ -227,8 +181,6 @@ async def create_from_onboarding(
         activity=activity,
         goal=goal,
     )
-    body_fat_pct = _body_fat(gender, height_cm, neck_cm, waist_cm, hip_cm)
-
     user = User(
         telegram_id=telegram_id,
         name=name,
@@ -250,14 +202,10 @@ async def create_from_onboarding(
         session,
         user.id,
         weight_kg=weight_kg,
-        waist_cm=waist_cm,
-        neck_cm=neck_cm,
-        hip_cm=hip_cm,
-        body_fat_pct=body_fat_pct,
     )
     await session.flush()
 
-    return user, plan, body_fat_pct
+    return user, plan, None
 
 
 async def update_from_onboarding(
@@ -271,9 +219,6 @@ async def update_from_onboarding(
     weight_kg: float,
     activity: ActivityLevel,
     goal: Goal,
-    waist_cm: float | None,
-    neck_cm: float | None,
-    hip_cm: float | None,
 ) -> tuple[User, NutritionPlan, float | None]:
     """Mavjud foydalanuvchi rejasini qayta hisoblaydi: user maydonlari
     yangilanadi va yangi o'lchov qo'shiladi. User topilmasa — yaratadi."""
@@ -289,9 +234,6 @@ async def update_from_onboarding(
             weight_kg=weight_kg,
             activity=activity,
             goal=goal,
-            waist_cm=waist_cm,
-            neck_cm=neck_cm,
-            hip_cm=hip_cm,
         )
 
     plan = build_nutrition_plan(
@@ -302,8 +244,6 @@ async def update_from_onboarding(
         activity=activity,
         goal=goal,
     )
-    body_fat_pct = _body_fat(gender, height_cm, neck_cm, waist_cm, hip_cm)
-
     user.name = name
     user.gender = gender
     user.age = age
@@ -320,11 +260,7 @@ async def update_from_onboarding(
         session,
         user.id,
         weight_kg=weight_kg,
-        waist_cm=waist_cm,
-        neck_cm=neck_cm,
-        hip_cm=hip_cm,
-        body_fat_pct=body_fat_pct,
     )
     await session.flush()
 
-    return user, plan, body_fat_pct
+    return user, plan, None

@@ -12,11 +12,14 @@ from fastapi import FastAPI, HTTPException, Request, Response
 from fastapi.exceptions import RequestValidationError
 from fastapi.responses import FileResponse, HTMLResponse, JSONResponse
 from fastapi.staticfiles import StaticFiles
+from sqlalchemy import text
 
 from app.api.routes.me import AVATAR_DIR
 from app.api.routes.me import router as me_router
 from app.api.routes.onboarding import router as onboarding_router
+from app.cache import get_redis
 from app.config import settings
+from app.db.session import engine
 
 log = structlog.get_logger(__name__)
 
@@ -87,6 +90,15 @@ def create_app(bot: Bot, dp: Dispatcher) -> FastAPI:
 
     @app.get("/health")
     async def health() -> dict[str, str]:
+        try:
+            async with engine.connect() as connection:
+                await connection.execute(text("SELECT 1"))
+            redis = get_redis()
+            if redis is not None:
+                await redis.ping()
+        except Exception as exc:
+            log.warning("health_check_failed", error=str(exc))
+            raise HTTPException(status_code=503, detail="Service unavailable") from exc
         return {"status": "ok"}
 
     @app.get("/webapp")

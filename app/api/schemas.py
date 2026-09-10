@@ -17,9 +17,6 @@ class ProfileIn(BaseModel):
     weight_kg: float = Field(ge=30, le=350)
     activity: ActivityLevel
     goal: Goal
-    waist_cm: float | None = Field(default=None, ge=30, le=250)
-    neck_cm: float | None = Field(default=None, ge=15, le=100)
-    hip_cm: float | None = Field(default=None, ge=40, le=250)
 
     @field_validator("name")
     @classmethod
@@ -33,7 +30,7 @@ class ProfileIn(BaseModel):
             raise ValueError("name contains unsupported characters")
         return cleaned
 
-    @field_validator("height_cm", "weight_kg", "waist_cm", "neck_cm", "hip_cm")
+    @field_validator("height_cm", "weight_kg")
     @classmethod
     def validate_positive_measurements(cls, value: float | None) -> float | None:
         if value is None:
@@ -77,9 +74,6 @@ class MeProfileOut(BaseModel):
     weight_kg: float | None = None
     activity: ActivityLevel
     goal: Goal
-    waist_cm: float | None = None
-    neck_cm: float | None = None
-    hip_cm: float | None = None
     avatar_url: str | None = None
 
 
