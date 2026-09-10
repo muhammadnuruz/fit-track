@@ -742,6 +742,65 @@
 </div>
 <div class="toast" id="toast"></div>
 
+<style>
+  .dash { display: flex; flex-direction: column; gap: 16px; }
+  .dhead { display: flex; align-items: center; gap: 14px; }
+  .avwrap { position: relative; flex: none; }
+  .avatar {
+    width: 72px; height: 72px; border-radius: 50%; overflow: hidden;
+    display: flex; align-items: center; justify-content: center;
+    font-weight: 800; font-size: 30px; color: #fff; background: var(--green);
+    box-shadow: var(--shadow);
+  }
+  .avatar img { width: 100%; height: 100%; object-fit: cover; display: block; }
+  .avedit {
+    position: absolute; right: -2px; bottom: -2px; width: 26px; height: 26px;
+    border-radius: 50%; border: 2px solid var(--paper); background: var(--ink);
+    color: #fff; display: flex; align-items: center; justify-content: center;
+    cursor: pointer; padding: 0;
+  }
+  .avedit svg { width: 13px; height: 13px; }
+  .dname { min-width: 0; }
+  .nrow { display: flex; align-items: center; gap: 8px; }
+  .nrow #nameTxt { font-size: 20px; font-weight: 800; letter-spacing: -0.02em; }
+  .lnk {
+    border: none; background: transparent; color: var(--ink-soft); cursor: pointer;
+    padding: 4px; display: inline-flex; align-items: center;
+  }
+  .lnk svg { width: 16px; height: 16px; }
+  .ninp {
+    font-size: 18px; font-weight: 700; padding: 4px 8px; border: 1px solid var(--line);
+    border-radius: var(--radius-md); background: var(--card); color: var(--ink); width: 160px;
+  }
+  .limitCard {
+    background: var(--card); border: 1px solid var(--line); border-radius: var(--radius-xl);
+    padding: 22px; text-align: center; box-shadow: var(--shadow);
+  }
+  .ph {
+    border: 1px dashed var(--line); border-radius: var(--radius-lg); padding: 26px 16px;
+    text-align: center; color: var(--ink-soft); font-size: 14px;
+  }
+  .edit { display: flex; flex-direction: column; gap: 12px; }
+  .edit h1 { margin: 0 0 4px; font-size: 22px; letter-spacing: -0.02em; }
+  .erow {
+    display: flex; align-items: center; justify-content: space-between; gap: 12px;
+    background: var(--card); border: 1px solid var(--line); border-radius: var(--radius-md);
+    padding: 12px 14px;
+  }
+  .erow > label { color: var(--ink-soft); font-size: 14px; font-weight: 600; flex: none; }
+  .erow input {
+    width: 120px; text-align: right; font-size: 16px; font-weight: 700; border: none;
+    background: transparent; color: var(--ink); padding: 4px 0;
+  }
+  .erow input:focus { outline: none; }
+  .chipsel { display: flex; gap: 6px; flex-wrap: wrap; justify-content: flex-end; }
+  .csel {
+    border: 1px solid var(--line); background: var(--paper-strong); color: var(--ink-soft);
+    border-radius: 999px; padding: 7px 12px; font-size: 13px; font-weight: 600; cursor: pointer;
+  }
+  .csel.on { background: var(--green); border-color: var(--green); color: #fff; }
+</style>
+
 <script>
 const tg = window.Telegram ? window.Telegram.WebApp : null;
 if (tg) { tg.ready(); tg.expand(); }
@@ -823,6 +882,7 @@ const T = {
     errReq: "To'ldiring", errRange: "Oralig'i",
     errSend: "Xatolik, qayta urinib ko'ring", sending: "Yaratilmoqda...",
     calc_title: "Rejangiz tayyorlanmoqda", calc_steps: ["Ma'lumotlar tahlil qilinmoqda", "Kaloriya hisoblanmoqda", "Makronutrientlar sozlanmoqda"],
+    recalc: "Qayta hisoblash", save: "Saqlash", changePhoto: "Rasmni o'zgartirish", saved: "Saqlandi", comingSoon: "Tez orada shu yerda ko'proq imkoniyatlar bo'ladi",
   },
   ru: {
     tagline: "Ваш спутник на пути к здоровью",
@@ -856,6 +916,7 @@ const T = {
     errReq: "Заполните", errRange: "Диапазон",
     errSend: "Ошибка, попробуйте снова", sending: "Создаём...",
     calc_title: "Готовим ваш план", calc_steps: ["Анализируем данные", "Считаем калории", "Настраиваем БЖУ"],
+    recalc: "Пересчитать", save: "Сохранить", changePhoto: "Изменить фото", saved: "Сохранено", comingSoon: "Скоро здесь появится больше возможностей",
   },
   en: {
     tagline: "Your companion on the way to health",
@@ -889,6 +950,7 @@ const T = {
     errReq: "Required", errRange: "Range",
     errSend: "Error, please try again", sending: "Creating...",
     calc_title: "Preparing your plan", calc_steps: ["Analyzing your data", "Calculating calories", "Tuning your macros"],
+    recalc: "Recalculate", save: "Save", changePhoto: "Change photo", saved: "Saved", comingSoon: "More features coming here soon",
   },
 };
 const L = T[LANG];
@@ -1225,8 +1287,7 @@ async function submit() {
     await minWait;
     stopCalculating();
     clearStore();
-    if (json.plan) return showPlan(json.plan);
-    return showAlready();
+    return boot();  // ro'yxatdan o'tgach dashboard'ga o'tamiz
   } catch (e) {
     stopCalculating();
     render();
@@ -1271,7 +1332,199 @@ function closeBtn() {
   nav.appendChild(b);
 }
 
-render();
+/* ===================== Mini App: Dashboard + Edit ===================== */
+const CAM_SVG = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg>';
+const PEN_SVG = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.12 2.12 0 0 1 3 3L7 19l-4 1 1-4z"/></svg>';
+const AV_COLORS = ["#1f9d55", "#1e4c9a", "#ff705d", "#f5b301", "#2ba0ff", "#7c4dff"];
+let ME = null;
+
+function authHeaders() { return { "X-Init-Data": tg ? tg.initData : "" }; }
+
+function toastMsg(m) {
+  toast.textContent = m; toast.classList.add("show");
+  clearTimeout(toastMsg._t);
+  toastMsg._t = setTimeout(() => toast.classList.remove("show"), 1800);
+}
+
+function hideProgress() { const w = document.querySelector(".pwrap"); if (w) w.style.display = "none"; }
+function showProgressBar() { const w = document.querySelector(".pwrap"); if (w) w.style.display = ""; }
+
+function monogramHTML(name) {
+  const ch = ((name || "?").trim().charAt(0) || "?").toUpperCase();
+  const color = AV_COLORS[ch.charCodeAt(0) % AV_COLORS.length];
+  return `<div class="avatar" style="background:${color}">${esc(ch)}</div>`;
+}
+function avatarHTML(p) {
+  const src = p.avatar_url ? p.avatar_url : (tgUser && tgUser.photo_url ? tgUser.photo_url : null);
+  if (src) return `<div class="avatar"><img src="${esc(src)}" alt="" /></div>`;
+  return monogramHTML(p.name);
+}
+
+async function boot() {
+  hideProgress();
+  nav.innerHTML = "";
+  card.innerHTML = `<div class="calc"><div class="ring"></div></div>`;
+  try {
+    const r = await fetch("/api/me", { headers: authHeaders() });
+    ME = r.ok ? await r.json() : { registered: false };
+  } catch (e) { ME = { registered: false }; }
+  if (ME && ME.registered) return showDashboard();
+  showProgressBar();
+  step = 0; render();
+}
+
+function macroRow(plan) {
+  if (!plan) return "";
+  return `<div class="macros">
+    <div><span class="mi">${ICONS.macro_protein}</span><b>${esc(plan.macros.protein_g)}g</b><span>${esc(L.protein)}</span></div>
+    <div><span class="mi">${ICONS.macro_carb}</span><b>${esc(plan.macros.carb_g)}g</b><span>${esc(L.carb)}</span></div>
+    <div><span class="mi">${ICONS.macro_fat}</span><b>${esc(plan.macros.fat_g)}g</b><span>${esc(L.fat)}</span></div>
+  </div>`;
+}
+
+function showDashboard() {
+  hideProgress();
+  const p = ME.profile, plan = ME.plan;
+  const bf = plan && plan.body_fat_pct != null ? `<span class="chip">Body fat ${esc(plan.body_fat_pct)}%</span>` : "";
+  const chips = plan ? `<div class="chips"><span class="chip">BMI ${esc(plan.bmi)}</span><span class="chip">TDEE ${esc(plan.tdee)}</span>${bf}</div>` : "";
+  card.innerHTML = `<div class="dash">
+    <div class="dhead">
+      <div class="avwrap" id="avwrap">${avatarHTML(p)}
+        <button class="avedit" id="avBtn" title="${esc(L.changePhoto)}">${CAM_SVG}</button>
+        <input type="file" id="avFile" accept="image/jpeg,image/png,image/webp" hidden />
+      </div>
+      <div class="dname">
+        <div class="nrow"><span id="nameTxt">${esc(p.name)}</span>
+          <button class="lnk" id="editName" aria-label="edit">${PEN_SVG}</button></div>
+        <div class="tag" style="margin-top:2px">${esc(L.tagline)}</div>
+      </div>
+    </div>
+    <div class="limitCard">
+      <div class="kc">${esc(L.kcalLabel)}</div>
+      <div class="big">${plan ? esc(plan.target_kcal) : "—"}</div>
+      ${macroRow(plan)}
+      ${chips}
+    </div>
+    <div class="ph">${esc(L.comingSoon)}</div>
+  </div>`;
+  nav.innerHTML = "";
+  const rc = document.createElement("button");
+  rc.className = "btn cta"; rc.textContent = L.recalc; rc.onclick = () => showEdit();
+  nav.appendChild(rc);
+  document.getElementById("avBtn").onclick = () => document.getElementById("avFile").click();
+  document.getElementById("avFile").onchange = onAvatarPick;
+  document.getElementById("editName").onclick = startNameEdit;
+}
+
+async function onAvatarPick(e) {
+  const f = e.target.files && e.target.files[0];
+  if (!f) return;
+  const fd = new FormData(); fd.append("file", f);
+  try {
+    const r = await fetch("/api/me/avatar", { method: "POST", headers: authHeaders(), body: fd });
+    if (!r.ok) throw new Error(String(r.status));
+    const j = await r.json();
+    ME.profile.avatar_url = j.url;
+    const wrap = document.getElementById("avwrap");
+    wrap.querySelector(".avatar").outerHTML = avatarHTML(ME.profile);
+    toastMsg(L.saved);
+  } catch (err) { toastMsg(L.errSend); }
+}
+
+function startNameEdit() {
+  const holder = document.querySelector(".nrow");
+  const cur = ME.profile.name;
+  holder.innerHTML = `<input id="nameInp" class="ninp" maxlength="64" value="${esc(cur)}" />
+    <button class="lnk" id="nameSave" aria-label="save">${PEN_SVG}</button>`;
+  const inp = document.getElementById("nameInp"); inp.focus();
+  document.getElementById("nameSave").onclick = async () => {
+    const v = inp.value.trim();
+    if (v.length < 2) { toastMsg(L.errReq); return; }
+    await saveProfile({ name: v });
+  };
+}
+
+function buildProfileBody(patch) {
+  const p = ME.profile;
+  const pick = (k) => (k in patch ? patch[k] : p[k]);
+  return {
+    name: pick("name"), gender: pick("gender"), age: pick("age"),
+    height_cm: pick("height_cm"), weight_kg: pick("weight_kg"),
+    activity: pick("activity"), goal: pick("goal"),
+    waist_cm: pick("waist_cm"), neck_cm: pick("neck_cm"), hip_cm: pick("hip_cm"),
+  };
+}
+
+async function saveProfile(patch) {
+  const body = buildProfileBody(patch);
+  try {
+    const r = await fetch("/api/me", {
+      method: "PATCH",
+      headers: { ...authHeaders(), "Content-Type": "application/json" },
+      body: JSON.stringify(body),
+    });
+    if (!r.ok) throw new Error(String(r.status));
+    ME = await r.json();
+    showDashboard(); toastMsg(L.saved);
+  } catch (e) { toastMsg(L.errSend); }
+}
+
+function numOrNull(id) { const v = document.getElementById(id).value.trim(); return v === "" ? null : parseFloat(v); }
+function selVal(id) { const on = document.querySelector(`#${id} .csel.on`); return on ? on.dataset.v : null; }
+
+function showEdit() {
+  hideProgress();
+  const p = ME.profile;
+  const chip = (v, label, cur) => `<button data-v="${v}" class="csel ${cur === v ? "on" : ""}">${esc(label)}</button>`;
+  const acts = ["sedentary", "moderate", "active"].map(v => chip(v, L["a_" + v], p.activity)).join("");
+  const goals = ["cut", "maintain", "bulk"].map(v => chip(v, L["g_" + v], p.goal)).join("");
+  card.innerHTML = `<div class="edit">
+    <h1>${esc(L.recalc)}</h1>
+    <div class="erow"><label>${esc(L.q_gender)}</label><div class="chipsel" id="e_gender">
+      ${chip("male", L.male, p.gender)}${chip("female", L.female, p.gender)}</div></div>
+    <div class="erow"><label>${esc(L.q_age)}</label><input id="e_age" type="number" inputmode="numeric" value="${esc(p.age)}" /></div>
+    <div class="erow"><label>${esc(L.height)}</label><input id="e_height" type="number" inputmode="decimal" step="0.1" value="${esc(p.height_cm)}" /></div>
+    <div class="erow"><label>${esc(L.weight)}</label><input id="e_weight" type="number" inputmode="decimal" step="0.1" value="${esc(p.weight_kg == null ? "" : p.weight_kg)}" /></div>
+    <div class="erow"><label>${esc(L.q_activity)}</label><div class="chipsel" id="e_activity">${acts}</div></div>
+    <div class="erow"><label>${esc(L.q_goal)}</label><div class="chipsel" id="e_goal">${goals}</div></div>
+    <div class="erow"><label>${esc(L.waist)}</label><input id="e_waist" type="number" inputmode="decimal" step="0.1" value="${esc(p.waist_cm == null ? "" : p.waist_cm)}" /></div>
+    <div class="erow"><label>${esc(L.neck)}</label><input id="e_neck" type="number" inputmode="decimal" step="0.1" value="${esc(p.neck_cm == null ? "" : p.neck_cm)}" /></div>
+    <div class="erow"><label>${esc(L.hip)}</label><input id="e_hip" type="number" inputmode="decimal" step="0.1" value="${esc(p.hip_cm == null ? "" : p.hip_cm)}" /></div>
+  </div>`;
+  card.querySelectorAll(".chipsel").forEach(sel => {
+    sel.querySelectorAll(".csel").forEach(b => {
+      b.onclick = () => {
+        sel.querySelectorAll(".csel").forEach(x => x.classList.remove("on"));
+        b.classList.add("on");
+      };
+    });
+  });
+  nav.innerHTML = "";
+  const back = document.createElement("button");
+  back.className = "btn ghost"; back.textContent = L.back; back.onclick = () => showDashboard();
+  const save = document.createElement("button");
+  save.className = "btn cta"; save.textContent = L.save; save.onclick = onEditSave;
+  nav.appendChild(back); nav.appendChild(save);
+}
+
+async function onEditSave() {
+  const patch = {
+    gender: selVal("e_gender"),
+    age: parseInt(document.getElementById("e_age").value, 10),
+    height_cm: parseFloat(document.getElementById("e_height").value),
+    weight_kg: parseFloat(document.getElementById("e_weight").value),
+    activity: selVal("e_activity"),
+    goal: selVal("e_goal"),
+    waist_cm: numOrNull("e_waist"),
+    neck_cm: numOrNull("e_neck"),
+    hip_cm: numOrNull("e_hip"),
+  };
+  if (!patch.gender || !patch.activity || !patch.goal ||
+      !patch.age || !patch.height_cm || !patch.weight_kg) { toastMsg(L.errReq); return; }
+  await saveProfile(patch);
+}
+
+boot();
 </script>
 </body>
 </html>
