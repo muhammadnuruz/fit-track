@@ -749,7 +749,7 @@ if (tg) { tg.ready(); tg.expand(); }
 // Yandex RTB blok ID (Yandex kabinetidan: R-A-XXXXXXX-N). Bo'sh bo'lsa reklama render bo'lmaydi.
 const YA_BLOCK_ID = "R-A-20020837-1";
 // Fullscreen (chiqishda) reklama uchun ALOHIDA Yandex unit ID. Bo'sh bo'lsa oddiy yopiladi.
-const YA_FULLSCREEN_ID = "";
+const YA_FULLSCREEN_ID = "R-A-20020837-2";
 function renderAd(containerId) {
   if (!YA_BLOCK_ID || typeof window.Ya === "undefined") return;
   window.yaContextCb.push(() => {
@@ -759,9 +759,12 @@ function renderAd(containerId) {
   });
 }
 // "Yopish" bosilganda: natija allaqachon ko'rilgan → fullscreen reklama → keyin yopiladi.
+let _exitAdShown = false;
 function closeWithExitAd() {
   if (!tg) return;
-  if (!YA_FULLSCREEN_ID || typeof window.Ya === "undefined") { tg.close(); return; }
+  // Reklama allaqachon ko'rsatilgan bo'lsa (2-bosish) yoki ID yo'q bo'lsa — to'g'ridan-to'g'ri yopamiz.
+  if (_exitAdShown || !YA_FULLSCREEN_ID || typeof window.Ya === "undefined") { tg.close(); return; }
+  _exitAdShown = true;
   let done = false, rendered = false;
   const finish = () => { if (done) return; done = true; tg.close(); };
   window.yaContextCb.push(() => {
