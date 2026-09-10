@@ -1,16 +1,65 @@
 from __future__ import annotations
 
-from datetime import date
+from datetime import date, datetime
 from decimal import Decimal
+from zoneinfo import ZoneInfo
 
 from sqlalchemy import delete, select
 from sqlalchemy.ext.asyncio import AsyncSession
 
+from app.config import settings
 from app.core.formulas import NutritionPlan, build_nutrition_plan, navy_body_fat
 from app.models.enums import ActivityLevel, Gender, Goal
 from app.models.measurement import Measurement
 from app.models.user import User
 from app.models.user_settings import UserSettings
+
+
+def today_local() -> date:
+    """settings.tz mintaqasidagi bugungi sana (UTC emas)."""
+    return datetime.now(ZoneInfo(settings.tz)).date()
+
+
+async def _upsert_measurement(
+    session: AsyncSession,
+    user_id: int,
+    *,
+    weight_kg: float,
+    waist_cm: float | None,
+    neck_cm: float | None,
+    hip_cm: float | None,
+    body_fat_pct: float | None,
+) -> None:
+    """Bir kunga bitta o'lchov: bugungi o'lchov bo'lsa yangilaydi, bo'lmasa qo'shadi.
+    Bu bir kunда bir necha marta recalculate qilinganda qatorlar cheksiz o'sishini oldini oladi."""
+    day = today_local()
+    existing = (
+        await session.execute(
+            select(Measurement).where(
+                Measurement.user_id == user_id, Measurement.date == day
+            )
+        )
+    ).scalar_one_or_none()
+    if existing is not None:
+        existing.weight_kg = Decimal(str(weight_kg))
+        existing.waist_cm = Decimal(str(waist_cm)) if waist_cm is not None else None
+        existing.neck_cm = Decimal(str(neck_cm)) if neck_cm is not None else None
+        existing.hip_cm = Decimal(str(hip_cm)) if hip_cm is not None else None
+        existing.body_fat_pct = (
+            Decimal(str(body_fat_pct)) if body_fat_pct is not None else None
+        )
+    else:
+        session.add(
+            Measurement(
+                user_id=user_id,
+                date=day,
+                weight_kg=weight_kg,
+                waist_cm=waist_cm,
+                neck_cm=neck_cm,
+                hip_cm=hip_cm,
+                body_fat_pct=body_fat_pct,
+            )
+        )
 
 
 async def get_by_telegram_id(session: AsyncSession, telegram_id: int) -> User | None:
@@ -138,16 +187,15 @@ async def create_from_onboarding(
     session.add(user)
     await session.flush()
 
-    measurement = Measurement(
-        user_id=user.id,
-        date=date.today(),
+    await _upsert_measurement(
+        session,
+        user.id,
         weight_kg=weight_kg,
         waist_cm=waist_cm,
         neck_cm=neck_cm,
         hip_cm=hip_cm,
         body_fat_pct=body_fat_pct,
     )
-    session.add(measurement)
     await session.flush()
 
     return user, plan, body_fat_pct
@@ -209,16 +257,14 @@ async def update_from_onboarding(
     user.target_carb = Decimal(str(plan.macros.carb_g))
     user.target_fat = Decimal(str(plan.macros.fat_g))
 
-    session.add(
-        Measurement(
-            user_id=user.id,
-            date=date.today(),
-            weight_kg=weight_kg,
-            waist_cm=waist_cm,
-            neck_cm=neck_cm,
-            hip_cm=hip_cm,
-            body_fat_pct=body_fat_pct,
-        )
+    await _upsert_measurement(
+        session,
+        user.id,
+        weight_kg=weight_kg,
+        waist_cm=waist_cm,
+        neck_cm=neck_cm,
+        hip_cm=hip_cm,
+        body_fat_pct=body_fat_pct,
     )
     await session.flush()
 

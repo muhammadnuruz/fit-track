@@ -1248,17 +1248,17 @@ function showAlready() {
 function showPlan(plan) {
   bar.style.width = "100%";
   stepLbl.textContent = ""; pctLbl.textContent = `100% ${L.done}`;
-  const bf = plan.body_fat_pct != null ? `<span class="chip">Body fat ${plan.body_fat_pct}%</span>` : "";
+  const bf = plan.body_fat_pct != null ? `<span class="chip">Body fat ${esc(plan.body_fat_pct)}%</span>` : "";
   card.innerHTML = `<div class="plan">${OK_SVG}
     <h1>${esc(L.planTitle)}</h1>
-    <div class="big">${plan.target_kcal}</div>
+    <div class="big">${esc(plan.target_kcal)}</div>
     <div class="kc">${esc(L.kcalLabel)}</div>
     <div class="macros">
-      <div><span class="mi">${ICONS.macro_protein}</span><b>${plan.macros.protein_g}g</b><span>${esc(L.protein)}</span></div>
-      <div><span class="mi">${ICONS.macro_carb}</span><b>${plan.macros.carb_g}g</b><span>${esc(L.carb)}</span></div>
-      <div><span class="mi">${ICONS.macro_fat}</span><b>${plan.macros.fat_g}g</b><span>${esc(L.fat)}</span></div>
+      <div><span class="mi">${ICONS.macro_protein}</span><b>${esc(plan.macros.protein_g)}g</b><span>${esc(L.protein)}</span></div>
+      <div><span class="mi">${ICONS.macro_carb}</span><b>${esc(plan.macros.carb_g)}g</b><span>${esc(L.carb)}</span></div>
+      <div><span class="mi">${ICONS.macro_fat}</span><b>${esc(plan.macros.fat_g)}g</b><span>${esc(L.fat)}</span></div>
     </div>
-    <div class="chips"><span class="chip">BMI ${plan.bmi}</span><span class="chip">TDEE ${plan.tdee}</span>${bf}</div>
+    <div class="chips"><span class="chip">BMI ${esc(plan.bmi)}</span><span class="chip">TDEE ${esc(plan.tdee)}</span>${bf}</div>
     <div class="ad-slot" id="ya_plan_ad"></div>
   </div>`;
   nav.innerHTML = ""; closeBtn();

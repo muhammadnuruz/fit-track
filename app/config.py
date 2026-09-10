@@ -30,6 +30,16 @@ class Settings(BaseSettings):
     postgres_port: int = 5432
     database_url: str = ""
 
+    # DB connection pool (per process)
+    db_pool_size: int = 10
+    db_max_overflow: int = 20
+    db_pool_recycle: int = 1800
+
+    # Xavfsizlik / abuse
+    init_data_max_age_seconds: int = 3600  # Telegram initData amal qilish muddati
+    # bir user uchun /api/onboarding chaqiruvlari orasidagi minimal interval (soniya)
+    onboarding_min_interval_seconds: int = 20
+
     api_host: str = "0.0.0.0"
     api_port: int = 8000
 
