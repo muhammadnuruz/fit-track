@@ -14,7 +14,6 @@ from app.bot.emoji import (
     CHANGE_LANG_EMOJI_ID,
     FLAG_EMOJI_IDS,
     PLAY_EMOJI_ID,
-    RECALC_EMOJI_ID,
 )
 from app.config import settings
 from app.i18n import LANGUAGES, Lang, t
@@ -30,13 +29,17 @@ def onboarding_webapp_url(lang: Lang) -> str | None:
     return f"{base}{separator}lang={lang.value}"
 
 
-def main_reply_keyboard(lang: Lang, *, has_plan: bool = False) -> ReplyKeyboardMarkup:
+def main_reply_keyboard(lang: Lang) -> ReplyKeyboardMarkup:
+    """Doimiy menyu: Mini App'ni ochish (web_app) + tilni o'zgartirish.
+    Kunlik reja/qayta hisoblash endi Mini App ichida (dashboard)."""
     builder = ReplyKeyboardBuilder()
-    if has_plan:
+    url = onboarding_webapp_url(lang)
+    if url is not None:
         builder.add(
             KeyboardButton(
-                text=t("btn_my_plan", lang),
+                text=t("btn_open_app", lang),
                 icon_custom_emoji_id=CALORIES_EMOJI_ID,
+                web_app=WebAppInfo(url=url),
             )
         )
     builder.add(
@@ -47,26 +50,6 @@ def main_reply_keyboard(lang: Lang, *, has_plan: bool = False) -> ReplyKeyboardM
     )
     builder.adjust(1)
     return builder.as_markup(resize_keyboard=True, is_persistent=True)
-
-
-def my_plan_labels() -> set[str]:
-    return {t("btn_my_plan", info.code) for info in LANGUAGES}
-
-
-def recalc_inline_keyboard(lang: Lang) -> InlineKeyboardMarkup | None:
-    url = onboarding_webapp_url(lang)
-    if url is None:
-        return None
-    builder = InlineKeyboardBuilder()
-    builder.add(
-        InlineKeyboardButton(
-            text=t("btn_recalc", lang),
-            icon_custom_emoji_id=RECALC_EMOJI_ID,
-            web_app=WebAppInfo(url=url),
-        )
-    )
-    builder.adjust(1)
-    return builder.as_markup()
 
 
 def onboarding_inline_keyboard(lang: Lang) -> InlineKeyboardMarkup | None:

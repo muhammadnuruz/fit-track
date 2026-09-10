@@ -61,8 +61,8 @@ async def _send_plan(
     body_fat_pct: float | None,
     name: str,
 ) -> None:
-    # Reja xabari bilan birga main menu (Kunlik normam tugmasi) chiqadi
-    keyboard = main_reply_keyboard(lang, has_plan=True)
+    # Reja xabari bilan birga doimiy menyu (Mini App'ni ochish) chiqadi
+    keyboard = main_reply_keyboard(lang)
     try:
         await bot.send_message(
             chat_id=chat_id,

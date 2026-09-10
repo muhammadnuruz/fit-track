@@ -6,6 +6,7 @@ MESSAGES: dict[str, str] = {
     "cmd_help_desc": "Помощь",
     "btn_change_language": "Изменить язык",
     "btn_start_onboarding": "Начать",
+    "btn_open_app": "Открыть FitTrack",
     "btn_my_plan": "Моя норма дня",
     "btn_recalc": "Пересчитать",
     "onboarding_cta": "Заполните профиль и получите персональный план {point}",
