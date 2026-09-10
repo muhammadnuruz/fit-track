@@ -27,3 +27,7 @@ class CheckIn(StatesGroup):
 
 class AdminBroadcast(StatesGroup):
     waiting_message = State()
+
+
+class AdminDeleteUser(StatesGroup):
+    waiting_user_id = State()

@@ -17,6 +17,7 @@ from app.bot.emoji import (
     BROADCAST_START_EMOJI_ID,
     CHANGE_LANG_EMOJI_ID,
     CHECK_EMOJI_ID,
+    DELETE_EMOJI_ID,
     ERROR_EMOJI_ID,
     FLAG_EMOJI_IDS,
     STATISTICS_EMOJI_ID,
@@ -27,15 +28,16 @@ from app.bot.keyboards.admin import (
     BACK_ADMIN_MENU,
     BACK_MAIN_MENU,
     BROADCAST_BTN,
+    DELETE_USER_BTN,
     STATS_BTN,
     admin_menu_keyboard,
     broadcast_keyboard,
 )
-from app.bot.states import AdminBroadcast
+from app.bot.states import AdminBroadcast, AdminDeleteUser
 from app.db.session import async_session_factory
 from app.i18n import Lang
 from app.models import User, UserSettings
-from app.services.users import user_exists
+from app.services.users import delete_user_completely, user_exists
 
 log = structlog.get_logger(__name__)
 
@@ -119,6 +121,53 @@ async def admin_broadcast_back(message: Message, state: FSMContext) -> None:
         return
     await state.clear()
     await cmd_admin(message)
+
+
+@router.message(F.text == DELETE_USER_BTN)
+async def admin_delete_user_start(message: Message, state: FSMContext) -> None:
+    if not is_admin(message.from_user.id if message.from_user else None):
+        return
+    await state.set_state(AdminDeleteUser.waiting_user_id)
+    await message.answer(
+        f"{custom_emoji(DELETE_EMOJI_ID, '🗑')} Send the user ID to delete.\n\n"
+        "The user and all their data will be permanently removed.",
+        reply_markup=broadcast_keyboard(),
+    )
+
+
+@router.message(AdminDeleteUser.waiting_user_id, F.text == BACK_ADMIN_MENU)
+async def admin_delete_user_back(message: Message, state: FSMContext) -> None:
+    if not is_admin(message.from_user.id if message.from_user else None):
+        return
+    await state.clear()
+    await cmd_admin(message)
+
+
+@router.message(AdminDeleteUser.waiting_user_id)
+async def admin_delete_user_receive(message: Message, state: FSMContext) -> None:
+    if not is_admin(message.from_user.id if message.from_user else None):
+        return
+    raw = (message.text or "").strip()
+    if not raw.isdigit():
+        await message.answer(
+            f"{custom_emoji(ERROR_EMOJI_ID, '❌')} ID must be a number. Try again.",
+            reply_markup=broadcast_keyboard(),
+        )
+        return
+    telegram_id = int(raw)
+    await state.clear()
+    async with async_session_factory() as session:
+        deleted = await delete_user_completely(session, telegram_id)
+    if deleted:
+        await message.answer(
+            f"{custom_emoji(CHECK_EMOJI_ID, '✅')} User <code>{telegram_id}</code> deleted.",
+            reply_markup=admin_menu_keyboard(),
+        )
+    else:
+        await message.answer(
+            f"{custom_emoji(ERROR_EMOJI_ID, '❌')} User <code>{telegram_id}</code> not found.",
+            reply_markup=admin_menu_keyboard(),
+        )
 
 
 @router.message(AdminBroadcast.waiting_message)

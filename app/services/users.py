@@ -2,13 +2,14 @@ from __future__ import annotations
 
 from datetime import date
 
-from sqlalchemy import select
+from sqlalchemy import delete, select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.core.formulas import NutritionPlan, build_nutrition_plan, navy_body_fat
 from app.models.enums import ActivityLevel, Gender, Goal
 from app.models.measurement import Measurement
 from app.models.user import User
+from app.models.user_settings import UserSettings
 
 
 async def get_by_telegram_id(session: AsyncSession, telegram_id: int) -> User | None:
@@ -19,6 +20,17 @@ async def get_by_telegram_id(session: AsyncSession, telegram_id: int) -> User | 
 async def user_exists(session: AsyncSession, telegram_id: int) -> bool:
     stmt = select(User.id).where(User.telegram_id == telegram_id)
     return (await session.execute(stmt)).scalar_one_or_none() is not None
+
+
+async def delete_user_completely(session: AsyncSession, telegram_id: int) -> bool:
+    """Foydalanuvchini bazadan butunlay o'chiradi: users (measurements/food_logs
+    DB cascade orqali) + user_settings. Biror narsa o'chirilsa True qaytaradi."""
+    user_res = await session.execute(delete(User).where(User.telegram_id == telegram_id))
+    settings_res = await session.execute(
+        delete(UserSettings).where(UserSettings.telegram_id == telegram_id)
+    )
+    await session.commit()
+    return bool(user_res.rowcount) or bool(settings_res.rowcount)
 
 
 async def get_existing_plan(
