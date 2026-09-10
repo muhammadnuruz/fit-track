@@ -5,7 +5,7 @@ MESSAGES: dict[str, str] = {
     "cmd_language_desc": "Сменить язык",
     "cmd_help_desc": "Помощь",
     "btn_change_language": "Изменить язык",
-    "btn_start_onboarding": "Начать",
+    "btn_start_onboarding": "▶️ Начать",
     "onboarding_cta": "Заполните профиль и получите персональный план {point}",
     "plan_ready": (
         "{e_check} <b>{name}</b>, ваш план готов!\n\n"

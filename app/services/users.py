@@ -21,6 +21,37 @@ async def user_exists(session: AsyncSession, telegram_id: int) -> bool:
     return (await session.execute(stmt)).scalar_one_or_none() is not None
 
 
+async def get_existing_plan(
+    session: AsyncSession, telegram_id: int
+) -> tuple[User, NutritionPlan, float | None] | None:
+    """Ro'yxatdan o'tgan foydalanuvchining rejasini saqlangan ma'lumot +
+    oxirgi o'lchovdan qayta hisoblaydi. Vazn topilmasa None qaytaradi."""
+    user = await get_by_telegram_id(session, telegram_id)
+    if user is None:
+        return None
+    stmt = (
+        select(Measurement)
+        .where(Measurement.user_id == user.id)
+        .order_by(Measurement.date.desc(), Measurement.id.desc())
+        .limit(1)
+    )
+    measurement = (await session.execute(stmt)).scalar_one_or_none()
+    if measurement is None or measurement.weight_kg is None:
+        return None
+    plan = build_nutrition_plan(
+        weight_kg=float(measurement.weight_kg),
+        height_cm=float(user.height_cm),
+        age=user.age,
+        gender=user.gender,
+        activity=user.activity_level,
+        goal=user.goal,
+    )
+    body_fat_pct = (
+        float(measurement.body_fat_pct) if measurement.body_fat_pct is not None else None
+    )
+    return user, plan, body_fat_pct
+
+
 def _body_fat(
     gender: Gender,
     height_cm: float,

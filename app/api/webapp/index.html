@@ -83,7 +83,7 @@
     display: block;
     flex: none;
     background: transparent;
-    filter: none;
+    mix-blend-mode: multiply;
   }
 
   .brand {
@@ -1172,8 +1172,8 @@ async function submit() {
     await minWait;
     stopCalculating();
     clearStore();
-    if (json.already) return showAlready();
-    showPlan(json.plan);
+    if (json.plan) return showPlan(json.plan);
+    return showAlready();
   } catch (e) {
     stopCalculating();
     render();
@@ -1186,7 +1186,8 @@ async function submit() {
 const OK_SVG = '<svg class="ok" viewBox="0 0 64 64" fill="none"><circle cx="32" cy="32" r="30" fill="#1f9d55"/><path d="M20 33l8 8 16-18" stroke="#fff" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"/></svg>';
 
 function showAlready() {
-  setProgress(); bar.style.width = "100%";
+  bar.style.width = "100%";
+  stepLbl.textContent = ""; pctLbl.textContent = `100% ${L.done}`;
   card.innerHTML = `<div class="plan">${OK_SVG}<p class="sub" style="margin-top:8px">${esc(L.already)}</p></div>`;
   nav.innerHTML = ""; closeBtn();
 }
@@ -1207,7 +1208,6 @@ function showPlan(plan) {
     <div class="chips"><span class="chip">BMI ${plan.bmi}</span><span class="chip">TDEE ${plan.tdee}</span>${bf}</div>
   </div>`;
   nav.innerHTML = ""; closeBtn();
-  if (tg) setTimeout(() => tg.close(), 4000);
 }
 
 function closeBtn() {

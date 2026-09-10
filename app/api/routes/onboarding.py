@@ -12,7 +12,7 @@ from app.config import settings
 from app.db.session import get_session
 from app.i18n import parse_lang, t
 from app.services.settings import get_language
-from app.services.users import create_from_onboarding, user_exists
+from app.services.users import create_from_onboarding, get_existing_plan
 
 router = APIRouter(prefix="/api")
 
@@ -57,6 +57,22 @@ async def _send_plan(request: Request, chat_id: int, lang, plan, body_fat_pct, n
         log.warning("plan_send_failed", chat_id=chat_id, error=str(exc))
 
 
+def _plan_out(plan, body_fat_pct: float | None) -> PlanOut:
+    return PlanOut(
+        bmr=plan.bmr,
+        tdee=plan.tdee,
+        target_kcal=plan.target_kcal,
+        bmi=plan.bmi,
+        body_fat_pct=body_fat_pct,
+        macros=MacrosOut(
+            kcal=plan.macros.kcal,
+            protein_g=plan.macros.protein_g,
+            carb_g=plan.macros.carb_g,
+            fat_g=plan.macros.fat_g,
+        ),
+    )
+
+
 @router.post("/onboarding", response_model=OnboardingOut)
 async def onboarding(
     payload: OnboardingIn,
@@ -70,8 +86,10 @@ async def onboarding(
 
     telegram_id = init.user_id
 
-    if await user_exists(session, telegram_id):
-        return OnboardingOut(ok=True, already=True, plan=None)
+    existing = await get_existing_plan(session, telegram_id)
+    if existing is not None:
+        _, plan, body_fat_pct = existing
+        return OnboardingOut(ok=True, already=True, plan=_plan_out(plan, body_fat_pct))
 
     user, plan, body_fat_pct = await create_from_onboarding(
         session,
@@ -92,20 +110,4 @@ async def onboarding(
     lang = await get_language(session, telegram_id) or parse_lang(init.language_code)
     await _send_plan(request, telegram_id, lang, plan, body_fat_pct, user.name)
 
-    return OnboardingOut(
-        ok=True,
-        already=False,
-        plan=PlanOut(
-            bmr=plan.bmr,
-            tdee=plan.tdee,
-            target_kcal=plan.target_kcal,
-            bmi=plan.bmi,
-            body_fat_pct=body_fat_pct,
-            macros=MacrosOut(
-                kcal=plan.macros.kcal,
-                protein_g=plan.macros.protein_g,
-                carb_g=plan.macros.carb_g,
-                fat_g=plan.macros.fat_g,
-            ),
-        ),
-    )
+    return OnboardingOut(ok=True, already=False, plan=_plan_out(plan, body_fat_pct))
