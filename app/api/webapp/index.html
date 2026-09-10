@@ -8,6 +8,9 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 <script src="https://telegram.org/js/telegram-web-app.js"></script>
+<!-- Yandex Advertising Network (RTB) loader -->
+<script>window.yaContextCb = window.yaContextCb || [];</script>
+<script src="https://yandex.ru/ads/system/context.js" async></script>
 <style>
   :root {
     --paper: #f6f1ea;
@@ -743,6 +746,17 @@
 const tg = window.Telegram ? window.Telegram.WebApp : null;
 if (tg) { tg.ready(); tg.expand(); }
 
+// Yandex RTB blok ID (Yandex kabinetidan: R-A-XXXXXXX-N). Bo'sh bo'lsa reklama render bo'lmaydi.
+const YA_BLOCK_ID = "";
+function renderAd(containerId) {
+  if (!YA_BLOCK_ID || typeof window.Ya === "undefined") return;
+  window.yaContextCb.push(() => {
+    try {
+      window.Ya.Context.AdvManager.render({ blockId: YA_BLOCK_ID, renderTo: containerId });
+    } catch (_) { /* reklama yuklanmasa, ekran buzilmaydi */ }
+  });
+}
+
 const params = new URLSearchParams(location.search);
 const tgUser = (tg && tg.initDataUnsafe && tg.initDataUnsafe.user) ? tg.initDataUnsafe.user : {};
 const LANG = ["uz","ru","en"].includes(params.get("lang")) ? params.get("lang")
@@ -1224,8 +1238,10 @@ function showPlan(plan) {
       <div><span class="mi">${ICONS.macro_fat}</span><b>${plan.macros.fat_g}g</b><span>${esc(L.fat)}</span></div>
     </div>
     <div class="chips"><span class="chip">BMI ${plan.bmi}</span><span class="chip">TDEE ${plan.tdee}</span>${bf}</div>
+    <div class="ad-slot" id="ya_plan_ad"></div>
   </div>`;
   nav.innerHTML = ""; closeBtn();
+  renderAd("ya_plan_ad");
 }
 
 function closeBtn() {

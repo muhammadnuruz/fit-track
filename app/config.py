@@ -21,6 +21,7 @@ class Settings(BaseSettings):
     webhook_path: str = "/webhook"
     webhook_secret: str = ""
     webapp_url: str = ""
+    bot_username: str = ""  # landing sahifasidagi "Telegramda ochish" tugmasi uchun (@ siz)
 
     postgres_user: str = "fittrack"
     postgres_password: str = "fittrack"

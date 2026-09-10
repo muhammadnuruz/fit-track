@@ -6,7 +6,7 @@ from aiogram import Bot, Dispatcher
 from aiogram.types import Update
 from fastapi import FastAPI, HTTPException, Request
 from fastapi.exceptions import RequestValidationError
-from fastapi.responses import FileResponse, JSONResponse
+from fastapi.responses import FileResponse, HTMLResponse, JSONResponse
 from fastapi.staticfiles import StaticFiles
 
 from app.api.routes.onboarding import router as onboarding_router
@@ -37,6 +37,16 @@ def create_app(bot: Bot, dp: Dispatcher) -> FastAPI:
     @app.exception_handler(HTTPException)
     async def http_exception_handler(_: Request, exc: HTTPException) -> JSONResponse:
         return JSONResponse(status_code=exc.status_code, content={"detail": exc.detail})
+
+    @app.get("/", response_class=HTMLResponse)
+    async def landing_page() -> HTMLResponse:
+        html = (WEBAPP_DIR / "landing.html").read_text(encoding="utf-8")
+        bot_link = (
+            f"https://t.me/{settings.bot_username.lstrip('@')}"
+            if settings.bot_username
+            else "#"
+        )
+        return HTMLResponse(html.replace("__BOT_LINK__", bot_link))
 
     @app.get("/health")
     async def health() -> dict[str, str]:

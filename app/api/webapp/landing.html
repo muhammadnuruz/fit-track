@@ -1,0 +1,78 @@
+<!doctype html>
+<html lang="uz">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+<title>FitTrack — sog'lom hayot yo'lidagi hamrohingiz</title>
+<meta name="description" content="FitTrack — kunlik kaloriya va makronutrient normangizni hisoblab, sog'lom ratsion tuzishga yordam beruvchi Telegram yordamchisi." />
+<link rel="icon" href="/assets/logo.png" />
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<!-- Yandex Advertising Network (RTB) loader -->
+<script>window.yaContextCb = window.yaContextCb || [];</script>
+<script src="https://yandex.ru/ads/system/context.js" async></script>
+<style>
+  :root {
+    --paper: #f6f1ea; --card: #ffffff; --ink: #1a1917; --ink-soft: #5d574f;
+    --line: rgba(26,25,23,0.10); --green: #1f9d55; --green-deep: #17864a;
+    --shadow: 0 12px 28px rgba(26,25,23,0.06); --radius-lg: 20px; --radius-md: 15px;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0; background: var(--paper); color: var(--ink);
+    font-family: "Inter", system-ui, -apple-system, sans-serif; line-height: 1.55;
+  }
+  .wrap { max-width: 720px; margin: 0 auto; padding: 40px 20px 64px; }
+  .brand { display: flex; align-items: center; gap: 12px; margin-bottom: 36px; }
+  .brand img { height: 44px; width: auto; }
+  .brand b { font-size: 20px; font-weight: 800; letter-spacing: -0.02em; }
+  h1 { font-size: 34px; line-height: 1.15; font-weight: 800; letter-spacing: -0.03em; margin: 0 0 14px; }
+  .lead { font-size: 18px; color: var(--ink-soft); margin: 0 0 28px; }
+  .cta {
+    display: inline-block; background: var(--green); color: #fff; text-decoration: none;
+    font-weight: 700; font-size: 16px; padding: 14px 26px; border-radius: var(--radius-md);
+    box-shadow: var(--shadow); transition: background .15s;
+  }
+  .cta:hover { background: var(--green-deep); }
+  .grid { display: grid; gap: 16px; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); margin: 40px 0; }
+  .feat { background: var(--card); border: 1px solid var(--line); border-radius: var(--radius-lg); padding: 20px; box-shadow: var(--shadow); }
+  .feat h3 { margin: 0 0 6px; font-size: 16px; font-weight: 700; }
+  .feat p { margin: 0; font-size: 14px; color: var(--ink-soft); }
+  .ad { margin: 40px 0; min-height: 90px; }
+  footer { margin-top: 48px; padding-top: 20px; border-top: 1px solid var(--line); font-size: 13px; color: var(--ink-soft); }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="brand"><img src="/assets/logo.png" alt="FitTrack" /><b>FitTrack</b></div>
+
+  <h1>Sog'lom hayot yo'lidagi hamrohingiz</h1>
+  <p class="lead">FitTrack jinsingiz, yoshingiz, bo'y-vazningiz va faollik darajangizga qarab kunlik kaloriya hamda oqsil-yog'-uglevod normangizni hisoblaydi va sog'lom ratsion tuzishga yordam beradi.</p>
+
+  <a class="cta" href="__BOT_LINK__" rel="noopener">Telegramda ochish</a>
+
+  <div class="grid">
+    <div class="feat"><h3>Aniq hisob</h3><p>Mifflin-St Jeor formulasi bo'yicha shaxsiy kaloriya va makronutrient normasi.</p></div>
+    <div class="feat"><h3>Maqsadga mos</h3><p>Vazn kamaytirish, saqlab qolish yoki massa yig'ish — reja maqsadingizga sozlanadi.</p></div>
+    <div class="feat"><h3>Kunlik reja</h3><p>Har kuni normangizni kuzatib boring va o'zgartirish kiriting.</p></div>
+  </div>
+
+  <!-- Yandex RTB reklama bloki. blockId ni Yandex kabinetidan olib qo'ying (R-A-XXXXXXX-N). -->
+  <div class="ad">
+    <div id="yandex_rtb_R-A-LANDING-1"></div>
+    <script>
+      window.yaContextCb.push(() => {
+        if (typeof Ya === "undefined") return;
+        Ya.Context.AdvManager.render({
+          blockId: "R-A-LANDING-1",
+          renderTo: "yandex_rtb_R-A-LANDING-1",
+        });
+      });
+    </script>
+  </div>
+
+  <footer>© FitTrack. Barcha huquqlar himoyalangan.</footer>
+</div>
+</body>
+</html>
