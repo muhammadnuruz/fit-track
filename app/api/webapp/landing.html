@@ -41,6 +41,60 @@
   .feat p { margin: 0; font-size: 14px; color: var(--ink-soft); }
   .ad { margin: 40px 0; min-height: 90px; }
   footer { margin-top: 48px; padding-top: 20px; border-top: 1px solid var(--line); font-size: 13px; color: var(--ink-soft); }
+
+  :root {
+    --paper: #f1f0ea; --card: #fbfbf7; --ink: #171916; --ink-soft: #626861;
+    --line: #171916; --green: #2d9b62; --green-deep: #21794b;
+    --shadow: 5px 5px 0 rgba(23,25,22,0.12);
+  }
+  body { font-family: "Arial Narrow", "Avenir Next", sans-serif; }
+  .wrap {
+    max-width: 920px;
+    padding: 28px 20px 56px;
+  }
+  .brand {
+    padding: 16px 18px;
+    margin-bottom: 54px;
+    background: var(--card);
+    border: 2px solid var(--ink);
+  }
+  .brand img { height: 30px; }
+  h1 { max-width: 680px; font-size: clamp(36px, 7vw, 58px); letter-spacing: 0; }
+  .lead { max-width: 640px; font-size: 17px; line-height: 1.55; }
+  .cta {
+    border-radius: 0;
+    background: var(--green);
+    box-shadow: none;
+    border: 2px solid var(--ink);
+    color: #fff;
+  }
+  .cta:hover { background: var(--green-deep); }
+  .grid { gap: 0; margin: 48px 0 32px; border: 2px solid var(--ink); }
+  .feat {
+    border: 0;
+    border-right: 2px solid var(--ink);
+    border-radius: 0;
+    padding: 24px;
+    box-shadow: none;
+  }
+  .feat:last-child { border-right: 0; }
+  .feat h3 { font-size: 17px; }
+  .feat p { line-height: 1.5; }
+  .ad {
+    margin: 32px 0;
+    min-height: 0;
+    padding: 22px;
+    border: 2px dashed #aeb4aa;
+    text-align: center;
+  }
+  footer { border-top: 2px solid var(--ink); }
+  @media (max-width: 620px) {
+    .wrap { padding: 16px 14px 40px; }
+    .brand { margin-bottom: 38px; }
+    .grid { grid-template-columns: 1fr; }
+    .feat { border-right: 0; border-bottom: 2px solid var(--ink); }
+    .feat:last-child { border-bottom: 0; }
+  }
 </style>
 </head>
 <body>

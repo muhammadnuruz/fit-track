@@ -856,6 +856,251 @@
     border-radius: 999px; padding: 7px 12px; font-size: 13px; font-weight: 600; cursor: pointer;
   }
   .csel.on { background: var(--green); border-color: var(--green); color: #fff; }
+
+  :root {
+    --paper: #f1f0ea;
+    --paper-strong: #e4e5dd;
+    --card: #fbfbf7;
+    --card-2: #f4f5ef;
+    --ink: #171916;
+    --ink-soft: #626861;
+    --line: #171916;
+    --green: #2d9b62;
+    --green-deep: #21794b;
+    --shadow: 5px 5px 0 rgba(23,25,22,0.12);
+    --radius-xl: 0;
+    --radius-lg: 0;
+    --radius-md: 0;
+  }
+
+  body {
+    background: var(--paper);
+    font-family: "Arial Narrow", "Avenir Next", sans-serif;
+  }
+
+  .app {
+    max-width: 430px;
+  }
+
+  .head {
+    align-items: stretch;
+    margin: 0 0 14px;
+    padding: 14px 16px 12px;
+    background: var(--card);
+    border: 2px solid var(--ink);
+  }
+
+  .brand-wrap {
+    justify-content: flex-start;
+    gap: 10px;
+  }
+
+  .logo {
+    width: 118px;
+  }
+
+  .tag {
+    margin-top: 4px;
+    text-align: left;
+    font-size: 10px;
+    letter-spacing: 0.08em;
+  }
+
+  .menu-btn {
+    top: 12px;
+    right: 12px;
+    width: 36px;
+    height: 36px;
+    border: 2px solid var(--ink);
+    border-radius: 0;
+    background: var(--card);
+  }
+
+  .menu-panel {
+    top: 58px;
+    right: 12px;
+    padding: 0;
+    border: 2px solid var(--ink);
+    border-radius: 0;
+    box-shadow: var(--shadow);
+  }
+
+  .menu-item {
+    border-radius: 0;
+    padding: 12px 14px;
+  }
+
+  .pwrap {
+    margin: 0 0 12px;
+  }
+
+  .ptop {
+    margin-bottom: 6px;
+    font-size: 10px;
+    letter-spacing: 0.08em;
+  }
+
+  .bar {
+    height: 5px;
+    border-radius: 0;
+    background: #d8dbd3;
+  }
+
+  .bar > i,
+  .calc .cbar > i {
+    border-radius: 0;
+    background: var(--green);
+  }
+
+  .card {
+    margin: 0;
+    border: 2px solid var(--ink);
+    border-radius: 0;
+    padding: 22px 18px 18px;
+    background: var(--card);
+    box-shadow: var(--shadow);
+  }
+
+  h1,
+  .plan h1,
+  .calc h1 {
+    letter-spacing: 0;
+    font-weight: 800;
+  }
+
+  p.sub {
+    color: var(--ink-soft);
+  }
+
+  label {
+    letter-spacing: 0.06em;
+  }
+
+  input,
+  .dob-box {
+    border: 2px solid var(--ink);
+    border-radius: 0;
+    background: var(--card);
+  }
+
+  input:focus {
+    border-color: var(--green);
+    box-shadow: 0 0 0 3px rgba(45,155,98,0.18);
+  }
+
+  .options {
+    gap: 10px;
+  }
+
+  .opt {
+    min-height: 60px;
+    padding: 12px 14px;
+    border: 2px solid var(--ink);
+    border-radius: 0;
+    background: var(--card);
+  }
+
+  .opt:hover {
+    transform: none;
+  }
+
+  .opt .ic {
+    border-radius: 0;
+    background: #e3f0e6;
+  }
+
+  .opt.sel {
+    border-color: var(--ink);
+    background: #e3f0e6;
+  }
+
+  .opt.sel .rad {
+    border-color: var(--ink);
+  }
+
+  .opt.sel .rad::after {
+    background: var(--green);
+  }
+
+  .nav {
+    gap: 10px;
+    padding-top: 14px;
+  }
+
+  .btn,
+  .btn.ghost,
+  .btn:not(.ghost),
+  .csel {
+    border-radius: 0;
+  }
+
+  .btn.ghost {
+    border: 2px solid var(--ink);
+    background: var(--card);
+  }
+
+  .btn:not(.ghost),
+  .btn.cta {
+    background: var(--green);
+    box-shadow: none;
+  }
+
+  .btn:not(.ghost):hover,
+  .btn.cta:hover {
+    background: var(--green-deep);
+  }
+
+  .toast {
+    border: 2px solid var(--ink);
+    border-radius: 0;
+    background: var(--ink);
+  }
+
+  .plan .big {
+    letter-spacing: 0;
+  }
+
+  .macros div,
+  .limitCard,
+  .ph,
+  .erow {
+    border: 2px solid var(--ink);
+    border-radius: 0;
+    background: var(--card);
+  }
+
+  .macros b {
+    color: var(--green-deep);
+    letter-spacing: 0;
+  }
+
+  .chip,
+  .csel.on {
+    border: 2px solid var(--ink);
+    border-radius: 0;
+    background: var(--green);
+    color: #fff;
+  }
+
+  .chip {
+    background: var(--card);
+    color: var(--ink);
+  }
+
+  .ring {
+    background: conic-gradient(from 0deg, var(--green), #b4d9bf, var(--green)) !important;
+  }
+
+  @media (min-width: 700px) {
+    body {
+      padding-top: 28px;
+      padding-bottom: 28px;
+    }
+
+    .app {
+      max-width: 520px;
+    }
+  }
 </style>
 
 <script>
