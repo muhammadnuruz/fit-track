@@ -1,16 +1,18 @@
 services:
   db:
-    image: pgvector/pgvector:pg16
+    image: postgres:16-alpine
     container_name: fittrack-db
     restart: unless-stopped
     environment:
-      POSTGRES_USER: ${POSTGRES_USER:-fittrack}
+      POSTGRES_USER: fittrack
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-fittrack}
-      POSTGRES_DB: ${POSTGRES_DB:-fittrack}
+      POSTGRES_DB: fittrack
+    ports:
+      - "${DB_HOST_PORT:-5433}:5432"
     volumes:
       - fittrack_pgdata:/var/lib/postgresql/data
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-fittrack} -d ${POSTGRES_DB:-fittrack}"]
+      test: ["CMD-SHELL", "pg_isready -U fittrack -d fittrack"]
       interval: 5s
       timeout: 5s
       retries: 10
@@ -26,53 +28,52 @@ services:
       timeout: 3s
       retries: 10
 
-  migrate:
-    build: .
-    container_name: fittrack-migrate
-    restart: "no"
-    depends_on:
-      db:
-        condition: service_healthy
-    env_file: .env
-    environment:
-      POSTGRES_HOST: db
-      POSTGRES_PORT: 5432
-    command: ["alembic", "upgrade", "head"]
-    volumes:
-      - ./app:/app/app
-      - ./migrations:/app/migrations
-      - ./alembic.ini:/app/alembic.ini
-
-  bot:
-    build: .
-    container_name: fittrack-bot
+  api:
+    build: ./api
+    container_name: fittrack-api
     restart: unless-stopped
     depends_on:
       db:
         condition: service_healthy
-      redis:
-        condition: service_healthy
-      migrate:
-        condition: service_completed_successfully
-    env_file: .env
     environment:
-      POSTGRES_HOST: db
-      POSTGRES_PORT: 5432
-      REDIS_URL: ${REDIS_URL:-redis://redis:6379/0}
+      DATABASE_URL: postgresql+asyncpg://fittrack:${POSTGRES_PASSWORD:-fittrack}@db:5432/fittrack
+      API_KEY: ${API_KEY:?set API_KEY in .env}
+      ENV: ${ENV:-development}
+      LOG_LEVEL: ${LOG_LEVEL:-INFO}
+    command: ["sh", "-c", "alembic upgrade head && uvicorn app.main:app --host 0.0.0.0 --port 8000"]
     ports:
-      - "${HOST_PORT:-8100}:8000"
+      - "${API_HOST_PORT:-8000}:8000"
     healthcheck:
       test: ["CMD", "python", "-c", "import urllib.request,sys; sys.exit(0) if urllib.request.urlopen('http://127.0.0.1:8000/health', timeout=3).status == 200 else sys.exit(1)"]
       interval: 10s
       timeout: 5s
       retries: 5
       start_period: 20s
-    volumes:
-      - ./app:/app/app
-      - ./migrations:/app/migrations
-      - ./alembic.ini:/app/alembic.ini
-      # scripts dir mount is kept for the bot service (not needed by the one-shot migrate service)
-      - ./scripts:/app/scripts
+
+  bot:
+    build: ./bot
+    container_name: fittrack-bot
+    restart: unless-stopped
+    depends_on:
+      api:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    environment:
+      BOT_TOKEN: ${BOT_TOKEN:?set BOT_TOKEN in .env}
+      BOT_MODE: ${BOT_MODE:-polling}
+      WEBHOOK_BASE_URL: ${WEBHOOK_BASE_URL:-}
+      WEBHOOK_PATH: ${WEBHOOK_PATH:-/webhook}
+      WEBHOOK_SECRET: ${WEBHOOK_SECRET:-}
+      WEB_HOST: 0.0.0.0
+      WEB_PORT: 8080
+      API_KEY: ${API_KEY:?set API_KEY in .env}
+      API_BASE_URL: http://api:8000
+      ADMINS: ${ADMINS:-}
+      REDIS_URL: redis://redis:6379/0
+      LOG_LEVEL: ${LOG_LEVEL:-INFO}
+    ports:
+      - "${BOT_HOST_PORT:-8080}:8080"
 
 volumes:
   fittrack_pgdata:
