@@ -14,9 +14,13 @@ Each service has its own README with endpoints, configuration and tests.
 ## Quick start (Docker)
 
 ```bash
-cp .env.example .env     # set BOT_TOKEN, API_KEY, ADMINS
+cp .env.example .env     # set BOT_TOKEN and API_KEY (required), ADMINS (optional)
 make up                  # db, redis, api (migrates on start), bot
 ```
+
+The bot runs in polling mode by default. For webhook mode set `BOT_MODE=webhook`,
+`WEBHOOK_BASE_URL` (public `https://` URL) and `WEBHOOK_SECRET` (16–256 letters, digits, `_` or `-`)
+in `.env`, and put an HTTPS reverse proxy in front of `BOT_HOST_PORT`.
 
 - API: http://localhost:8000 (health: `/health`, endpoints under `/api/v1`, every call needs `X-API-Key`)
 - Postgres is published on host port `5433` (`DB_HOST_PORT`) so it does not clash with a local Postgres.
@@ -33,10 +37,9 @@ The API tests need a Postgres database (`TEST_DATABASE_URL`). CI runs one automa
 
 ```
 api/                  FastAPI service
-bot/                  Telegram bot service
+bot/                  Telegram bot service (polling or webhook)
 docker-compose.yml    db, redis, api, bot
 .github/workflows/    CI for both services
-FitTrack mobile app design/   design reference for the future frontend
 ```
 
 ## Design decisions
