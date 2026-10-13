@@ -5,69 +5,24 @@ from aiogram.types import (
     InlineKeyboardMarkup,
     KeyboardButton,
     ReplyKeyboardMarkup,
-    WebAppInfo,
 )
 from aiogram.utils.keyboard import InlineKeyboardBuilder, ReplyKeyboardBuilder
 
-from app.bot.emoji import (
-    CALORIES_EMOJI_ID,
-    CHANGE_LANG_EMOJI_ID,
-    FLAG_EMOJI_IDS,
-    PLAY_EMOJI_ID,
-)
-from app.config import settings
+from app.bot.emoji import CHANGE_LANG_EMOJI_ID, FLAG_EMOJI_IDS
 from app.i18n import LANGUAGES, Lang, t
 
 LANG_CALLBACK_PREFIX = "lang"
 
 
-def onboarding_webapp_url(lang: Lang) -> str | None:
-    base = settings.webapp_url.strip()
-    if not base.startswith("https://"):
-        return None
-    separator = "&" if "?" in base else "?"
-    return f"{base}{separator}lang={lang.value}"
-
-
 def main_reply_keyboard(lang: Lang) -> ReplyKeyboardMarkup:
-    """Doimiy menyu: Mini App'ni ochish (web_app) + tilni o'zgartirish.
-    Kunlik reja/qayta hisoblash endi Mini App ichida (dashboard)."""
     builder = ReplyKeyboardBuilder()
-    url = onboarding_webapp_url(lang)
-    if url is not None:
-        builder.add(
-            KeyboardButton(
-                text=t("btn_open_app", lang),
-                icon_custom_emoji_id=CALORIES_EMOJI_ID,
-                web_app=WebAppInfo(url=url),
-            )
-        )
     builder.add(
         KeyboardButton(
             text=t("btn_change_language", lang),
             icon_custom_emoji_id=CHANGE_LANG_EMOJI_ID,
         )
     )
-    builder.adjust(1)
     return builder.as_markup(resize_keyboard=True, is_persistent=True)
-
-
-def onboarding_inline_keyboard(lang: Lang) -> InlineKeyboardMarkup | None:
-    """Inline web_app tugma — reply-keyboard'dan farqli, barcha platformalarda
-    (Telegram Desktop ham) imzolangan initData beradi."""
-    url = onboarding_webapp_url(lang)
-    if url is None:
-        return None
-    builder = InlineKeyboardBuilder()
-    builder.add(
-        InlineKeyboardButton(
-            text=t("btn_start_onboarding", lang),
-            icon_custom_emoji_id=PLAY_EMOJI_ID,
-            web_app=WebAppInfo(url=url),
-        )
-    )
-    builder.adjust(1)
-    return builder.as_markup()
 
 
 def language_inline_keyboard() -> InlineKeyboardMarkup:

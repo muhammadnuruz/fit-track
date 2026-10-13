@@ -5,20 +5,6 @@ MESSAGES: dict[str, str] = {
     "cmd_language_desc": "Сменить язык",
     "cmd_help_desc": "Помощь",
     "btn_change_language": "Изменить язык",
-    "btn_start_onboarding": "Начать",
-    "btn_open_app": "Открыть FitTrack",
-    "btn_my_plan": "Моя норма дня",
-    "btn_recalc": "Пересчитать",
-    "onboarding_cta": "Заполните профиль и получите персональный план {point}",
-    "plan_ready": (
-        "{e_check} <b>{name}</b>, ваш план готов!\n\n"
-        "{e_fire} Калории в день: <b>{kcal} ккал</b>\n"
-        "{e_protein} Белки: <b>{protein} г</b>\n"
-        "{e_carb} Углеводы: <b>{carb} г</b>\n"
-        "{e_fat} Жиры: <b>{fat} г</b>\n\n"
-        "{e_stats} ИМТ: <b>{bmi}</b> · TDEE: <b>{tdee} ккал</b>"
-    ),
-    "plan_bodyfat": "{e_dna} Жир в организме: <b>{bf}%</b>",
     "choose_language": "Выберите язык:",
     "language_changed": "{check} Язык изменён на {flag} <b>Русский</b>.",
     "start_welcome": (

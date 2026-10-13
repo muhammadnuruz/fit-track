@@ -7,7 +7,7 @@ import uvicorn
 
 from app.api.app import create_app
 from app.bot.bot import create_bot, create_dispatcher
-from app.bot.commands import setup_bot_commands, setup_menu_button
+from app.bot.commands import setup_bot_commands
 from app.config import settings
 from app.logging_config import get_logger, setup_logging
 
@@ -18,7 +18,6 @@ async def run() -> None:
     bot = create_bot()
     dp = create_dispatcher()
     await setup_bot_commands(bot)
-    await setup_menu_button(bot)
 
     app = create_app(bot, dp)
     server = uvicorn.Server(
