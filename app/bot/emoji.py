@@ -13,7 +13,6 @@ FLAG_EMOJI_IDS: dict[Lang, str] = {
 FALLBACK_FLAG: dict[Lang, str] = {Lang.UZ: "🇺🇿", Lang.RU: "🇷🇺", Lang.EN: "🇬🇧"}
 
 POINT_DOWN_EMOJI_ID = "5470177992950946662"
-PLAY_EMOJI_ID = "4969955006095557136"  # ▶️ (inline Start tugmasi ikonasi)
 
 WELCOME_WAVE_EMOJI_ID = "5472055112702629499"
 WELCOME_SMILE_EMOJI_ID = "5370738629486319646"
@@ -30,13 +29,11 @@ PRIVATE_CHAT_EMOJI_ID = "5231302159739395058"
 NEW_USER_EMOJI_ID = "5213456836912487647"  # 🆕
 DELETE_EMOJI_ID = "5445267414562389170"  # 🗑
 RECALC_EMOJI_ID = "5264727218734524899"  # 🔄
+CHECK_EMOJI_ID = "5852871561983299073"
 
 
 def custom_emoji(emoji_id: str, fallback: str) -> str:
     return f'<tg-emoji emoji-id="{emoji_id}">{fallback}</tg-emoji>'
-
-
-CHECK_EMOJI_ID = "5852871561983299073"
 
 
 def check_emoji() -> str:
@@ -55,10 +52,6 @@ def point_down() -> str:
     return custom_emoji(POINT_DOWN_EMOJI_ID, "👇")
 
 
-def play_emoji() -> str:
-    return custom_emoji(PLAY_EMOJI_ID, "▶️")
-
-
 def welcome_emojis() -> dict[str, str]:
     return {
         "wave": custom_emoji(WELCOME_WAVE_EMOJI_ID, "👋"),
@@ -67,45 +60,3 @@ def welcome_emojis() -> dict[str, str]:
         "muscle": custom_emoji(WELCOME_MUSCLE_EMOJI_ID, "💪"),
         "point": custom_emoji(POINT_DOWN_EMOJI_ID, "👇"),
     }
-
-
-# Reja xabari (plan) uchun premium emoji ID lari.
-# Bo'sh qoldirilganlar (CARB, BODYFAT) hozircha oddiy emoji sifatida chiqadi —
-# ID kelishi bilan premium bo'ladi.
-CALORIES_EMOJI_ID = "5420315771991497307"  # 🔥
-PROTEIN_EMOJI_ID = "5470159421512359552"  # 🍖
-FAT_EMOJI_ID = "5454298326331571916"  # 🥑
-BMI_EMOJI_ID = STATISTICS_EMOJI_ID  # 📊
-CARB_EMOJI_ID = "5195018946037712661"  # 🍚
-BODYFAT_EMOJI_ID = "5217444336089714383"  # 😖
-
-
-def _emoji_or_plain(emoji_id: str, fallback: str) -> str:
-    return custom_emoji(emoji_id, fallback) if emoji_id else fallback
-
-
-def plan_emojis(*, plain: bool = False) -> dict[str, str]:
-    if plain:
-        return {
-            "e_check": "✅",
-            "e_fire": "🔥",
-            "e_protein": "🍖",
-            "e_carb": "🍚",
-            "e_fat": "🥑",
-            "e_stats": "📊",
-        }
-    return {
-        "e_check": custom_emoji(CHECK_EMOJI_ID, "✅"),
-        "e_fire": _emoji_or_plain(CALORIES_EMOJI_ID, "🔥"),
-        "e_protein": _emoji_or_plain(PROTEIN_EMOJI_ID, "🍖"),
-        "e_carb": _emoji_or_plain(CARB_EMOJI_ID, "🍚"),
-        "e_fat": _emoji_or_plain(FAT_EMOJI_ID, "🥑"),
-        "e_stats": custom_emoji(BMI_EMOJI_ID, "📊"),
-    }
-
-
-def bodyfat_emoji(*, plain: bool = False) -> str:
-    # Premium fallback belgisi ID bazasiga mos bo'lishi kerak (😖); oddiy holatda 🧬
-    if plain:
-        return "🧬"
-    return _emoji_or_plain(BODYFAT_EMOJI_ID, "😖")
