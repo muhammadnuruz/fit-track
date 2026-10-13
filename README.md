@@ -1,52 +1,50 @@
 # FitTrack
 
-FitTrack helps people who train seriously track nutrition and body composition. Today it is
-a Telegram bot that builds a daily calorie and macro plan from a short profile. The project is
-split into two services so the same API can later serve a website as well.
+FitTrack builds a daily calorie and macro plan from a short user profile.
+It has two services:
 
-| Service | Path   | Stack                                              | Role                                           |
-|---------|--------|----------------------------------------------------|------------------------------------------------|
-| API     | `api/` | FastAPI · PostgreSQL · SQLAlchemy 2 · Alembic      | Owns all data and rules (profiles, plans, settings) |
-| Bot     | `bot/` | aiogram 3 · httpx · Redis (optional)               | Telegram interface; calls the API over HTTP    |
+- `api/` — FastAPI service with PostgreSQL. It stores profiles, plans and settings.
+- `bot/` — Telegram bot. It calls the API.
 
-Each service has its own README with endpoints, configuration and tests.
-
-## Quick start (Docker)
+## Run with Docker
 
 ```bash
-cp .env.example .env     # set BOT_TOKEN and API_KEY (required), ADMINS (optional)
-make up                  # db, redis, api (migrates on start), bot
+cp .env.example .env
 ```
 
-The bot runs in polling mode by default. For webhook mode set `BOT_MODE=webhook`,
-`WEBHOOK_BASE_URL` (public `https://` URL) and `WEBHOOK_SECRET` (16–256 letters, digits, `_` or `-`)
-in `.env`, and put an HTTPS reverse proxy in front of `BOT_HOST_PORT`.
+Edit `.env` and set `BOT_TOKEN` and `API_KEY`. Then:
 
-- API: http://localhost:8000 (health: `/health`, endpoints under `/api/v1`, every call needs `X-API-Key`)
-- Postgres is published on host port `5433` (`DB_HOST_PORT`) so it does not clash with a local Postgres.
+```bash
+make up
+```
+
+This starts Postgres, Redis, the API and the bot. The API applies migrations on start.
+
+- API: http://localhost:8000 (health check: `/health`)
+- Postgres: port 5433 on the host
+
+Stop everything with `make down`.
+
+## Bot modes
+
+- `BOT_MODE=polling` (default). No public URL needed.
+- `BOT_MODE=webhook`. Set `WEBHOOK_BASE_URL` to a public `https://` URL and `WEBHOOK_SECRET`
+  to 16–256 characters (letters, digits, `_`, `-`). Put an HTTPS reverse proxy in front of
+  `BOT_HOST_PORT`.
 
 ## Tests
 
 ```bash
-make test                # api and bot test suites
+make test
 ```
 
-The API tests need a Postgres database (`TEST_DATABASE_URL`). CI runs one automatically.
+The API tests need Postgres. See `api/README.md`.
 
-## Layout
+## Project layout
 
 ```
-api/                  FastAPI service
-bot/                  Telegram bot service (polling or webhook)
-docker-compose.yml    db, redis, api, bot
-.github/workflows/    CI for both services
+api/                   API service
+bot/                   Telegram bot
+docker-compose.yml     Postgres, Redis, API, bot
+.github/workflows/     CI
 ```
-
-## Design decisions
-
-- **Data lives only in the API.** The bot keeps no database, so the website and the bot always
-  see the same profiles and plans.
-- **Service-to-service auth is a shared API key.** Telegram initData is no longer used because
-  the Mini App was removed.
-- **Nutrition formulas are pure functions** (`api/app/core/formulas.py`) with their own tests.
-- **Migrations run on API start** (`alembic upgrade head`), so the schema always matches the code.
