@@ -14,8 +14,6 @@ class User(IntPKMixin, TimestampMixin, Base):
 
     telegram_id: Mapped[int] = mapped_column(BigInteger, nullable=False, unique=True, index=True)
     name: Mapped[str] = mapped_column(String(128), nullable=False)
-    # yuklangan avatar URL yo'li; bo'sh bo'lsa Telegram rasmi yoki monogramma
-    avatar_path: Mapped[str | None] = mapped_column(String(256))
     gender: Mapped[Gender] = mapped_column(pg_enum(Gender, "gender"), nullable=False)
     age: Mapped[int] = mapped_column(Integer, nullable=False)
     height_cm: Mapped[Decimal] = mapped_column(Numeric(5, 1), nullable=False)

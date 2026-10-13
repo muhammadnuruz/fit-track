@@ -73,9 +73,6 @@ services:
       - ./alembic.ini:/app/alembic.ini
       # scripts dir mount is kept for the bot service (not needed by the one-shot migrate service)
       - ./scripts:/app/scripts
-      # yuklangan avatarlar — doimiy (deploy'да yo'qolmaydi)
-      - fittrack_uploads:/app/uploads
 
 volumes:
   fittrack_pgdata:
-  fittrack_uploads:

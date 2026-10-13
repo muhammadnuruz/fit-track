@@ -20,8 +20,6 @@ class Settings(BaseSettings):
     webhook_url: str = ""
     webhook_path: str = "/webhook"
     webhook_secret: str = ""
-    webapp_url: str = ""
-    bot_username: str = ""  # landing sahifasidagi "Telegramda ochish" tugmasi uchun (@ siz)
 
     postgres_user: str = "fittrack"
     postgres_password: str = "fittrack"
@@ -34,11 +32,6 @@ class Settings(BaseSettings):
     db_pool_size: int = 10
     db_max_overflow: int = 20
     db_pool_recycle: int = 1800
-
-    # Xavfsizlik / abuse
-    init_data_max_age_seconds: int = 3600  # Telegram initData amal qilish muddati
-    # bir user uchun /api/onboarding chaqiruvlari orasidagi minimal interval (soniya)
-    onboarding_min_interval_seconds: int = 20
 
     # Redis (bo'sh bo'lsa: FSM/throttle/til-cache in-memory — faqat bitta instans uchun).
     # Ko'p replica uchun to'ldiring, masalan: redis://redis:6379/0
