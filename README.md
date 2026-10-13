@@ -1,85 +1,52 @@
-# FitTrack Bot 🏋️
+# FitTrack
 
-> Sport bilan aktiv shug'ullanuvchilar uchun tana tarkibini o'zgartirishga (bulk / cut / PP) yordam beruvchi Telegram bot. **Farqlovchi ustunlik:** aniq makroslar bilan **mahalliy (O'zbek) taom bazasi**.
+FitTrack helps people who train seriously track nutrition and body composition. Today it is
+a Telegram bot that builds a daily calorie and macro plan from a short profile. The project is
+split into two services so the same API can later serve a website as well.
 
-Batafsil spetsifikatsiya: `SPEC.md` (Downloads papkasida).
+| Service | Path   | Stack                                              | Role                                           |
+|---------|--------|----------------------------------------------------|------------------------------------------------|
+| API     | `api/` | FastAPI · PostgreSQL · SQLAlchemy 2 · Alembic      | Owns all data and rules (profiles, plans, settings) |
+| Bot     | `bot/` | aiogram 3 · httpx · Redis (optional)               | Telegram interface; calls the API over HTTP    |
 
----
+Each service has its own README with endpoints, configuration and tests.
 
-## Texnologiyalar
+## Quick start (Docker)
 
-| Qatlam | Texnologiya |
-|---|---|
-| Bot | Aiogram 3 (FSM) |
-| API / biznes logika | FastAPI |
-| DB | PostgreSQL + **pgvector** |
-| ORM / migratsiya | SQLAlchemy 2.0 (async) + Alembic |
-| Scheduler | APScheduler |
-| Grafik | matplotlib |
-| Embedding | sentence-transformers (ixtiyoriy) |
-
-## Loyiha tuzilishi
-
-```
-app/
-├── config.py          # pydantic-settings sozlamalari
-├── main.py            # kirish nuqtasi (bot + api)
-├── logging_config.py  # structlog
-├── db/                # engine, session, Base
-├── models/            # SQLAlchemy modellari (users, foods, ...)
-├── core/              # formulalar (BMR/TDEE/makros/Navy) + tavsiya dvijoki
-├── services/          # taom moslash, loglash xizmatlari
-├── bot/               # aiogram: handlers, keyboards, FSM states
-├── api/               # FastAPI routelari
-└── scheduler/         # haftalik check-in eslatmalari
-migrations/            # Alembic
-scripts/               # seed_foods.py
-tests/                 # pytest (formulalar to'liq qamrovda)
-```
-
-## Ishga tushirish (lokal)
-
-**Talab:** Docker Desktop.
-
-**Asosiy yo'l — Docker-first (tavsiya etiladi):**
 ```bash
-cp .env.example .env          # BOT_TOKEN ni to'ldiring
-docker compose up --build     # DB + migratsiya + bot — hammasi
+cp .env.example .env     # set BOT_TOKEN and API_KEY (required), ADMINS (optional)
+make up                  # db, redis, api (migrates on start), bot
 ```
-Bitta buyruq bilan: DB ko'tariladi, sog'lom bo'lguncha kutiladi, migratsiyalar
-qo'llanadi va bot ishga tushadi.
 
-Kodni tahrirlagach, image'ni qayta qurish shart emas — `app/`, `migrations/`,
-`alembic.ini` va `scripts/` konteynerga live mount qilingan:
+The bot runs in polling mode by default. For webhook mode set `BOT_MODE=webhook`,
+`WEBHOOK_BASE_URL` (public `https://` URL) and `WEBHOOK_SECRET` (16–256 letters, digits, `_` or `-`)
+in `.env`, and put an HTTPS reverse proxy in front of `BOT_HOST_PORT`.
+
+- API: http://localhost:8000 (health: `/health`, endpoints under `/api/v1`, every call needs `X-API-Key`)
+- Postgres is published on host port `5433` (`DB_HOST_PORT`) so it does not clash with a local Postgres.
+
+## Tests
+
 ```bash
-docker compose restart bot
+make test                # api and bot test suites
 ```
 
-To'xtatish:
-```bash
-docker compose down
+The API tests need a Postgres database (`TEST_DATABASE_URL`). CI runs one automatically.
+
+## Layout
+
 ```
-Loglar `--build` bilan terminalda ko'rinadi; fon rejimida (`-d`) ishga tushirgan
-bo'lsangiz — `docker compose logs -f bot`.
+api/                  FastAPI service
+bot/                  Telegram bot service (polling or webhook)
+docker-compose.yml    db, redis, api, bot
+.github/workflows/    CI for both services
+```
 
-> **Muhim:** testlar va lint (`pytest`, `ruff`) Docker image'ida YO'Q — image'da
-> faqat asosiy (runtime) bog'liqliklar o'rnatilgan. Test/lint uchun lokal venv kerak:
-> ```bash
-> python3.10 -m venv .venv && source .venv/bin/activate && pip install -e ".[dev]"
-> pytest        # testlar
-> ruff check app tests   # lint
-> ```
+## Design decisions
 
-## Rivojlanish bosqichlari (SPEC §8)
-
-- [x] **Bosqich 0 — Poydevor:** skelet, DB + Alembic, modellar, formulalar + testlar, config, Docker
-- [ ] **Bosqich 1 — Yadro:** foods seed, kunlik loglash, vektor moslash, "qancha qoldi"
-- [ ] **Bosqich 2 — Tracking:** haftalik check-in, Navy BF%, APScheduler, matplotlib grafik
-- [ ] **Bosqich 3 — Aql:** tavsiya dvijoki, admin moderatsiya
-- [ ] **Bosqich 4 — Kelajak:** LLM tabiiy so'rov, premium
-
-## Eslatma (maxfiylik va xavflar)
-
-- Yog' foizi = **taxmin**, klinik o'lchov emas.
-- Progress fotolar ixtiyoriy; faqat Telegram `file_id` saqlanadi.
-- Bu tibbiy maslahat emas — faqat kuzatuv/hisob vositasi.
+- **Data lives only in the API.** The bot keeps no database, so the website and the bot always
+  see the same profiles and plans.
+- **Service-to-service auth is a shared API key.** Telegram initData is no longer used because
+  the Mini App was removed.
+- **Nutrition formulas are pure functions** (`api/app/core/formulas.py`) with their own tests.
+- **Migrations run on API start** (`alembic upgrade head`), so the schema always matches the code.
